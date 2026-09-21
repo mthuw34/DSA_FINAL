@@ -5,18 +5,26 @@ int main()
 {
     sqlite3* db = nullptr;
 
-    if (sqlite3_open("hospital.db", &db) != SQLITE_OK)
+    // Mo database
+    if (sqlite3_open("database/hospital.db", &db) != SQLITE_OK)
     {
-        std::cerr << sqlite3_errmsg(db) << '\n';
+        std::cerr << "Khong mo duoc database: "
+                  << sqlite3_errmsg(db) << '\n';
+
+        sqlite3_close(db);
         return 1;
     }
 
-    const char* sql = R"(
+    // =========================================
+    // TAO BANG PATIENTS
+    // =========================================
+
+    const char* sqlPatients = R"(
 
         CREATE TABLE IF NOT EXISTS patients (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             name TEXT NOT NULL,
-            brith_date TEXT NOT NULL,
+            birth_date TEXT NOT NULL,
             age INTEGER NOT NULL,
             gender TEXT,
             hometown TEXT,
@@ -30,7 +38,7 @@ int main()
 
     int result = sqlite3_exec(
         db,
-        sql,
+        sqlPatients,
         nullptr,
         nullptr,
         &error
@@ -38,15 +46,66 @@ int main()
 
     if (result != SQLITE_OK)
     {
-        std::cerr << "SQL Error: " << error << '\n';
+        std::cerr << "Loi tao bang patients: "
+                  << error << '\n';
 
         sqlite3_free(error);
-    }
-    else
-    {
-        std::cout << "Tao bang thanh cong\n";
+        sqlite3_close(db);
+
+        return 1;
     }
 
+    std::cout << "Tao bang patients thanh cong\n";
+
+    // =========================================
+    // TAO BANG CHECKINS
+    // =========================================
+
+    const char* sqlCheckin = R"(
+
+        CREATE TABLE IF NOT EXISTS checkins (
+            checkin_id INTEGER PRIMARY KEY AUTOINCREMENT,
+
+            patient_id INTEGER NOT NULL,
+
+            department TEXT NOT NULL,
+
+            checkin_time TEXT NOT NULL
+                DEFAULT (datetime('now', 'localtime')),
+
+            priority INTEGER NOT NULL
+                CHECK(priority BETWEEN 1 AND 5),
+
+            FOREIGN KEY(patient_id)
+                REFERENCES patients(id)
+        );
+
+    )";
+
+    error = nullptr;
+
+    result = sqlite3_exec(
+        db,
+        sqlCheckin,
+        nullptr,
+        nullptr,
+        &error
+    );
+
+    if (result != SQLITE_OK)
+    {
+        std::cerr << "Loi tao bang checkins: "
+                  << error << '\n';
+
+        sqlite3_free(error);
+        sqlite3_close(db);
+
+        return 1;
+    }
+
+    std::cout << "Tao bang checkins thanh cong\n";
+
+    // Dong database
     sqlite3_close(db);
 
     return 0;
