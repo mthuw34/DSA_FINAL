@@ -105,7 +105,6 @@ int main()
 
     std::cout << "Tao bang checkins thanh cong\n";
 
-
     sqlite3_close(db);
 
     return 0;

@@ -135,6 +135,7 @@ void hienThiBangCheckIn(sqlite3* db)
             cout
                 << left
                 << setw(6)  << "STT"
+                << setw(12) << "Ma check-in"
                 << setw(10) << "ID"
                 << setw(25) << "Ho ten"
                 << setw(20) << "Uu tien"
@@ -150,6 +151,7 @@ void hienThiBangCheckIn(sqlite3* db)
         cout
             << left
             << setw(6) << stt
+            << setw(12) << checkinId
             << setw(10) << patientId
             << setw(25) << name.substr(0, 23)
             << setw(20)
@@ -175,4 +177,103 @@ void hienThiBangCheckIn(sqlite3* db)
          << tongBenhNhan
          << '\n';
     cout << "====================================================================\n";
+}
+
+bool xoaToanBoCheckIn(sqlite3* db)
+{
+    const char* sql = R"(
+        DELETE FROM checkins;
+
+        DELETE FROM sqlite_sequence
+        WHERE name = 'checkins';
+)";    
+
+    char* errorMessage = nullptr;
+
+    int result = sqlite3_exec(
+        db,
+        sql,
+        nullptr,
+        nullptr,
+        &errorMessage
+    );
+
+    if (result != SQLITE_OK)
+    {
+        std::cerr
+            << "Loi khi xoa du lieu check-in: "
+            << errorMessage
+            << '\n';
+
+        sqlite3_free(errorMessage);
+
+        return false;
+    }
+
+    cout << "\nDa xoa toan bo du lieu trong bang checkins.\n";
+    cout <<"Ma check-in da duoc reset ve 1.\n";
+
+    return true;
+}
+bool xoaMotCheckIn(
+    sqlite3* db,
+    int checkinId
+)
+{
+    const char* sql =
+        "DELETE FROM checkins WHERE checkin_id = ?;";
+
+    sqlite3_stmt* stmt = nullptr;
+
+    if (sqlite3_prepare_v2(
+            db,
+            sql,
+            -1,
+            &stmt,
+            nullptr
+        ) != SQLITE_OK)
+    {
+        cerr << "Loi SQL khi xoa check-in: "
+             << sqlite3_errmsg(db)
+             << '\n';
+
+        return false;
+    }
+
+    sqlite3_bind_int(
+        stmt,
+        1,
+        checkinId
+    );
+
+    if (sqlite3_step(stmt) != SQLITE_DONE)
+    {
+        cerr << "Khong the xoa check-in: "
+             << sqlite3_errmsg(db)
+             << '\n';
+
+        sqlite3_finalize(stmt);
+
+        return false;
+    }
+
+    int soDongDaXoa =
+        sqlite3_changes(db);
+
+    sqlite3_finalize(stmt);
+
+    if (soDongDaXoa == 0)
+    {
+        cout << "\nKhong tim thay check-in co ma = "
+             << checkinId
+             << '\n';
+
+        return false;
+    }
+
+    cout << "\nDa xoa check-in co ma = "
+         << checkinId
+         << '\n';
+
+    return true;
 }

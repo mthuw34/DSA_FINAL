@@ -5,4 +5,13 @@
 
 void hienThiBangCheckIn(sqlite3* db);
 
+bool xoaToanBoCheckIn(
+    sqlite3* db
+);
+
+bool xoaMotCheckIn(
+    sqlite3* db,
+    int checkinId
+);
+
 #endif

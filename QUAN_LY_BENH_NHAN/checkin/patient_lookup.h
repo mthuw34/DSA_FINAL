@@ -9,14 +9,17 @@ struct Patient
     int id;
 
     std::string name;
-    std::string birthDate;
-
     int age;
 
+    std::string phone;
+    std::string birthDate;
     std::string gender;
     std::string hometown;
     std::string address;
-    std::string phone;
+
+    double height;
+    double weight;
+    double bmi;
 };
 
 bool timBenhNhan(

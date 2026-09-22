@@ -1,16 +1,26 @@
 #include <iostream>
+#include <iomanip>
 #include <string>
 #include <sqlite3.h>
 
 #include "patient_lookup.h"
 
-static std::string getText(
+using namespace std;
+
+
+// =========================================
+// LAY TEXT TU SQLITE
+// =========================================
+static string getText(
     sqlite3_stmt* stmt,
     int column
 )
 {
     const unsigned char* text =
-        sqlite3_column_text(stmt, column);
+        sqlite3_column_text(
+            stmt,
+            column
+        );
 
     if (text == nullptr)
         return "";
@@ -19,6 +29,9 @@ static std::string getText(
 }
 
 
+// =========================================
+// TIM BENH NHAN THEO ID
+// =========================================
 bool timBenhNhan(
     sqlite3* db,
     int patientId,
@@ -30,12 +43,15 @@ bool timBenhNhan(
         SELECT
             id,
             name,
-            birth_date,
             age,
+            phone,
+            birth_date,
             gender,
             hometown,
             address,
-            phone
+            height,
+            weight,
+            bmi
 
         FROM patients
 
@@ -45,6 +61,8 @@ bool timBenhNhan(
 
     sqlite3_stmt* stmt = nullptr;
 
+
+    // CHUAN BI SQL
     if (sqlite3_prepare_v2(
             db,
             sql,
@@ -53,7 +71,7 @@ bool timBenhNhan(
             nullptr
         ) != SQLITE_OK)
     {
-        std::cerr
+        cerr
             << "Loi SQL tim benh nhan: "
             << sqlite3_errmsg(db)
             << '\n';
@@ -61,41 +79,127 @@ bool timBenhNhan(
         return false;
     }
 
+
+    // GAN ID VAO ?
     sqlite3_bind_int(
         stmt,
         1,
         patientId
     );
 
+
+    // KHONG TIM THAY
     if (sqlite3_step(stmt) != SQLITE_ROW)
     {
         sqlite3_finalize(stmt);
+
         return false;
     }
 
+
+    // =========================================
+    // LAY DU LIEU
+    // =========================================
+
     patient.id =
-        sqlite3_column_int(stmt, 0);
+        sqlite3_column_int(
+            stmt,
+            0
+        );
 
     patient.name =
-        getText(stmt, 1);
-
-    patient.birthDate =
-        getText(stmt, 2);
+        getText(
+            stmt,
+            1
+        );
 
     patient.age =
-        sqlite3_column_int(stmt, 3);
-
-    patient.gender =
-        getText(stmt, 4);
-
-    patient.hometown =
-        getText(stmt, 5);
-
-    patient.address =
-        getText(stmt, 6);
+        sqlite3_column_int(
+            stmt,
+            2
+        );
 
     patient.phone =
-        getText(stmt, 7);
+        getText(
+            stmt,
+            3
+        );
+
+    patient.birthDate =
+        getText(
+            stmt,
+            4
+        );
+
+    patient.gender =
+        getText(
+            stmt,
+            5
+        );
+
+    patient.hometown =
+        getText(
+            stmt,
+            6
+        );
+
+    patient.address =
+        getText(
+            stmt,
+            7
+        );
+
+
+    // =========================================
+    // CHIEU CAO
+    // =========================================
+    if (sqlite3_column_type(stmt, 8) == SQLITE_NULL)
+    {
+        patient.height = 0;
+    }
+    else
+    {
+        patient.height =
+            sqlite3_column_double(
+                stmt,
+                8
+            );
+    }
+
+
+    // =========================================
+    // CAN NANG
+    // =========================================
+    if (sqlite3_column_type(stmt, 9) == SQLITE_NULL)
+    {
+        patient.weight = 0;
+    }
+    else
+    {
+        patient.weight =
+            sqlite3_column_double(
+                stmt,
+                9
+            );
+    }
+
+
+    // =========================================
+    // BMI
+    // =========================================
+    if (sqlite3_column_type(stmt, 10) == SQLITE_NULL)
+    {
+        patient.bmi = 0;
+    }
+    else
+    {
+        patient.bmi =
+            sqlite3_column_double(
+                stmt,
+                10
+            );
+    }
+
 
     sqlite3_finalize(stmt);
 
@@ -103,38 +207,101 @@ bool timBenhNhan(
 }
 
 
+// =========================================
+// HIEN THI THONG TIN BENH NHAN
+// =========================================
 void hienThiBenhNhan(
     const Patient& patient
 )
 {
-    std::cout << "\n";
-    std::cout << "========================================\n";
-    std::cout << "          THONG TIN BENH NHAN\n";
-    std::cout << "========================================\n";
+    cout << "\n";
+    cout << "========================================\n";
+    cout << "          THONG TIN BENH NHAN\n";
+    cout << "========================================\n";
 
-    std::cout << "ID         : "
-              << patient.id << '\n';
+    cout << "ID         : "
+         << patient.id
+         << '\n';
 
-    std::cout << "Ho ten     : "
-              << patient.name << '\n';
+    cout << "Ho ten     : "
+         << patient.name
+         << '\n';
 
-    std::cout << "Ngay sinh  : "
-              << patient.birthDate << '\n';
+    cout << "Ngay sinh  : "
+         << patient.birthDate
+         << '\n';
 
-    std::cout << "Tuoi       : "
-              << patient.age << '\n';
+    cout << "Tuoi       : "
+         << patient.age
+         << '\n';
 
-    std::cout << "Gioi tinh  : "
-              << patient.gender << '\n';
+    cout << "Gioi tinh  : "
+         << patient.gender
+         << '\n';
 
-    std::cout << "Que quan   : "
-              << patient.hometown << '\n';
+    cout << "Que quan   : "
+         << patient.hometown
+         << '\n';
 
-    std::cout << "Dia chi    : "
-              << patient.address << '\n';
+    cout << "Dia chi    : "
+         << patient.address
+         << '\n';
 
-    std::cout << "So DT      : "
-              << patient.phone << '\n';
+    cout << "So DT      : "
+         << patient.phone
+         << '\n';
 
-    std::cout << "========================================\n";
+
+    // =========================================
+    // CHIEU CAO
+    // =========================================
+    if (patient.height > 0)
+    {
+        cout << "Chieu cao  : "
+             << fixed
+             << setprecision(1)
+             << patient.height
+             << " cm\n";
+    }
+    else
+    {
+        cout << "Chieu cao  : Chua co du lieu\n";
+    }
+
+
+    // =========================================
+    // CAN NANG
+    // =========================================
+    if (patient.weight > 0)
+    {
+        cout << "Can nang   : "
+             << fixed
+             << setprecision(1)
+             << patient.weight
+             << " kg\n";
+    }
+    else
+    {
+        cout << "Can nang   : Chua co du lieu\n";
+    }
+
+
+    // =========================================
+    // BMI
+    // =========================================
+    if (patient.bmi > 0)
+    {
+        cout << "BMI        : "
+             << fixed
+             << setprecision(2)
+             << patient.bmi
+             << '\n';
+    }
+    else
+    {
+        cout << "BMI        : Chua co du lieu\n";
+    }
+
+
+    cout << "========================================\n";
 }

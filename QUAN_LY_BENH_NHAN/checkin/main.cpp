@@ -13,10 +13,9 @@ int main()
 
     const char* databasePath = "hospital.db";
 
-    const string dbPath = "hospital.db";
-  
-
+    // =========================================
     // MO DATABASE
+    // =========================================
     if (sqlite3_open(
             databasePath,
             &db
@@ -53,11 +52,12 @@ int main()
 
         cout << "1. Check-in benh nhan\n";
         cout << "2. Xem bang check-in\n";
+        cout << "3. Xoa toan bo du lieu check-in\n";
+        cout << "4. Xoa mot check-in\n";
         cout << "0. Thoat\n";
 
         cout << "----------------------------------------\n";
         cout << "Lua chon: ";
-
 
         int choice;
 
@@ -77,7 +77,7 @@ int main()
 
 
         // =====================================
-        // CHECK-IN
+        // 1. CHECK-IN
         // =====================================
         if (choice == 1)
         {
@@ -86,7 +86,7 @@ int main()
 
 
         // =====================================
-        // XEM BANG CHECK-IN
+        // 2. XEM BANG CHECK-IN
         // =====================================
         else if (choice == 2)
         {
@@ -95,7 +95,95 @@ int main()
 
 
         // =====================================
-        // THOAT
+        // 3. XOA TOAN BO CHECK-IN
+        // =====================================
+        else if (choice == 3)
+        {
+            char xacNhan;
+
+            cout << "\n";
+            cout << "========================================\n";
+            cout << "            CANH BAO\n";
+            cout << "========================================\n";
+
+            cout << "Ban co chac muon xoa TOAN BO check-in?\n";
+            cout << "Du lieu sau khi xoa se khong con trong bang.\n";
+            cout << "Xac nhan (y/n): ";
+
+            cin >> xacNhan;
+
+            if (xacNhan == 'y' || xacNhan == 'Y')
+            {
+                xoaToanBoCheckIn(db);
+            }
+            else
+            {
+                cout << "Da huy thao tac xoa.\n";
+            }
+        }
+
+
+        // =====================================
+        // 4. XOA MOT CHECK-IN
+        // =====================================
+        else if (choice == 4)
+        {
+            int checkinId;
+
+            cout << "\n";
+            cout << "========================================\n";
+            cout << "          XOA MOT CHECK-IN\n";
+            cout << "========================================\n";
+
+            cout << "Nhap ma check-in can xoa: ";
+
+            if (!(cin >> checkinId))
+            {
+                cout << "Ma check-in khong hop le.\n";
+
+                cin.clear();
+
+                cin.ignore(
+                    numeric_limits<streamsize>::max(),
+                    '\n'
+                );
+
+                continue;
+            }
+
+
+            if (checkinId <= 0)
+            {
+                cout << "Ma check-in phai lon hon 0.\n";
+                continue;
+            }
+
+
+            char xacNhan;
+
+            cout << "Ban co chac muon xoa check-in co ma "
+                 << checkinId
+                 << "? (y/n): ";
+
+            cin >> xacNhan;
+
+
+            if (xacNhan == 'y' || xacNhan == 'Y')
+            {
+                xoaMotCheckIn(
+                    db,
+                    checkinId
+                );
+            }
+            else
+            {
+                cout << "Da huy thao tac xoa.\n";
+            }
+        }
+
+
+        // =====================================
+        // 0. THOAT
         // =====================================
         else if (choice == 0)
         {
@@ -113,6 +201,9 @@ int main()
     }
 
 
+    // =========================================
+    // DONG DATABASE
+    // =========================================
     sqlite3_close(db);
 
     cout << "\nDa thoat chuong trinh.\n";
