@@ -8,12 +8,7 @@
 using namespace std;
 
 QuanLyHangDoi::QuanLyHangDoi() {
-    daXuLyThanhCong = false;
     taiVaXuLyBenhNhan();
-}
-
-bool QuanLyHangDoi::xuLyThanhCong() const {
-    return daXuLyThanhCong;
 }
 
 void QuanLyHangDoi::taiVaXuLyBenhNhan() {
@@ -41,7 +36,7 @@ void QuanLyHangDoi::taiVaXuLyBenhNhan() {
         
         // 3. Đổ dữ liệu đã sort vào truyXuat.db
         const char* outputPath = "TRUY_XUAT_BENH_NHAN/truyXuat.db";
-        daXuLyThanhCong = XuLyDuLieu::xuatDuLieuDaSapXep(records, outputPath);
+        XuLyDuLieu::xuatDuLieuDaSapXep(records, outputPath);
     }
 
     // Đóng file DB gốc

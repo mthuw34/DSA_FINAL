@@ -2,7 +2,6 @@
 #include <sqlite3.h>
 #include <vector>
 #include "HoSoTruyXuat.h"
-
 using namespace std;
 
 class XuLyDuLieu {
