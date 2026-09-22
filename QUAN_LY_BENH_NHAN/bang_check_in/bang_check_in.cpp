@@ -135,6 +135,7 @@ void hienThiBangCheckIn(sqlite3* db)
             cout
                 << left
                 << setw(6)  << "STT"
+                << setw(12) << "Ma check-in"
                 << setw(10) << "ID"
                 << setw(25) << "Ho ten"
                 << setw(20) << "Uu tien"
@@ -150,6 +151,7 @@ void hienThiBangCheckIn(sqlite3* db)
         cout
             << left
             << setw(6) << stt
+            << setw(12) << checkinId
             << setw(10) << patientId
             << setw(25) << name.substr(0, 23)
             << setw(20)
@@ -179,8 +181,12 @@ void hienThiBangCheckIn(sqlite3* db)
 
 bool xoaToanBoCheckIn(sqlite3* db)
 {
-    const char* sql =
-        "DELETE FROM checkins;";
+    const char* sql = R"(
+        DELETE FROM checkins;
+
+        DELETE FROM sqlite_sequence
+        WHERE name = 'checkins';
+)";    
 
     char* errorMessage = nullptr;
 
@@ -204,8 +210,8 @@ bool xoaToanBoCheckIn(sqlite3* db)
         return false;
     }
 
-    std::cout
-        << "\nDa xoa toan bo du lieu trong bang checkins.\n";
+    cout << "\nDa xoa toan bo du lieu trong bang checkins.\n";
+    cout <<"Ma check-in da duoc reset ve 1.\n";
 
     return true;
 }

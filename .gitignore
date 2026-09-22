@@ -1,7 +1,14 @@
 node_modules/
 *.exe
+
+# Bo qua cac database
 *.db
-"QUAN_LY_BENH_NHAN/output/" 
-"QUAN_LY_BENH_NHAN/benh_nhan_20000.csv" git add .gitignore
+
+# NHUNG van dua database chinh nay len GitHub
+!QUAN_LY_BENH_NHAN/hospital.db
+
+QUAN_LY_BENH_NHAN/output/
+QUAN_LY_BENH_NHAN/benh_nhan_20000.csv
+
 .vscode/
 benh_nhan_20000.csv
