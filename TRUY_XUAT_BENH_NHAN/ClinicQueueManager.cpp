@@ -49,10 +49,15 @@ void ClinicQueueManager::loadPatientsFromDatabase() {
     if (sqlite3_prepare_v2(database, query, -1, &statement, nullptr) == SQLITE_OK) {
         while (sqlite3_step(statement) == SQLITE_ROW) {
             Appointment appointment;
-            appointment.appointment_code = std::to_string(sqlite3_column_int(statement, 0));
-            appointment.patient_code = std::to_string(sqlite3_column_int(statement, 1));
+            const char* appt_text = reinterpret_cast<const char*>(sqlite3_column_text(statement, 0));
+            const char* patient_text = reinterpret_cast<const char*>(sqlite3_column_text(statement, 1));
+
+            appointment.appointment_code = (appt_text != nullptr) ? std::string(appt_text) : "UNKNOWN";
+            appointment.patient_code = (patient_text != nullptr) ? std::string(patient_text) : "UNKNOWN";
+
+            // Mức ưu tiên (cột 2) là số nguyên nên vẫn dùng column_int bình thường
             appointment.priority_level = sqlite3_column_int(statement, 2);
-            appointment.checkin_time = 0;
+            appointment.checkin_time = 0; 
             appointment.status = "waiting";
 
             addPatientWeb(appointment);
