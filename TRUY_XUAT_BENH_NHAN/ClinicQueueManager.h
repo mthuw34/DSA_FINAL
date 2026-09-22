@@ -4,11 +4,15 @@
 #include <list>
 #include <vector>
 #include <unordered_map>
+#include <mutex>
 
 class ClinicQueueManager {
 private:
     std::vector<std::list<Appointment>> waitlists;
     std::unordered_map<std::string, std::list<Appointment>::iterator> locator;
+    std::mutex queue_mutex;
+
+    void loadPatientsFromDatabase();
 
 public:
     // Khai báo constructor

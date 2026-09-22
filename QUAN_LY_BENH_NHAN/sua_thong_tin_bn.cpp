@@ -8,7 +8,7 @@ using namespace std;
 int main() {
     sqlite3* db = nullptr;
 
-    if (sqlite3_open("hospital.db", &db) != SQLITE_OK) {
+    if (sqlite3_open("QUAN_LY_BENH_NHAN/hospital.db", &db) != SQLITE_OK) {
         cout << "Khong mo duoc database: "
              << sqlite3_errmsg(db) << endl;
         return 1;

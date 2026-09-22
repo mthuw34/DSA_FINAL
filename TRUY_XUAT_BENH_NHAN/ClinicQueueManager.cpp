@@ -1,4 +1,6 @@
 #include "ClinicQueueManager.h"
+#include <fstream>
+#include <sqlite3.h>
 #include <stdexcept>
 #include <nlohmann/json.hpp>    
 
@@ -7,6 +9,51 @@ using json = nlohmann::json;
 //Định nghĩa Constructor
 ClinicQueueManager::ClinicQueueManager() {
     waitlists.resize(6); // 1 đến 5, bỏ qua index 0
+    loadPatientsFromDatabase();
+}
+
+void ClinicQueueManager::loadPatientsFromDatabase() {
+    const char* databasePath = "QUAN_LY_BENH_NHAN/hospital.db";
+    std::ifstream databaseFile(databasePath);
+    if (!databaseFile.good()) {
+        return;
+    }
+
+    sqlite3* database = nullptr;
+    if (sqlite3_open_v2(databasePath, &database, SQLITE_OPEN_READONLY, nullptr) != SQLITE_OK) {
+        if (database != nullptr) {
+            sqlite3_close(database);
+        }
+        return;
+    }
+
+    const char* query = R"(
+        SELECT checkin_id, patient_id, priority, checkin_time
+        FROM checkins
+        ORDER BY priority ASC, checkin_time ASC, checkin_id ASC;
+    )";
+
+    sqlite3_stmt* statement = nullptr;
+    if (sqlite3_prepare_v2(database, query, -1, &statement, nullptr) == SQLITE_OK) {
+        while (sqlite3_step(statement) == SQLITE_ROW) {
+            Appointment appointment;
+            const char* appt_text = reinterpret_cast<const char*>(sqlite3_column_text(statement, 0));
+            const char* patient_text = reinterpret_cast<const char*>(sqlite3_column_text(statement, 1));
+
+            appointment.appointment_code = (appt_text != nullptr) ? std::string(appt_text) : "UNKNOWN";
+            appointment.patient_code = (patient_text != nullptr) ? std::string(patient_text) : "UNKNOWN";
+
+            // Mức ưu tiên (cột 2) là số nguyên nên vẫn dùng column_int bình thường
+            appointment.priority_level = sqlite3_column_int(statement, 2);
+            appointment.checkin_time = 0; 
+            appointment.status = "waiting";
+
+            addPatientWeb(appointment);
+        }
+    }
+
+    sqlite3_finalize(statement);
+    sqlite3_close(database);
 }
 
 //Định nghĩa hàm gọi bệnh nhân
@@ -14,7 +61,9 @@ std::string ClinicQueueManager::callNextPatientWeb() {
     json response;
 
     try {
-        for (int i = 5; i >= 1; --i) {
+        std::lock_guard<std::mutex> lock(queue_mutex);
+
+        for (int i = 1; i <= 5; ++i) {
             if (!waitlists[i].empty()) {
                 Appointment next_patient = waitlists[i].front();
                 
@@ -46,6 +95,8 @@ std::string ClinicQueueManager::callNextPatientWeb() {
 
 //Định nghĩa hàm thêm bệnh nhân
 void ClinicQueueManager::addPatientWeb(const Appointment& appt) {
+    std::lock_guard<std::mutex> lock(queue_mutex);
+
     if (appt.priority_level >= 1 && appt.priority_level <= 5) {
         waitlists[appt.priority_level].push_back(appt);
         

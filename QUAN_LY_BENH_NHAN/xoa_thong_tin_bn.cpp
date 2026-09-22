@@ -4,7 +4,7 @@
 int main() {
     sqlite3* db;
 
-    if (sqlite3_open("hospital.db", &db) != SQLITE_OK) {
+    if (sqlite3_open("QUAN_LY_BENH_NHAN/hospital.db", &db) != SQLITE_OK) {
         std::cout << "Khong mo duoc database\n";
         return 1;
     }
