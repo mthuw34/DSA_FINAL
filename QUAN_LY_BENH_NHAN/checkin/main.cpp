@@ -1,5 +1,7 @@
 #include <iostream>
 #include <limits>
+#include <vector>
+#include <filesystem>
 #include <sqlite3.h>
 
 #include "check_in.h"
@@ -7,17 +9,52 @@
 
 using namespace std;
 
-int main()
+static string resolveDatabasePath(const char* argv0)
+{
+    vector<string> candidates;
+
+    if (argv0 != nullptr && argv0[0] != '\0')
+    {
+        filesystem::path exePath(argv0);
+
+        if (exePath.is_relative())
+        {
+            exePath = filesystem::absolute(exePath);
+        }
+
+        if (!exePath.empty())
+        {
+            candidates.push_back((exePath.parent_path() / "hospital.db").string());
+            candidates.push_back((exePath.parent_path().parent_path() / "hospital.db").string());
+            candidates.push_back((exePath.parent_path().parent_path() / "QUAN_LY_BENH_NHAN" / "hospital.db").string());
+        }
+    }
+
+    candidates.push_back((filesystem::current_path() / "hospital.db").string());
+    candidates.push_back("hospital.db");
+
+    for (const string& candidate : candidates)
+    {
+        if (filesystem::exists(candidate))
+        {
+            return candidate;
+        }
+    }
+
+    return "hospital.db";
+}
+
+int main(int argc, char* argv[])
 {
     sqlite3* db = nullptr;
 
-    const char* databasePath = "hospital.db";
+    const string databasePath = resolveDatabasePath(argc > 0 ? argv[0] : nullptr);
 
     // =========================================
     // MO DATABASE
     // =========================================
     if (sqlite3_open(
-            databasePath,
+            databasePath.c_str(),
             &db
         ) != SQLITE_OK)
     {
