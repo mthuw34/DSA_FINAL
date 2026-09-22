@@ -4,7 +4,7 @@ node_modules/
 # Bo qua cac database
 *.db
 
-# NHUNG van dua database chinh nay len GitHub
+# Van dua database chinh nay len GitHub
 !QUAN_LY_BENH_NHAN/hospital.db
 
 QUAN_LY_BENH_NHAN/output/
