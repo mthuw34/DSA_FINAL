@@ -1,7 +1,6 @@
 node_modules/
 *.exe
 *.db
-!THAY_DOI_MUC_DO_UU_TIEN/hospital_backup.db
 "QUAN_LY_BENH_NHAN/output/" 
 "QUAN_LY_BENH_NHAN/benh_nhan_20000.csv" git add .gitignore
 .vscode/
