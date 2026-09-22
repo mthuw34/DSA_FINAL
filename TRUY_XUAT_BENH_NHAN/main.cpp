@@ -5,6 +5,10 @@ int main() {
     crow::SimpleApp app;
     ClinicQueueManager queue; // Khởi tạo Cấu trúc dữ liệu
 
+    CROW_STATIC_FILE(app, "/", "TRUY_XUAT_BENH_NHAN/static/index.html");
+    CROW_STATIC_FILE(app, "/static/style.css", "TRUY_XUAT_BENH_NHAN/static/style.css");
+    CROW_STATIC_FILE(app, "/static/app.js", "TRUY_XUAT_BENH_NHAN/static/app.js");
+
     // API Endpoint: /api/call-next
     CROW_ROUTE(app, "/api/call-next")
     ([&queue](){

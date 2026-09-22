@@ -72,23 +72,23 @@ std::string ClinicQueueManager::callNextPatientWeb() {
                 waitlists[i].pop_front(); 
                 
                 // Đóng gói JSON
-                response["status"] = "success";
-                response["data"] = {
-                    {"appointment_code", next_patient.appointment_code},
-                    {"patient_code", next_patient.patient_code},
-                    {"priority_level", next_patient.priority_level}
+                response["trang_thai"] = "thanh_cong";
+                response["du_lieu"] = {
+                    {"ma_check_in", next_patient.appointment_code},
+                    {"ma_benh_nhan", next_patient.patient_code},
+                    {"muc_uu_tien", next_patient.priority_level}
                 };
                 return response.dump();
             }
         }
         
-        response["status"] = "empty";
-        response["message"] = "Hien tai khong co benh nhan nao dang cho.";
+        response["trang_thai"] = "rong";
+        response["thong_bao"] = "Hien tai khong co benh nhan nao dang cho.";
         return response.dump();
 
     } catch (const std::exception& e) {
-        response["status"] = "error";
-        response["message"] = e.what();
+        response["trang_thai"] = "loi";
+        response["thong_bao"] = e.what();
         return response.dump();
     }
 }
@@ -108,8 +108,8 @@ std::string ClinicQueueManager::getQueuesByDepartmentWeb() {
     sqlite3* database = nullptr;
     const char* databasePath = "QUAN_LY_BENH_NHAN/hospital.db";
     if (sqlite3_open_v2(databasePath, &database, SQLITE_OPEN_READONLY, nullptr) != SQLITE_OK) {
-        response["status"] = "error";
-        response["message"] = "Khong mo duoc database.";
+        response["trang_thai"] = "loi";
+        response["thong_bao"] = "Khong mo duoc co so du lieu.";
         if (database != nullptr) {
             sqlite3_close(database);
         }
@@ -123,8 +123,8 @@ std::string ClinicQueueManager::getQueuesByDepartmentWeb() {
     )";
     sqlite3_stmt* statement = nullptr;
     if (sqlite3_prepare_v2(database, query, -1, &statement, nullptr) != SQLITE_OK) {
-        response["status"] = "error";
-        response["message"] = sqlite3_errmsg(database);
+        response["trang_thai"] = "loi";
+        response["thong_bao"] = sqlite3_errmsg(database);
         sqlite3_close(database);
         return response.dump();
     }
@@ -138,15 +138,15 @@ std::string ClinicQueueManager::getQueuesByDepartmentWeb() {
         const std::string department = departmentText;
         if (response.contains(department)) {
             response[department].push_back({
-                {"checkin_id", sqlite3_column_int(statement, 0)},
-                {"patient_id", sqlite3_column_int(statement, 1)}
+                {"ma_check_in", sqlite3_column_int(statement, 0)},
+                {"ma_benh_nhan", sqlite3_column_int(statement, 1)}
             });
         }
     }
 
     sqlite3_finalize(statement);
     sqlite3_close(database);
-    response["status"] = "success";
+    response["trang_thai"] = "thanh_cong";
     return response.dump();
 }
 
