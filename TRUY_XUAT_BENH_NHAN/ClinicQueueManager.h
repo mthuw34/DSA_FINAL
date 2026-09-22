@@ -1,31 +1,11 @@
 #pragma once
-#include "Appointment.h"
 #include <sqlite3.h>
-#include <string>
-#include <list>
-#include <vector>
-#include <unordered_map>
-#include <mutex>
 
 class ClinicQueueManager {
 private:
-    std::vector<std::list<Appointment>> waitlists;
-    std::unordered_map<std::string, std::list<Appointment>::iterator> locator;
-    std::mutex queue_mutex;
-
-    bool ensureRetrievalTable(sqlite3* database);
+    bool exportRetrievalDatabase(sqlite3* sourceDatabase);
     void loadPatientsFromDatabase();
 
 public:
-    // Khai báo constructor
     ClinicQueueManager();
-
-    // Khai báo hàm gọi bệnh nhân tiếp theo trả về chuỗi JSON
-    std::string callNextPatientWeb();
-
-    // Trả về hàng chờ của 10 khoa mà không thay đổi dữ liệu
-    std::string getQueuesByDepartmentWeb();
-    
-    // Khai báo hàm thêm bệnh nhân (chút nữa bạn sẽ viết logic bên file cpp)
-    void addPatientWeb(const Appointment& appt);
 };
