@@ -94,17 +94,27 @@ bool XuLyDuLieu::xuatDuLieuDaSapXep(const vector<HoSoTruyXuat>& sortedRecords, c
         "queue_khoa_than_kinh"
     };
 
-    const char* dropTablesSql = R"(
+    const char* dropForeignTablesSql = R"(
         PRAGMA foreign_keys = ON;
         DROP TABLE IF EXISTS retrieval_queue;
         DROP TABLE IF EXISTS departments;
     )";
 
     char* errorMessage = nullptr;
-    if (sqlite3_exec(outputDatabase, dropTablesSql, nullptr, nullptr, &errorMessage) != SQLITE_OK) {
+    if (sqlite3_exec(outputDatabase, dropForeignTablesSql, nullptr, nullptr, &errorMessage) != SQLITE_OK) {
         sqlite3_free(errorMessage);
         sqlite3_close(outputDatabase);
         return false;
+    }
+
+    for (const char* tableName : tableNames) {
+        char dropTableSql[256];
+        snprintf(dropTableSql, sizeof(dropTableSql), "DROP TABLE IF EXISTS %s;", tableName);
+        if (sqlite3_exec(outputDatabase, dropTableSql, nullptr, nullptr, &errorMessage) != SQLITE_OK) {
+            sqlite3_free(errorMessage);
+            sqlite3_close(outputDatabase);
+            return false;
+        }
     }
 
     const char* createTableFormat = R"(
