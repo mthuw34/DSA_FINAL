@@ -4,40 +4,70 @@
 #include <filesystem>
 #include <sqlite3.h>
 
+#ifdef _WIN32
+#include <windows.h>
+#endif
+
 #include "check_in.h"
 #include "../bang_check_in/bang_check_in.h"
 
 using namespace std;
 
-static string resolveDatabasePath(const char* argv0)
+static filesystem::path getExecutablePath(const char* argv0)
 {
-    vector<string> candidates;
+#ifdef _WIN32
+    vector<wchar_t> buffer(512);
+
+    while (true)
+    {
+        DWORD length = GetModuleFileNameW(
+            nullptr,
+            buffer.data(),
+            static_cast<DWORD>(buffer.size())
+        );
+
+        if (length == 0)
+            break;
+
+        if (length < buffer.size() - 1)
+            return filesystem::path(buffer.data(), buffer.data() + length);
+
+        buffer.resize(buffer.size() * 2);
+    }
+#endif
 
     if (argv0 != nullptr && argv0[0] != '\0')
-    {
-        filesystem::path exePath(argv0);
+        return filesystem::path(argv0);
 
+    return {};
+}
+
+static string resolveDatabasePath(const char* argv0)
+{
+    vector<filesystem::path> candidates;
+
+    filesystem::path exePath = getExecutablePath(argv0);
+
+    if (!exePath.empty())
+    {
         if (exePath.is_relative())
         {
             exePath = filesystem::absolute(exePath);
         }
 
-        if (!exePath.empty())
-        {
-            candidates.push_back((exePath.parent_path() / "hospital.db").string());
-            candidates.push_back((exePath.parent_path().parent_path() / "hospital.db").string());
-            candidates.push_back((exePath.parent_path().parent_path() / "QUAN_LY_BENH_NHAN" / "hospital.db").string());
-        }
+        candidates.push_back(exePath.parent_path() / "hospital.db");
+        candidates.push_back(exePath.parent_path().parent_path() / "hospital.db");
+        candidates.push_back(exePath.parent_path().parent_path() / "QUAN_LY_BENH_NHAN" / "hospital.db");
     }
 
-    candidates.push_back((filesystem::current_path() / "hospital.db").string());
-    candidates.push_back("hospital.db");
+    candidates.push_back(filesystem::current_path() / "hospital.db");
+    candidates.push_back(filesystem::path("hospital.db"));
 
-    for (const string& candidate : candidates)
+    for (const filesystem::path& candidate : candidates)
     {
         if (filesystem::exists(candidate))
         {
-            return candidate;
+            return candidate.u8string();
         }
     }
 
