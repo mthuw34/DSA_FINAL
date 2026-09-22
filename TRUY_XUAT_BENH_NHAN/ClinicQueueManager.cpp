@@ -1,9 +1,6 @@
 #include "ClinicQueueManager.h"
-<<<<<<< Updated upstream
-=======
 #include <fstream>
 #include <sqlite3.h>
->>>>>>> Stashed changes
 #include <stdexcept>
 #include <nlohmann/json.hpp>    
 
@@ -12,8 +9,6 @@ using json = nlohmann::json;
 //Định nghĩa Constructor
 ClinicQueueManager::ClinicQueueManager() {
     waitlists.resize(6); // 1 đến 5, bỏ qua index 0
-<<<<<<< Updated upstream
-=======
     loadPatientsFromDatabase();
 }
 
@@ -66,7 +61,6 @@ void ClinicQueueManager::loadPatientsFromDatabase() {
 
     sqlite3_finalize(statement);
     sqlite3_close(database);
->>>>>>> Stashed changes
 }
 
 //Định nghĩa hàm gọi bệnh nhân
@@ -74,13 +68,9 @@ std::string ClinicQueueManager::callNextPatientWeb() {
     json response;
 
     try {
-<<<<<<< Updated upstream
-        for (int i = 5; i >= 1; --i) {
-=======
         std::lock_guard<std::mutex> lock(queue_mutex);
 
         for (int i = 1; i <= 5; ++i) {
->>>>>>> Stashed changes
             if (!waitlists[i].empty()) {
                 Appointment next_patient = waitlists[i].front();
                 
@@ -112,11 +102,8 @@ std::string ClinicQueueManager::callNextPatientWeb() {
 
 //Định nghĩa hàm thêm bệnh nhân
 void ClinicQueueManager::addPatientWeb(const Appointment& appt) {
-<<<<<<< Updated upstream
-=======
     std::lock_guard<std::mutex> lock(queue_mutex);
 
->>>>>>> Stashed changes
     if (appt.priority_level >= 1 && appt.priority_level <= 5) {
         waitlists[appt.priority_level].push_back(appt);
         

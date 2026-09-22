@@ -4,21 +4,15 @@
 #include <list>
 #include <vector>
 #include <unordered_map>
-<<<<<<< Updated upstream
-=======
 #include <mutex>
->>>>>>> Stashed changes
 
 class ClinicQueueManager {
 private:
     std::vector<std::list<Appointment>> waitlists;
     std::unordered_map<std::string, std::list<Appointment>::iterator> locator;
-<<<<<<< Updated upstream
-=======
     std::mutex queue_mutex;
 
     void loadPatientsFromDatabase();
->>>>>>> Stashed changes
 
 public:
     // Khai báo constructor
