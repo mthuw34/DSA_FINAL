@@ -11,12 +11,10 @@ int main()
 {
     sqlite3* db = nullptr;
 
-    const char* databasePath =
-<<<<<<< HEAD
-        "hospital.db";
-=======
-        "QUAN_LY_BENH_NHAN/hospital.db";
->>>>>>> 004cdb4d92503542fd8a72184ce448732b1c2d3a
+    const char* databasePath = "hospital.db";
+
+    const string dbPath = "hospital.db";
+  
 
     // MO DATABASE
     if (sqlite3_open(

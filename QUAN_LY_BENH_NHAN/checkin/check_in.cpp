@@ -107,7 +107,105 @@ bool checkInMotBenhNhan(sqlite3* db)
 
     hienThiBenhNhan(patient);
 
+// =====================================
+// KIEM TRA BENH NHAN DA CHECK-IN CHUA
+// =====================================
 
+const char* checkSql = R"(
+
+    SELECT
+        checkin_id,
+        department,
+        checkin_time,
+        priority
+
+    FROM checkins
+
+    WHERE patient_id = ?
+
+    ORDER BY checkin_id DESC
+
+    LIMIT 1;
+
+)";
+
+sqlite3_stmt* checkStmt = nullptr;
+
+if (sqlite3_prepare_v2(
+        db,
+        checkSql,
+        -1,
+        &checkStmt,
+        nullptr
+    ) != SQLITE_OK)
+{
+    cerr << "Loi kiem tra check-in: "
+         << sqlite3_errmsg(db)
+         << '\n';
+
+    return true;
+}
+
+sqlite3_bind_int(
+    checkStmt,
+    1,
+    patientId
+);
+
+if (sqlite3_step(checkStmt) == SQLITE_ROW)
+{
+    int oldCheckinId =
+        sqlite3_column_int(checkStmt, 0);
+
+    string oldDepartment =
+        getText(checkStmt, 1);
+
+    string oldCheckinTime =
+        getText(checkStmt, 2);
+
+    int oldPriority =
+        sqlite3_column_int(checkStmt, 3);
+
+    cout << "\n";
+    cout << "========================================\n";
+    cout << "       BENH NHAN DA CHECK-IN\n";
+    cout << "========================================\n";
+
+    cout << "Ma check-in : "
+         << oldCheckinId
+         << '\n';
+
+    cout << "ID benh nhan: "
+         << patientId
+         << '\n';
+
+    cout << "Ho ten      : "
+         << patient.name
+         << '\n';
+
+    cout << "Khoa        : "
+         << oldDepartment
+         << '\n';
+
+    cout << "Thoi gian   : "
+         << oldCheckinTime
+         << '\n';
+
+    cout << "Uu tien     : "
+         << oldPriority
+         << " - "
+         << getPriorityName(oldPriority)
+         << '\n';
+
+    cout << "========================================\n";
+    cout << "Khong the check-in lan thu hai!\n";
+
+    sqlite3_finalize(checkStmt);
+
+    return true;
+}
+
+sqlite3_finalize(checkStmt);
     // =====================================
     // CHON KHOA
     // =====================================
