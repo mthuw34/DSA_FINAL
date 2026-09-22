@@ -12,6 +12,139 @@ ClinicQueueManager::ClinicQueueManager() {
     loadPatientsFromDatabase();
 }
 
+bool ClinicQueueManager::ensureRetrievalTable(sqlite3* database) {
+    const char* objectTypeSql = R"(
+        SELECT type
+        FROM sqlite_master
+        WHERE name = 'retrieval_queue';
+    )";
+    sqlite3_stmt* objectTypeStatement = nullptr;
+    std::string objectType;
+
+    if (sqlite3_prepare_v2(database, objectTypeSql, -1, &objectTypeStatement, nullptr) == SQLITE_OK &&
+        sqlite3_step(objectTypeStatement) == SQLITE_ROW) {
+        const char* typeText = reinterpret_cast<const char*>(sqlite3_column_text(objectTypeStatement, 0));
+        if (typeText != nullptr) {
+            objectType = typeText;
+        }
+    }
+    sqlite3_finalize(objectTypeStatement);
+
+    if (objectType == "view") {
+        if (sqlite3_exec(database, "DROP VIEW retrieval_queue;", nullptr, nullptr, nullptr) != SQLITE_OK) {
+            return false;
+        }
+    }
+
+    const char* createTableSql = R"(
+        CREATE TABLE IF NOT EXISTS retrieval_queue (
+            checkin_id INTEGER PRIMARY KEY,
+            patient_id INTEGER NOT NULL,
+            patient_name TEXT NOT NULL,
+            birth_date TEXT NOT NULL,
+            age INTEGER NOT NULL,
+            gender TEXT,
+            hometown TEXT,
+            address TEXT,
+            phone TEXT,
+            department TEXT NOT NULL,
+            checkin_time TEXT NOT NULL,
+            priority INTEGER NOT NULL,
+            FOREIGN KEY(patient_id) REFERENCES patients(id)
+        );
+
+        DELETE FROM retrieval_queue;
+
+        INSERT INTO retrieval_queue (
+            checkin_id, patient_id, patient_name, birth_date, age,
+            gender, hometown, address, phone, department,
+            checkin_time, priority
+        )
+        SELECT
+            c.checkin_id,
+            c.patient_id,
+            p.name AS patient_name,
+            p.birth_date,
+            p.age,
+            p.gender,
+            p.hometown,
+            p.address,
+            p.phone,
+            c.department,
+            c.checkin_time,
+            c.priority
+        FROM checkins AS c
+        JOIN patients AS p ON p.id = c.patient_id;
+
+        CREATE TRIGGER IF NOT EXISTS retrieval_queue_after_checkin_insert
+        AFTER INSERT ON checkins
+        BEGIN
+            INSERT INTO retrieval_queue
+            SELECT NEW.checkin_id, NEW.patient_id, p.name, p.birth_date, p.age,
+                   p.gender, p.hometown, p.address, p.phone,
+                   NEW.department, NEW.checkin_time, NEW.priority
+            FROM patients AS p
+            WHERE p.id = NEW.patient_id;
+        END;
+
+        CREATE TRIGGER IF NOT EXISTS retrieval_queue_after_checkin_update
+        AFTER UPDATE ON checkins
+        BEGIN
+            UPDATE retrieval_queue
+            SET patient_id = NEW.patient_id,
+                patient_name = (SELECT name FROM patients WHERE id = NEW.patient_id),
+                birth_date = (SELECT birth_date FROM patients WHERE id = NEW.patient_id),
+                age = (SELECT age FROM patients WHERE id = NEW.patient_id),
+                gender = (SELECT gender FROM patients WHERE id = NEW.patient_id),
+                hometown = (SELECT hometown FROM patients WHERE id = NEW.patient_id),
+                address = (SELECT address FROM patients WHERE id = NEW.patient_id),
+                phone = (SELECT phone FROM patients WHERE id = NEW.patient_id),
+                department = NEW.department,
+                checkin_time = NEW.checkin_time,
+                priority = NEW.priority
+            WHERE checkin_id = NEW.checkin_id;
+        END;
+
+        CREATE TRIGGER IF NOT EXISTS retrieval_queue_after_checkin_delete
+        AFTER DELETE ON checkins
+        BEGIN
+            DELETE FROM retrieval_queue WHERE checkin_id = OLD.checkin_id;
+        END;
+
+        CREATE TRIGGER IF NOT EXISTS retrieval_queue_after_patient_update
+        AFTER UPDATE ON patients
+        BEGIN
+            UPDATE retrieval_queue
+            SET patient_name = NEW.name,
+                birth_date = NEW.birth_date,
+                age = NEW.age,
+                gender = NEW.gender,
+                hometown = NEW.hometown,
+                address = NEW.address,
+                phone = NEW.phone
+            WHERE patient_id = NEW.id;
+        END;
+    )";
+
+    char* errorMessage = nullptr;
+    const int result = sqlite3_exec(
+        database,
+        createTableSql,
+        nullptr,
+        nullptr,
+        &errorMessage
+    );
+
+    if (result != SQLITE_OK) {
+        if (errorMessage != nullptr) {
+            sqlite3_free(errorMessage);
+        }
+        return false;
+    }
+
+    return true;
+}
+
 void ClinicQueueManager::loadPatientsFromDatabase() {
     const char* databasePath = "QUAN_LY_BENH_NHAN/hospital.db";
     std::ifstream databaseFile(databasePath);
@@ -20,16 +153,21 @@ void ClinicQueueManager::loadPatientsFromDatabase() {
     }
 
     sqlite3* database = nullptr;
-    if (sqlite3_open_v2(databasePath, &database, SQLITE_OPEN_READONLY, nullptr) != SQLITE_OK) {
+    if (sqlite3_open_v2(databasePath, &database, SQLITE_OPEN_READWRITE, nullptr) != SQLITE_OK) {
         if (database != nullptr) {
             sqlite3_close(database);
         }
         return;
     }
 
+    if (!ensureRetrievalTable(database)) {
+        sqlite3_close(database);
+        return;
+    }
+
     const char* query = R"(
         SELECT checkin_id, patient_id, priority, checkin_time
-        FROM checkins
+        FROM retrieval_queue
         ORDER BY priority ASC, checkin_time ASC, checkin_id ASC;
     )";
 
@@ -107,7 +245,7 @@ std::string ClinicQueueManager::getQueuesByDepartmentWeb() {
 
     sqlite3* database = nullptr;
     const char* databasePath = "QUAN_LY_BENH_NHAN/hospital.db";
-    if (sqlite3_open_v2(databasePath, &database, SQLITE_OPEN_READONLY, nullptr) != SQLITE_OK) {
+    if (sqlite3_open_v2(databasePath, &database, SQLITE_OPEN_READWRITE, nullptr) != SQLITE_OK) {
         response["trang_thai"] = "loi";
         response["thong_bao"] = "Khong mo duoc co so du lieu.";
         if (database != nullptr) {
@@ -116,9 +254,16 @@ std::string ClinicQueueManager::getQueuesByDepartmentWeb() {
         return response.dump();
     }
 
+    if (!ensureRetrievalTable(database)) {
+        response["trang_thai"] = "loi";
+        response["thong_bao"] = "Khong tao duoc bang truy xuat trong co so du lieu.";
+        sqlite3_close(database);
+        return response.dump();
+    }
+
     const char* query = R"(
         SELECT checkin_id, patient_id, department
-        FROM checkins
+        FROM retrieval_queue
         ORDER BY priority ASC, checkin_time ASC, checkin_id ASC;
     )";
     sqlite3_stmt* statement = nullptr;

@@ -1,5 +1,6 @@
 #pragma once
 #include "Appointment.h"
+#include <sqlite3.h>
 #include <string>
 #include <list>
 #include <vector>
@@ -12,6 +13,7 @@ private:
     std::unordered_map<std::string, std::list<Appointment>::iterator> locator;
     std::mutex queue_mutex;
 
+    bool ensureRetrievalTable(sqlite3* database);
     void loadPatientsFromDatabase();
 
 public:
