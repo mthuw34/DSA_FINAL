@@ -173,6 +173,8 @@ bool PrioritySync::syncAll()
         {
             cerr << "Loi dong bo checkin_id = "
                  << checkinId
+                 << ": "
+                 << sqlite3_errmsg(priorityDb)
                  << '\n';
 
             sqlite3_finalize(selectStmt);
