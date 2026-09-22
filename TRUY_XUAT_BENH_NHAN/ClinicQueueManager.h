@@ -20,6 +20,9 @@ public:
 
     // Khai báo hàm gọi bệnh nhân tiếp theo trả về chuỗi JSON
     std::string callNextPatientWeb();
+
+    // Trả về hàng chờ của 10 khoa mà không thay đổi dữ liệu
+    std::string getQueuesByDepartmentWeb();
     
     // Khai báo hàm thêm bệnh nhân (chút nữa bạn sẽ viết logic bên file cpp)
     void addPatientWeb(const Appointment& appt);

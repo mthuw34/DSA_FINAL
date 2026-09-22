@@ -93,6 +93,63 @@ std::string ClinicQueueManager::callNextPatientWeb() {
     }
 }
 
+std::string ClinicQueueManager::getQueuesByDepartmentWeb() {
+    const std::vector<std::string> departments = {
+        "Khoa Cap cuu", "Khoa Noi", "Khoa Ngoai", "Khoa Tim mach",
+        "Khoa Nhi", "Khoa San", "Khoa Tai Mui Hong", "Khoa Mat",
+        "Khoa Da lieu", "Khoa Than kinh"
+    };
+
+    json response;
+    for (const std::string& department : departments) {
+        response[department] = json::array();
+    }
+
+    sqlite3* database = nullptr;
+    const char* databasePath = "QUAN_LY_BENH_NHAN/hospital.db";
+    if (sqlite3_open_v2(databasePath, &database, SQLITE_OPEN_READONLY, nullptr) != SQLITE_OK) {
+        response["status"] = "error";
+        response["message"] = "Khong mo duoc database.";
+        if (database != nullptr) {
+            sqlite3_close(database);
+        }
+        return response.dump();
+    }
+
+    const char* query = R"(
+        SELECT checkin_id, patient_id, department
+        FROM checkins
+        ORDER BY priority ASC, checkin_time ASC, checkin_id ASC;
+    )";
+    sqlite3_stmt* statement = nullptr;
+    if (sqlite3_prepare_v2(database, query, -1, &statement, nullptr) != SQLITE_OK) {
+        response["status"] = "error";
+        response["message"] = sqlite3_errmsg(database);
+        sqlite3_close(database);
+        return response.dump();
+    }
+
+    while (sqlite3_step(statement) == SQLITE_ROW) {
+        const char* departmentText = reinterpret_cast<const char*>(sqlite3_column_text(statement, 2));
+        if (departmentText == nullptr) {
+            continue;
+        }
+
+        const std::string department = departmentText;
+        if (response.contains(department)) {
+            response[department].push_back({
+                {"checkin_id", sqlite3_column_int(statement, 0)},
+                {"patient_id", sqlite3_column_int(statement, 1)}
+            });
+        }
+    }
+
+    sqlite3_finalize(statement);
+    sqlite3_close(database);
+    response["status"] = "success";
+    return response.dump();
+}
+
 //Định nghĩa hàm thêm bệnh nhân
 void ClinicQueueManager::addPatientWeb(const Appointment& appt) {
     std::lock_guard<std::mutex> lock(queue_mutex);
