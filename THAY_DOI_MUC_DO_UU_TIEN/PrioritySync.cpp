@@ -18,15 +18,16 @@ PrioritySync::PrioritySync(
 
 bool PrioritySync::syncAll()
 {
-    // =========================
-    // B1. DOC TOAN BO CHECK-IN GOC
-    // =========================
+    // =============================
+    // 1. DOC DU LIEU TU hospital.db
+    // =============================
 
     const char* selectSql = R"(
 
         SELECT
             checkin_id,
             patient_id,
+            department,
             checkin_time,
             priority
 
@@ -44,13 +45,13 @@ bool PrioritySync::syncAll()
             nullptr
         ) != SQLITE_OK)
     {
-        cerr << "Loi doc hospital.db\n";
+        cerr << "Loi doc bang checkins trong hospital.db\n";
         return false;
     }
 
-    // =========================
-    // B2. THEM / CAP NHAT priority.db
-    // =========================
+    // ===================================
+    // 2. THEM / CAP NHAT VAO priority.db
+    // ===================================
 
     const char* upsertSql = R"(
 
@@ -58,17 +59,19 @@ bool PrioritySync::syncAll()
         (
             checkin_id,
             patient_id,
+            department,
             checkin_time,
             base_priority,
             current_priority
         )
 
-        VALUES (?, ?, ?, ?, ?)
+        VALUES (?, ?, ?, ?, ?, ?)
 
         ON CONFLICT(checkin_id)
 
         DO UPDATE SET
             patient_id = excluded.patient_id,
+            department = excluded.department,
             checkin_time = excluded.checkin_time,
             base_priority = excluded.base_priority;
 
@@ -100,8 +103,16 @@ bool PrioritySync::syncAll()
         int patientId =
             sqlite3_column_int(selectStmt, 1);
 
-        const unsigned char* timeText =
+        const unsigned char* departmentText =
             sqlite3_column_text(selectStmt, 2);
+
+        string department =
+            departmentText
+            ? reinterpret_cast<const char*>(departmentText)
+            : "";
+
+        const unsigned char* timeText =
+            sqlite3_column_text(selectStmt, 3);
 
         string checkinTime =
             timeText
@@ -109,7 +120,7 @@ bool PrioritySync::syncAll()
             : "";
 
         int basePriority =
-            sqlite3_column_int(selectStmt, 3);
+            sqlite3_column_int(selectStmt, 4);
 
         validIds.insert(checkinId);
 
@@ -131,6 +142,14 @@ bool PrioritySync::syncAll()
         sqlite3_bind_text(
             upsertStmt,
             3,
+            department.c_str(),
+            -1,
+            SQLITE_TRANSIENT
+        );
+
+        sqlite3_bind_text(
+            upsertStmt,
+            4,
             checkinTime.c_str(),
             -1,
             SQLITE_TRANSIENT
@@ -138,15 +157,15 @@ bool PrioritySync::syncAll()
 
         sqlite3_bind_int(
             upsertStmt,
-            4,
+            5,
             basePriority
         );
 
-        // Khi check-in moi duoc tao
-        // current_priority = base_priority
+        // Neu check-in moi:
+        // current_priority ban dau = base_priority
         sqlite3_bind_int(
             upsertStmt,
-            5,
+            6,
             basePriority
         );
 
@@ -166,9 +185,9 @@ bool PrioritySync::syncAll()
     sqlite3_finalize(selectStmt);
     sqlite3_finalize(upsertStmt);
 
-    // =========================
-    // B3. XOA CAC CHECK-IN KHONG CON O DB GOC
-    // =========================
+    // =====================================
+    // 3. XOA CAC CHECK-IN KHONG CON O GOC
+    // =====================================
 
     const char* readSql =
         "SELECT checkin_id FROM priority_checkins;";

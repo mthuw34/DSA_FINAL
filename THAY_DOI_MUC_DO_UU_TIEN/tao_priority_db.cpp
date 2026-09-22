@@ -12,11 +12,7 @@ int main()
 
     if (sqlite3_open(dbPath, &db) != SQLITE_OK)
     {
-        cerr << "Khong mo duoc priority.db: "
-             << sqlite3_errmsg(db)
-             << '\n';
-
-        sqlite3_close(db);
+        cerr << "Khong mo duoc priority.db\n";
         return 1;
     }
 
@@ -25,7 +21,11 @@ int main()
         CREATE TABLE IF NOT EXISTS priority_checkins
         (
             checkin_id INTEGER PRIMARY KEY,
+
             patient_id INTEGER NOT NULL,
+
+            department TEXT NOT NULL,
+
             checkin_time TEXT NOT NULL,
 
             base_priority INTEGER NOT NULL
