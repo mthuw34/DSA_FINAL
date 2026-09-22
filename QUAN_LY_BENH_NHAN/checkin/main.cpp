@@ -12,11 +12,7 @@ int main()
     sqlite3* db = nullptr;
 
     const char* databasePath =
-<<<<<<< Updated upstream
-        "database/hospital.db";
-=======
-        "../hospital.db";
->>>>>>> Stashed changes
+        "QUAN_LY_BENH_NHAN/hospital.db";
 
     // MO DATABASE
     if (sqlite3_open(

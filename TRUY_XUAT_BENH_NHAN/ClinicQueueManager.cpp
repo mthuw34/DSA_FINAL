@@ -13,21 +13,9 @@ ClinicQueueManager::ClinicQueueManager() {
 }
 
 void ClinicQueueManager::loadPatientsFromDatabase() {
-    const char* databasePaths[] = {
-        "../QUAN_LY_BENH_NHAN/hospital.db",
-        "QUAN_LY_BENH_NHAN/hospital.db"
-    };
-
-    const char* databasePath = nullptr;
-    for (const char* path : databasePaths) {
-        std::ifstream databaseFile(path);
-        if (databaseFile.good()) {
-            databasePath = path;
-            break;
-        }
-    }
-
-    if (databasePath == nullptr) {
+    const char* databasePath = "QUAN_LY_BENH_NHAN/hospital.db";
+    std::ifstream databaseFile(databasePath);
+    if (!databaseFile.good()) {
         return;
     }
 
