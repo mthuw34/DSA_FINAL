@@ -1,16 +1,12 @@
-#include "ClinicQueueManager.h"
-#include <crow_all.h>
+#include "QuanLyHangDoi.h"
+#include <iostream>
+
+using namespace std;
 
 int main() {
-    crow::SimpleApp app;
-    ClinicQueueManager queue; // Khởi tạo Cấu trúc dữ liệu
-
-    // API Endpoint: /api/call-next
-    CROW_ROUTE(app, "/api/call-next")
-    ([&queue](){
-        return queue.callNextPatientWeb(); // Gọi hàm xử lý và trả về JSON
-    });
-
-    app.port(8080).multithreaded().run();
+    // Khởi tạo đối tượng quản lý, quá trình lấy dữ liệu và sắp xếp sẽ tự động chạy
+    QuanLyHangDoi manager;
+    
+    cout << "Da tao TRUY_XUAT_BENH_NHAN/truyXuat.db thanh cong!\n";
     return 0;
 }
