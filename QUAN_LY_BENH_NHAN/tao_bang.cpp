@@ -6,7 +6,7 @@ int main()
     sqlite3* db = nullptr;
 
     // Mo database
-    if (sqlite3_open("database/hospital.db", &db) != SQLITE_OK)
+    if (sqlite3_open("hospital.db", &db) != SQLITE_OK)
     {
         std::cerr << "Khong mo duoc database: "
                   << sqlite3_errmsg(db) << '\n';

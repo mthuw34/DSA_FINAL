@@ -12,7 +12,7 @@ int main()
     sqlite3* db = nullptr;
 
     const char* databasePath =
-        "database/hospital.db";
+        "hospital.db";
 
     // MO DATABASE
     if (sqlite3_open(
