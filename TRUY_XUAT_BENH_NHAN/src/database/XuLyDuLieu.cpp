@@ -141,6 +141,8 @@ bool XuLyDuLieu::xuatDuLieuDaSapXep(const vector<HoSoTruyXuat>& sortedRecords, c
 
     bool success = true;
     int departmentOrders[10] = {};
+    sqlite3_exec(outputDatabase, "BEGIN TRANSACTION;", nullptr, nullptr, nullptr);
+    
     for (const HoSoTruyXuat& record : sortedRecords) {
         if (record.departmentOrder < 1 || record.departmentOrder > 10) continue;
         
@@ -165,6 +167,8 @@ bool XuLyDuLieu::xuatDuLieuDaSapXep(const vector<HoSoTruyXuat>& sortedRecords, c
             break;
         }
     }
+
+    sqlite3_exec(outputDatabase, "COMMIT;", nullptr, nullptr, nullptr);
 
     for (sqlite3_stmt* statement : departmentStatements) {
         if (statement) sqlite3_finalize(statement);
