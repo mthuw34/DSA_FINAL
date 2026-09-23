@@ -7,6 +7,6 @@ int main() {
     // Khởi tạo đối tượng quản lý, quá trình lấy dữ liệu và sắp xếp sẽ tự động chạy
     QuanLyHangDoi manager;
     
-    cout << "Da tao TRUY_XUAT_BENH_NHAN/truyXuat.db thanh cong!\n";
+    cout << "Da truy xuat thong tin benh nhan thanh cong!\n";
     return 0;
 }

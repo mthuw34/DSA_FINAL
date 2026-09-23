@@ -21,8 +21,14 @@ bool ThuatToanSapXep::xetUuTien(const HoSoTruyXuat& left, const HoSoTruyXuat& ri
     if (left.departmentOrder != right.departmentOrder) {
         return left.departmentOrder < right.departmentOrder;
     }
-    if (left.priority != right.priority) {
-        return left.priority < right.priority;
+    if (left.currentPriority != right.currentPriority) {
+        return left.currentPriority < right.currentPriority;
+    }
+    if (left.priorityChanged != right.priorityChanged) {
+        return left.priorityChanged;
+    }
+    if (left.priorityChanged && left.lastUpdate != right.lastUpdate) {
+        return left.lastUpdate < right.lastUpdate;
     }
     if (left.checkinTime != right.checkinTime) {
         return left.checkinTime < right.checkinTime;

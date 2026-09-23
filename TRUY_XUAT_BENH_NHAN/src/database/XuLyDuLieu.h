@@ -6,6 +6,10 @@ using namespace std;
 
 class XuLyDuLieu {
 public:
-    static bool layDanhSachBenhNhan(sqlite3* sourceDatabase, vector<HoSoTruyXuat>& outRecords);
+    static bool layDanhSachBenhNhan(
+        sqlite3* hospitalDatabase,
+        sqlite3* priorityDatabase,
+        vector<HoSoTruyXuat>& outRecords
+    );
     static bool xuatDuLieuDaSapXep(const vector<HoSoTruyXuat>& sortedRecords, const char* outputPath);
 };

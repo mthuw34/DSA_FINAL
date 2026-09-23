@@ -12,21 +12,29 @@ QuanLyHangDoi::QuanLyHangDoi() {
 }
 
 void QuanLyHangDoi::taiVaXuLyBenhNhan() {
-    const char* databasePath = "QUAN_LY_BENH_NHAN/hospital.db";
-    sqlite3* database = nullptr;
+    const char* hospitalPath = "QUAN_LY_BENH_NHAN/hospital.db";
+    const char* priorityPath = "THAY_DOI_MUC_DO_UU_TIEN/priority.db";
+    sqlite3* hospitalDatabase = nullptr;
+    sqlite3* priorityDatabase = nullptr;
 
-    // Mở file DB gốc
-    if (sqlite3_open_v2(databasePath, &database, SQLITE_OPEN_READONLY, nullptr) != SQLITE_OK) {
-        if (database != nullptr) {
-            sqlite3_close(database);
+    if (sqlite3_open_v2(hospitalPath, &hospitalDatabase, SQLITE_OPEN_READONLY, nullptr) != SQLITE_OK) {
+        if (hospitalDatabase != nullptr) {
+            sqlite3_close(hospitalDatabase);
+        }
+        return;
+    }
+
+    if (sqlite3_open_v2(priorityPath, &priorityDatabase, SQLITE_OPEN_READONLY, nullptr) != SQLITE_OK) {
+        sqlite3_close(hospitalDatabase);
+        if (priorityDatabase != nullptr) {
+            sqlite3_close(priorityDatabase);
         }
         return;
     }
 
     vector<HoSoTruyXuat> records;
     
-    // 1. Lấy dữ liệu từ DB
-    if (XuLyDuLieu::layDanhSachBenhNhan(database, records)) {
+    if (XuLyDuLieu::layDanhSachBenhNhan(hospitalDatabase, priorityDatabase, records)) {
         
         // 2. Thuật toán Merge Sort sắp xếp dữ liệu
         if (!records.empty()) {
@@ -39,6 +47,6 @@ void QuanLyHangDoi::taiVaXuLyBenhNhan() {
         XuLyDuLieu::xuatDuLieuDaSapXep(records, outputPath);
     }
 
-    // Đóng file DB gốc
-    sqlite3_close(database);
+    sqlite3_close(priorityDatabase);
+    sqlite3_close(hospitalDatabase);
 }

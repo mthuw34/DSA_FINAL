@@ -17,4 +17,8 @@ struct HoSoTruyXuat {
     string department;
     string checkinTime;
     int priority;
+    int basePriority;
+    int currentPriority;
+    string lastUpdate;
+    bool priorityChanged;
 };

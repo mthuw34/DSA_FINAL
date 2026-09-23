@@ -1,23 +1,57 @@
 #include "XuLyDuLieu.h"
 #include "ThuatToanSapXep.h"
 #include <cstdio>
+#include <unordered_map>
 
 using namespace std;
 
-bool XuLyDuLieu::layDanhSachBenhNhan(sqlite3* sourceDatabase, vector<HoSoTruyXuat>& outRecords) {
+bool XuLyDuLieu::layDanhSachBenhNhan(
+    sqlite3* hospitalDatabase,
+    sqlite3* priorityDatabase,
+    vector<HoSoTruyXuat>& outRecords
+) {
+    struct PriorityInfo {
+        int basePriority;
+        int currentPriority;
+        string lastUpdate;
+    };
+
+    unordered_map<int, PriorityInfo> priorityByCheckinId;
+    const char* priorityQuery = R"(
+        SELECT checkin_id, base_priority, current_priority, last_update
+        FROM priority_checkins;
+    )";
+
+    sqlite3_stmt* priorityStatement = nullptr;
+    if (sqlite3_prepare_v2(priorityDatabase, priorityQuery, -1, &priorityStatement, nullptr) != SQLITE_OK) {
+        sqlite3_finalize(priorityStatement);
+        return false;
+    }
+
+    int priorityResult = SQLITE_ROW;
+    while ((priorityResult = sqlite3_step(priorityStatement)) == SQLITE_ROW) {
+        const unsigned char* lastUpdateText = sqlite3_column_text(priorityStatement, 3);
+        priorityByCheckinId[sqlite3_column_int(priorityStatement, 0)] = {
+            sqlite3_column_int(priorityStatement, 1),
+            sqlite3_column_int(priorityStatement, 2),
+            lastUpdateText ? reinterpret_cast<const char*>(lastUpdateText) : ""
+        };
+    }
+    sqlite3_finalize(priorityStatement);
+    if (priorityResult != SQLITE_DONE) {
+        return false;
+    }
+
     const char* query = R"(
-        SELECT c.checkin_id, c.patient_id, p.name, p.birth_date, p.age,
-               p.gender, p.hometown, p.address, p.phone,
+        SELECT c.checkin_id, c.patient_id, c.department, c.checkin_time,
                CASE c.department
                    WHEN 'Khoa Cap cuu' THEN 1 WHEN 'Khoa Noi' THEN 2
                    WHEN 'Khoa Ngoai' THEN 3 WHEN 'Khoa Tim mach' THEN 4
                    WHEN 'Khoa Nhi' THEN 5 WHEN 'Khoa San' THEN 6
                    WHEN 'Khoa Tai Mui Hong' THEN 7 WHEN 'Khoa Mat' THEN 8
                    WHEN 'Khoa Da lieu' THEN 9 WHEN 'Khoa Than kinh' THEN 10
-               END,
-               c.department, c.checkin_time, c.priority
+                   END
         FROM checkins AS c
-        JOIN patients AS p ON p.id = c.patient_id
         WHERE c.department IN (
             'Khoa Cap cuu', 'Khoa Noi', 'Khoa Ngoai', 'Khoa Tim mach',
             'Khoa Nhi', 'Khoa San', 'Khoa Tai Mui Hong', 'Khoa Mat',
@@ -26,7 +60,7 @@ bool XuLyDuLieu::layDanhSachBenhNhan(sqlite3* sourceDatabase, vector<HoSoTruyXua
     )";
 
     sqlite3_stmt* sourceStatement = nullptr;
-    if (sqlite3_prepare_v2(sourceDatabase, query, -1, &sourceStatement, nullptr) != SQLITE_OK) {
+    if (sqlite3_prepare_v2(hospitalDatabase, query, -1, &sourceStatement, nullptr) != SQLITE_OK) {
         sqlite3_finalize(sourceStatement);
         return false;
     }
@@ -36,34 +70,27 @@ bool XuLyDuLieu::layDanhSachBenhNhan(sqlite3* sourceDatabase, vector<HoSoTruyXua
         HoSoTruyXuat record;
         record.checkinId = sqlite3_column_int(sourceStatement, 0);
         record.patientId = sqlite3_column_int(sourceStatement, 1);
-        record.patientName = reinterpret_cast<const char*>(sqlite3_column_text(sourceStatement, 2));
-        record.birthDate = sqlite3_column_type(sourceStatement, 3) == SQLITE_NULL
-            ? ""
-            : reinterpret_cast<const char*>(sqlite3_column_text(sourceStatement, 3));
-        record.age = sqlite3_column_int(sourceStatement, 4);
-        record.gender = sqlite3_column_type(sourceStatement, 5) == SQLITE_NULL
-            ? ""
-            : reinterpret_cast<const char*>(sqlite3_column_text(sourceStatement, 5));
-        record.hometown = sqlite3_column_type(sourceStatement, 6) == SQLITE_NULL
-            ? ""
-            : reinterpret_cast<const char*>(sqlite3_column_text(sourceStatement, 6));
-        record.address = sqlite3_column_type(sourceStatement, 7) == SQLITE_NULL
-            ? ""
-            : reinterpret_cast<const char*>(sqlite3_column_text(sourceStatement, 7));
-        record.phone = sqlite3_column_type(sourceStatement, 8) == SQLITE_NULL
-            ? ""
-            : reinterpret_cast<const char*>(sqlite3_column_text(sourceStatement, 8));
-        
-        record.departmentOrder = sqlite3_column_int(sourceStatement, 9);
-        record.department = reinterpret_cast<const char*>(sqlite3_column_text(sourceStatement, 10));
+        record.department = reinterpret_cast<const char*>(sqlite3_column_text(sourceStatement, 2));
+        record.departmentOrder = sqlite3_column_int(sourceStatement, 4);
         
         // Đề phòng SQL lấy thiếu, dùng C++ để gán lại thứ tự
         if(record.departmentOrder == 0) {
              record.departmentOrder = ThuatToanSapXep::layThuTuKhoa(record.department);
         }
 
-        record.checkinTime = reinterpret_cast<const char*>(sqlite3_column_text(sourceStatement, 11));
-        record.priority = sqlite3_column_int(sourceStatement, 12);
+        const unsigned char* checkinTimeText = sqlite3_column_text(sourceStatement, 3);
+        record.checkinTime = checkinTimeText ? reinterpret_cast<const char*>(checkinTimeText) : "";
+
+        auto priorityInfo = priorityByCheckinId.find(record.checkinId);
+        if (priorityInfo == priorityByCheckinId.end()) {
+            continue;
+        }
+
+        record.basePriority = priorityInfo->second.basePriority;
+        record.currentPriority = priorityInfo->second.currentPriority;
+        record.lastUpdate = priorityInfo->second.lastUpdate;
+        record.priorityChanged = record.basePriority != record.currentPriority;
+        record.priority = record.currentPriority;
         outRecords.push_back(record);
     }
 
@@ -122,17 +149,11 @@ bool XuLyDuLieu::xuatDuLieuDaSapXep(const vector<HoSoTruyXuat>& sortedRecords, c
             retrieval_order INTEGER PRIMARY KEY,
             checkin_id INTEGER NOT NULL UNIQUE,
             patient_id INTEGER NOT NULL,
-            patient_name TEXT NOT NULL,
-            birth_date TEXT,
-            age INTEGER,
-            gender TEXT,
-            hometown TEXT,
-            address TEXT,
-            phone TEXT,
-            department_order INTEGER NOT NULL,
             department TEXT NOT NULL,
             checkin_time TEXT NOT NULL,
-            priority INTEGER NOT NULL
+            base_priority INTEGER NOT NULL,
+            current_priority INTEGER NOT NULL,
+            last_update TEXT
         );
     )";
 
@@ -146,7 +167,7 @@ bool XuLyDuLieu::xuatDuLieuDaSapXep(const vector<HoSoTruyXuat>& sortedRecords, c
         }
     }
 
-    const char* insertFormat = "INSERT INTO %s VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);";
+    const char* insertFormat = "INSERT INTO %s VALUES (?, ?, ?, ?, ?, ?, ?, ?);";
     sqlite3_stmt* departmentStatements[10] = {};
     for (int index = 0; index < 10; ++index) {
         char insertSql[256];
@@ -171,17 +192,15 @@ bool XuLyDuLieu::xuatDuLieuDaSapXep(const vector<HoSoTruyXuat>& sortedRecords, c
         sqlite3_bind_int(departmentStatement, 1, ++departmentOrders[record.departmentOrder - 1]);
         sqlite3_bind_int(departmentStatement, 2, record.checkinId);
         sqlite3_bind_int(departmentStatement, 3, record.patientId);
-        sqlite3_bind_text(departmentStatement, 4, record.patientName.c_str(), -1, SQLITE_TRANSIENT);
-        sqlite3_bind_text(departmentStatement, 5, record.birthDate.c_str(), -1, SQLITE_TRANSIENT);
-        sqlite3_bind_int(departmentStatement, 6, record.age);
-        sqlite3_bind_text(departmentStatement, 7, record.gender.c_str(), -1, SQLITE_TRANSIENT);
-        sqlite3_bind_text(departmentStatement, 8, record.hometown.c_str(), -1, SQLITE_TRANSIENT);
-        sqlite3_bind_text(departmentStatement, 9, record.address.c_str(), -1, SQLITE_TRANSIENT);
-        sqlite3_bind_text(departmentStatement, 10, record.phone.c_str(), -1, SQLITE_TRANSIENT);
-        sqlite3_bind_int(departmentStatement, 11, record.departmentOrder);
-        sqlite3_bind_text(departmentStatement, 12, record.department.c_str(), -1, SQLITE_TRANSIENT);
-        sqlite3_bind_text(departmentStatement, 13, record.checkinTime.c_str(), -1, SQLITE_TRANSIENT);
-        sqlite3_bind_int(departmentStatement, 14, record.priority);
+        sqlite3_bind_text(departmentStatement, 4, record.department.c_str(), -1, SQLITE_TRANSIENT);
+        sqlite3_bind_text(departmentStatement, 5, record.checkinTime.c_str(), -1, SQLITE_TRANSIENT);
+        sqlite3_bind_int(departmentStatement, 6, record.basePriority);
+        sqlite3_bind_int(departmentStatement, 7, record.currentPriority);
+        if (record.lastUpdate.empty()) {
+            sqlite3_bind_null(departmentStatement, 8);
+        } else {
+            sqlite3_bind_text(departmentStatement, 8, record.lastUpdate.c_str(), -1, SQLITE_TRANSIENT);
+        }
         
         if (sqlite3_step(departmentStatement) != SQLITE_DONE) {
             success = false;
