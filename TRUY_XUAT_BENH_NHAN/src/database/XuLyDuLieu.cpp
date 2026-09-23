@@ -1,101 +1,59 @@
 #include "XuLyDuLieu.h"
 #include "ThuatToanSapXep.h"
 #include <cstdio>
-#include <unordered_map>
 
 using namespace std;
 
 bool XuLyDuLieu::layDanhSachBenhNhan(
-    sqlite3* hospitalDatabase,
     sqlite3* priorityDatabase,
     vector<HoSoTruyXuat>& outRecords
 ) {
-    struct PriorityInfo {
-        int basePriority;
-        int currentPriority;
-        string lastUpdate;
-    };
-
-    unordered_map<int, PriorityInfo> priorityByCheckinId;
-    const char* priorityQuery = R"(
-        SELECT checkin_id, base_priority, current_priority, last_update
-        FROM priority_checkins;
-    )";
-
-    sqlite3_stmt* priorityStatement = nullptr;
-    if (sqlite3_prepare_v2(priorityDatabase, priorityQuery, -1, &priorityStatement, nullptr) != SQLITE_OK) {
-        sqlite3_finalize(priorityStatement);
-        return false;
-    }
-
-    int priorityResult = SQLITE_ROW;
-    while ((priorityResult = sqlite3_step(priorityStatement)) == SQLITE_ROW) {
-        const unsigned char* lastUpdateText = sqlite3_column_text(priorityStatement, 3);
-        priorityByCheckinId[sqlite3_column_int(priorityStatement, 0)] = {
-            sqlite3_column_int(priorityStatement, 1),
-            sqlite3_column_int(priorityStatement, 2),
-            lastUpdateText ? reinterpret_cast<const char*>(lastUpdateText) : ""
-        };
-    }
-    sqlite3_finalize(priorityStatement);
-    if (priorityResult != SQLITE_DONE) {
-        return false;
-    }
-
     const char* query = R"(
-        SELECT c.checkin_id, c.patient_id, c.department, c.checkin_time,
-               CASE c.department
+        SELECT checkin_id, patient_id, department, checkin_time,
+               base_priority, current_priority, last_update,
+               CASE department
                    WHEN 'Khoa Cap cuu' THEN 1 WHEN 'Khoa Noi' THEN 2
                    WHEN 'Khoa Ngoai' THEN 3 WHEN 'Khoa Tim mach' THEN 4
                    WHEN 'Khoa Nhi' THEN 5 WHEN 'Khoa San' THEN 6
                    WHEN 'Khoa Tai Mui Hong' THEN 7 WHEN 'Khoa Mat' THEN 8
                    WHEN 'Khoa Da lieu' THEN 9 WHEN 'Khoa Than kinh' THEN 10
-                   END
-        FROM checkins AS c
-        WHERE c.department IN (
-            'Khoa Cap cuu', 'Khoa Noi', 'Khoa Ngoai', 'Khoa Tim mach',
-            'Khoa Nhi', 'Khoa San', 'Khoa Tai Mui Hong', 'Khoa Mat',
-            'Khoa Da lieu', 'Khoa Than kinh'
-        );
+                   ELSE 0
+               END
+        FROM priority_checkins;
     )";
 
-    sqlite3_stmt* sourceStatement = nullptr;
-    if (sqlite3_prepare_v2(hospitalDatabase, query, -1, &sourceStatement, nullptr) != SQLITE_OK) {
-        sqlite3_finalize(sourceStatement);
+    sqlite3_stmt* statement = nullptr;
+    if (sqlite3_prepare_v2(priorityDatabase, query, -1, &statement, nullptr) != SQLITE_OK) {
+        sqlite3_finalize(statement);
         return false;
     }
 
-    int sourceResult = SQLITE_ROW;
-    while ((sourceResult = sqlite3_step(sourceStatement)) == SQLITE_ROW) {
+    int result = SQLITE_ROW;
+    while ((result = sqlite3_step(statement)) == SQLITE_ROW) {
         HoSoTruyXuat record;
-        record.checkinId = sqlite3_column_int(sourceStatement, 0);
-        record.patientId = sqlite3_column_int(sourceStatement, 1);
-        record.department = reinterpret_cast<const char*>(sqlite3_column_text(sourceStatement, 2));
-        record.departmentOrder = sqlite3_column_int(sourceStatement, 4);
-        
-        // Đề phòng SQL lấy thiếu, dùng C++ để gán lại thứ tự
-        if(record.departmentOrder == 0) {
-             record.departmentOrder = ThuatToanSapXep::layThuTuKhoa(record.department);
+        record.checkinId = sqlite3_column_int(statement, 0);
+        record.patientId = sqlite3_column_int(statement, 1);
+        record.department = reinterpret_cast<const char*>(sqlite3_column_text(statement, 2));
+        record.departmentOrder = sqlite3_column_int(statement, 7);
+
+        if (record.departmentOrder == 0) {
+            record.departmentOrder = ThuatToanSapXep::layThuTuKhoa(record.department);
         }
 
-        const unsigned char* checkinTimeText = sqlite3_column_text(sourceStatement, 3);
+        const unsigned char* checkinTimeText = sqlite3_column_text(statement, 3);
         record.checkinTime = checkinTimeText ? reinterpret_cast<const char*>(checkinTimeText) : "";
 
-        auto priorityInfo = priorityByCheckinId.find(record.checkinId);
-        if (priorityInfo == priorityByCheckinId.end()) {
-            continue;
-        }
-
-        record.basePriority = priorityInfo->second.basePriority;
-        record.currentPriority = priorityInfo->second.currentPriority;
-        record.lastUpdate = priorityInfo->second.lastUpdate;
+        record.basePriority = sqlite3_column_int(statement, 4);
+        record.currentPriority = sqlite3_column_int(statement, 5);
+        const unsigned char* lastUpdateText = sqlite3_column_text(statement, 6);
+        record.lastUpdate = lastUpdateText ? reinterpret_cast<const char*>(lastUpdateText) : "";
         record.priorityChanged = record.basePriority != record.currentPriority;
         record.priority = record.currentPriority;
         outRecords.push_back(record);
     }
 
-    bool success = (sourceResult == SQLITE_DONE);
-    sqlite3_finalize(sourceStatement);
+    bool success = (result == SQLITE_DONE);
+    sqlite3_finalize(statement);
     return success;
 }
 

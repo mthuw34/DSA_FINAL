@@ -7,7 +7,6 @@ using namespace std;
 class XuLyDuLieu {
 public:
     static bool layDanhSachBenhNhan(
-        sqlite3* hospitalDatabase,
         sqlite3* priorityDatabase,
         vector<HoSoTruyXuat>& outRecords
     );
