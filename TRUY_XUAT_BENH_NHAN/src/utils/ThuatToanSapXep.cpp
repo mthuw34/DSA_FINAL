@@ -15,7 +15,7 @@ int ThuatToanSapXep::layThuTuKhoa(const string& department) {
         }
     }
     return 99;
-}
+}   
 
 bool ThuatToanSapXep::xetUuTien(const HoSoTruyXuat& left, const HoSoTruyXuat& right) {
     if (left.departmentOrder != right.departmentOrder) {
@@ -26,6 +26,14 @@ bool ThuatToanSapXep::xetUuTien(const HoSoTruyXuat& left, const HoSoTruyXuat& ri
     }
     if (left.priorityChanged != right.priorityChanged) {
         return left.priorityChanged;
+    }
+    if (left.priorityChanged && right.priorityChanged) {
+        int doTroNangLeft = left.basePriority - left.currentPriority;
+        int doTroNangRight = right.basePriority - right.currentPriority;
+        
+        if (doTroNangLeft != doTroNangRight) {
+            return doTroNangLeft > doTroNangRight; // Độ chênh lệch lớn hơn sẽ được xếp trước
+        }
     }
     if (left.priorityChanged && left.lastUpdate != right.lastUpdate) {
         return left.lastUpdate < right.lastUpdate;
