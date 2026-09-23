@@ -4,9 +4,14 @@
 using namespace std;
 
 int main() {
-    // Khởi tạo đối tượng quản lý, quá trình lấy dữ liệu và sắp xếp sẽ tự động chạy
     QuanLyHangDoi manager;
     
-    cout << "Da truy xuat thong tin benh nhan thanh cong!\n";
+    if (manager.taiVaXuLyBenhNhan()) {
+        cout << "Da truy xuat va sap xep du lieu thanh cong!\n";
+    } else {
+        cerr << "khong the truy xuat và sap xep du lieu!\n";
+        return 1;
+    }
+
     return 0;
 }
