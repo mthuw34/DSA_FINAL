@@ -18,33 +18,32 @@ int ThuatToanSapXep::layThuTuKhoa(const string& department) {
 }   
 
 bool ThuatToanSapXep::xetUuTien(const HoSoTruyXuat& left, const HoSoTruyXuat& right) {
-    // 1. Phân theo khoa trước
     if (left.departmentOrder != right.departmentOrder) {
         return left.departmentOrder < right.departmentOrder;
     }
     
-    // 2. Xét mức độ ưu tiên hiện tại (Current Priority)
     if (left.currentPriority != right.currentPriority) {
         return left.currentPriority < right.currentPriority;
     }
     
-    // 3. Ưu tiên lùi về gốc (Base Priority Fallback)
-    // Nếu bị trùng currentPriority, ai có bệnh gốc nặng hơn (số nhỏ hơn) lập tức xếp trên!
+    // ĐOẠN MỚI THÊM: Ưu tiên ca trở nặng thật sự (do Y tá bấm)
+    if (left.isTroNangLamSang != right.isTroNangLamSang) {
+        return left.isTroNangLamSang > right.isTroNangLamSang;
+    }
+    
+    // Ưu tiên lùi về bệnh gốc (Dành cho nhóm tự động được lên cấp do đợi lâu)
     if (left.basePriority != right.basePriority) {
         return left.basePriority < right.basePriority;
     }
     
-    // 4. Nếu giống nhau cả bệnh gốc lẫn hiện tại, xét thời gian cập nhật tình trạng
     if (left.lastUpdate != right.lastUpdate) {
         return left.lastUpdate < right.lastUpdate;
     }
     
-    // 5. Cuối cùng, nguyên tắc đến trước vào trước (FIFO)
     if (left.checkinTime != right.checkinTime) {
         return left.checkinTime < right.checkinTime;
     }
     
-    // 6. Chốt chặn cuối bằng ID bốc số
     return left.checkinId < right.checkinId;
 }
 
