@@ -53,10 +53,10 @@ int main()
          << '\n';
 
 
-    // Kiem tra root
+// Bien luu benh nhan duoc lay ra khoi Heap
 
     AutoPriorityItem item;
-    
+
     // Lay lan luot cac phan tu
 
     cout << "\nThu tu xu ly:\n";

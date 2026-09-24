@@ -24,16 +24,12 @@ int main()
     int basePriority;
     int currentPriority;
 
-    // =========================
     // 1. NHAP CHECKIN ID
-    // =========================
 
     cout << "Nhap checkin ID: ";
     cin >> checkinId;
 
-    // =========================
     // 2. KIEM TRA ID CO TON TAI
-    // =========================
 
     if (!manager.getPriority(
             checkinId,
@@ -48,9 +44,7 @@ int main()
         return 0;
     }
 
-    // =========================
     // 3. NEU ID HOP LE
-    // =========================
 
     cout << "\nTim thay check-in.\n";
 
@@ -66,18 +60,14 @@ int main()
          << currentPriority
          << '\n';
 
-    // =========================
     // 4. NHAP PRIORITY MOI
-    // =========================
 
     int newPriority;
 
     cout << "\nNhap muc do uu tien moi (1-5): ";
     cin >> newPriority;
 
-    // =========================
     // 5. KIEM TRA PRIORITY
-    // =========================
 
     if (newPriority < 1 || newPriority > 5)
     {
@@ -88,9 +78,7 @@ int main()
         return 0;
     }
 
-    // =========================
     // 6. CAP NHAT
-    // =========================
 
     manager.updatePriority(
         checkinId,
