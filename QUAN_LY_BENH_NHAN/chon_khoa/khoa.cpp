@@ -1,6 +1,7 @@
 #include <iostream>
 #include <string>
 #include <ctime>
+#include <limits>
 
 #include "khoa.h"
 
@@ -27,7 +28,16 @@ std::string chonKhoa()
         std::cout << "10. Khoa Than kinh\n";
 
         std::cout << "\nNhap khoa (1-10): ";
-        std::cin >> luaChon;
+        if (!(std::cin >> luaChon))
+        {
+            if (std::cin.eof() || std::cin.bad())
+                return "";
+
+            std::cin.clear();
+            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+            std::cout << "Lua chon khong hop le!\n";
+            continue;
+        }
 
         switch (luaChon)
         {

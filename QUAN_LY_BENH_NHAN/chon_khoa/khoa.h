@@ -3,6 +3,7 @@
 
 #include <string>
 
+// Tra ve chuoi rong khi dau vao bi dong hoac khong the doc.
 std::string chonKhoa();
 
 bool khoaDangHoatDong(
