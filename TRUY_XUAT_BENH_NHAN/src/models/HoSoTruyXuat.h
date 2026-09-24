@@ -21,4 +21,5 @@ struct HoSoTruyXuat {
     int currentPriority;
     string lastUpdate;
     bool priorityChanged;
+    bool isTroNangLamSang = false;
 };
