@@ -47,8 +47,6 @@ bool XuLyDuLieu::layDanhSachBenhNhan(
         record.currentPriority = sqlite3_column_int(statement, 5);
         const unsigned char* lastUpdateText = sqlite3_column_text(statement, 6);
         record.lastUpdate = lastUpdateText ? reinterpret_cast<const char*>(lastUpdateText) : "";
-        record.priorityChanged = record.basePriority != record.currentPriority;
-        record.priority = record.currentPriority;
         outRecords.push_back(record);
     }
 

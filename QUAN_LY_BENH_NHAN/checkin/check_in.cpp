@@ -70,6 +70,9 @@ bool checkInMotBenhNhan(sqlite3* db)
 
     if (!(cin >> patientId))
     {
+        if (cin.eof() || cin.bad())
+            return false;
+
         cout << "ID khong hop le!\n";
 
         cin.clear();
@@ -152,7 +155,8 @@ sqlite3_bind_int(
     patientId
 );
 
-if (sqlite3_step(checkStmt) == SQLITE_ROW)
+int checkResult = sqlite3_step(checkStmt);
+if (checkResult == SQLITE_ROW)
 {
     int oldCheckinId =
         sqlite3_column_int(checkStmt, 0);
@@ -205,6 +209,13 @@ if (sqlite3_step(checkStmt) == SQLITE_ROW)
     return true;
 }
 
+if (checkResult != SQLITE_DONE)
+{
+    cerr << "Loi kiem tra check-in: " << sqlite3_errmsg(db) << '\n';
+    sqlite3_finalize(checkStmt);
+    return true;
+}
+
 sqlite3_finalize(checkStmt);
     // =====================================
     // CHON KHOA
@@ -212,6 +223,9 @@ sqlite3_finalize(checkStmt);
 
     string department =
         chonKhoa();
+
+    if (department.empty())
+        return false;
 
     cout << "\nDa chon: "
          << department
@@ -239,6 +253,9 @@ sqlite3_finalize(checkStmt);
 
     if (!(cin >> priority))
     {
+        if (cin.eof() || cin.bad())
+            return false;
+
         cout << "Du lieu khong hop le!\n";
 
         cin.clear();
@@ -288,7 +305,8 @@ sqlite3_finalize(checkStmt);
             cout
                 << "Chuyen sang Khoa Cap cuu? (y/n): ";
 
-            cin >> choice;
+            if (!(cin >> choice))
+                return false;
 
             if (
                 choice == 'y' ||
@@ -381,9 +399,10 @@ sqlite3_finalize(checkStmt);
 
     if (sqlite3_step(insertStmt) != SQLITE_DONE)
     {
-        cerr << "Check-in that bai: "
-             << sqlite3_errmsg(db)
-             << '\n';
+        if (sqlite3_extended_errcode(db) == SQLITE_CONSTRAINT_UNIQUE)
+            cerr << "Benh nhan da duoc check-in o phien khac.\n";
+        else
+            cerr << "Check-in that bai: " << sqlite3_errmsg(db) << '\n';
 
         sqlite3_finalize(insertStmt);
 

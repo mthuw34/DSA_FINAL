@@ -29,7 +29,10 @@ int main()
             gender TEXT,
             hometown TEXT,
             address TEXT,
-            phone TEXT
+            phone TEXT,
+            height REAL,
+            weight REAL,
+            bmi REAL
         );
 
     )";
@@ -79,6 +82,9 @@ int main()
             FOREIGN KEY(patient_id)
                 REFERENCES patients(id)
         );
+
+        CREATE UNIQUE INDEX IF NOT EXISTS ux_checkins_patient_id
+            ON checkins(patient_id);
 
     )";
 

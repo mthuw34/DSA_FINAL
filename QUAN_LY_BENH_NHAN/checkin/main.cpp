@@ -104,6 +104,19 @@ int main(int argc, char* argv[])
         nullptr
     );
 
+    // Rang buoc tai database de hai phien khong the check-in trung.
+    if (sqlite3_exec(db,
+            "CREATE UNIQUE INDEX IF NOT EXISTS ux_checkins_patient_id "
+            "ON checkins(patient_id);",
+            nullptr, nullptr, nullptr) != SQLITE_OK)
+    {
+        cerr << "Khong the thiet lap rang buoc check-in: "
+             << sqlite3_errmsg(db) << '\n';
+        cerr << "Neu co patient_id trung, can xu ly cac check-in trung truoc.\n";
+        sqlite3_close(db);
+        return 1;
+    }
+
     cout << "Da ket noi database.\n";
 
 
@@ -130,6 +143,9 @@ int main(int argc, char* argv[])
 
         if (!(cin >> choice))
         {
+            if (cin.eof() || cin.bad())
+                break;
+
             cout << "Lua chon khong hop le.\n";
 
             cin.clear();
@@ -177,7 +193,8 @@ int main(int argc, char* argv[])
             cout << "Du lieu sau khi xoa se khong con trong bang.\n";
             cout << "Xac nhan (y/n): ";
 
-            cin >> xacNhan;
+            if (!(cin >> xacNhan))
+                break;
 
             if (xacNhan == 'y' || xacNhan == 'Y')
             {
@@ -206,6 +223,9 @@ int main(int argc, char* argv[])
 
             if (!(cin >> checkinId))
             {
+                if (cin.eof() || cin.bad())
+                    break;
+
                 cout << "Ma check-in khong hop le.\n";
 
                 cin.clear();
@@ -232,7 +252,8 @@ int main(int argc, char* argv[])
                  << checkinId
                  << "? (y/n): ";
 
-            cin >> xacNhan;
+            if (!(cin >> xacNhan))
+                break;
 
 
             if (xacNhan == 'y' || xacNhan == 'Y')
