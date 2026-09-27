@@ -1,173 +1,220 @@
 #include "WorkingTime.h"
 
 #include <algorithm>
-#include <ctime>
 
 using namespace std;
 
-// Gio lam viec
-const int SANG_BAT_DAU = 7 * 60 + 30;
-const int SANG_KET_THUC = 11 * 60 + 30;
 
-const int CHIEU_BAT_DAU = 13 * 60;
-const int CHIEU_KET_THUC = 16 * 60 + 30;
+// 07:30
+const int SANG_BAT_DAU =
+    7 * 60 + 30;
 
 
-// ===================================
-// HAM KIEM TRA GIO LAM VIEC
-// ===================================
+// 11:30
+const int SANG_KET_THUC =
+    11 * 60 + 30;
 
-bool isWorkingTime(time_t timestamp)
+
+// 13:00
+const int CHIEU_BAT_DAU =
+    13 * 60;
+
+
+// 16:30
+const int CHIEU_KET_THUC =
+    16 * 60 + 30;
+
+
+// ========================================
+// KIEM TRA CO DANG TRONG GIO LAM KHONG
+// ========================================
+
+bool isWorkingTime(
+    time_t timestamp
+)
 {
-    tm timeInfo = *localtime(&timestamp);
+    tm timeInfo =
+        *localtime(&timestamp);
+
 
     int minutes =
         timeInfo.tm_hour * 60
-        + timeInfo.tm_min;
+        +
+        timeInfo.tm_min;
+
 
     bool morning =
         minutes >= SANG_BAT_DAU
-        && minutes < SANG_KET_THUC;
+        &&
+        minutes < SANG_KET_THUC;
+
 
     bool afternoon =
         minutes >= CHIEU_BAT_DAU
-        && minutes < CHIEU_KET_THUC;
+        &&
+        minutes < CHIEU_KET_THUC;
 
-    return morning || afternoon;
+
+    return
+        morning
+        ||
+        afternoon;
 }
 
 
-// ===================================
-// HAM TINH THOI GIAN CHO HOP LE
-// ===================================
+// ========================================
+// TINH TONG THOI GIAN CHO HOP LE
+// ========================================
 
 long long calculateWorkingSeconds(
     time_t checkinTime,
     time_t currentTime
 )
 {
-    // Thoi gian ket thuc phai lon hon
-    // thoi gian check-in
     if (currentTime <= checkinTime)
     {
         return 0;
     }
 
+
     long long totalSeconds = 0;
 
-    // Lay ngay check-in
-    tm startDate = *localtime(&checkinTime);
 
-    // Dua ve dau ngay
-    startDate.tm_hour = 0;
-    startDate.tm_min = 0;
-    startDate.tm_sec = 0;
-    startDate.tm_isdst = -1;
+    tm date =
+        *localtime(&checkinTime);
 
-    time_t dayStart = mktime(&startDate);
 
-    // Duyet tung ngay
+    date.tm_hour = 0;
+    date.tm_min = 0;
+    date.tm_sec = 0;
+    date.tm_isdst = -1;
+
+
+    time_t dayStart =
+        mktime(&date);
+
+
     while (dayStart < currentTime)
     {
-        tm day = *localtime(&dayStart);
+        tm day =
+            *localtime(&dayStart);
 
-        // ==========================
-        // THOI GIAN CA SANG
-        // ==========================
 
-        tm morningStartInfo = day;
+        // -----------------------------
+        // 07:30
+        // -----------------------------
 
-        morningStartInfo.tm_hour = 7;
-        morningStartInfo.tm_min = 30;
-        morningStartInfo.tm_sec = 0;
-        morningStartInfo.tm_isdst = -1;
+        tm morningStartTm = day;
+
+        morningStartTm.tm_hour = 7;
+        morningStartTm.tm_min = 30;
+        morningStartTm.tm_sec = 0;
+        morningStartTm.tm_isdst = -1;
+
 
         time_t morningStart =
-            mktime(&morningStartInfo);
+            mktime(&morningStartTm);
 
 
-        tm morningEndInfo = day;
+        // -----------------------------
+        // 11:30
+        // -----------------------------
 
-        morningEndInfo.tm_hour = 11;
-        morningEndInfo.tm_min = 30;
-        morningEndInfo.tm_sec = 0;
-        morningEndInfo.tm_isdst = -1;
+        tm morningEndTm = day;
+
+        morningEndTm.tm_hour = 11;
+        morningEndTm.tm_min = 30;
+        morningEndTm.tm_sec = 0;
+        morningEndTm.tm_isdst = -1;
+
 
         time_t morningEnd =
-            mktime(&morningEndInfo);
+            mktime(&morningEndTm);
 
 
-        // ==========================
-        // THOI GIAN CA CHIEU
-        // ==========================
+        // -----------------------------
+        // 13:00
+        // -----------------------------
 
-        tm afternoonStartInfo = day;
+        tm afternoonStartTm = day;
 
-        afternoonStartInfo.tm_hour = 13;
-        afternoonStartInfo.tm_min = 0;
-        afternoonStartInfo.tm_sec = 0;
-        afternoonStartInfo.tm_isdst = -1;
+        afternoonStartTm.tm_hour = 13;
+        afternoonStartTm.tm_min = 0;
+        afternoonStartTm.tm_sec = 0;
+        afternoonStartTm.tm_isdst = -1;
+
 
         time_t afternoonStart =
-            mktime(&afternoonStartInfo);
+            mktime(&afternoonStartTm);
 
 
-        tm afternoonEndInfo = day;
+        // -----------------------------
+        // 16:30
+        // -----------------------------
 
-        afternoonEndInfo.tm_hour = 16;
-        afternoonEndInfo.tm_min = 30;
-        afternoonEndInfo.tm_sec = 0;
-        afternoonEndInfo.tm_isdst = -1;
+        tm afternoonEndTm = day;
+
+        afternoonEndTm.tm_hour = 16;
+        afternoonEndTm.tm_min = 30;
+        afternoonEndTm.tm_sec = 0;
+        afternoonEndTm.tm_isdst = -1;
+
 
         time_t afternoonEnd =
-            mktime(&afternoonEndInfo);
+            mktime(&afternoonEndTm);
 
 
-        // ==========================
-        // TINH THOI GIAN CA SANG
-        // ==========================
+        // =============================
+        // CA SANG
+        // =============================
 
-        time_t start = max(
-            checkinTime,
-            morningStart
-        );
+        time_t start =
+            max(
+                checkinTime,
+                morningStart
+            );
 
-        time_t end = min(
-            currentTime,
-            morningEnd
-        );
+
+        time_t end =
+            min(
+                currentTime,
+                morningEnd
+            );
+
 
         if (end > start)
         {
             totalSeconds +=
-                static_cast<long long>(end - start);
+                end - start;
         }
 
 
-        // ==========================
-        // TINH THOI GIAN CA CHIEU
-        // ==========================
+        // =============================
+        // CA CHIEU
+        // =============================
 
-        start = max(
-            checkinTime,
-            afternoonStart
-        );
+        start =
+            max(
+                checkinTime,
+                afternoonStart
+            );
 
-        end = min(
-            currentTime,
-            afternoonEnd
-        );
+
+        end =
+            min(
+                currentTime,
+                afternoonEnd
+            );
+
 
         if (end > start)
         {
             totalSeconds +=
-                static_cast<long long>(end - start);
+                end - start;
         }
 
 
-        // ==========================
-        // CHUYEN SANG NGAY TIEP THEO
-        // ==========================
+        // Sang ngay tiep theo
 
         day.tm_mday++;
 
@@ -176,8 +223,11 @@ long long calculateWorkingSeconds(
         day.tm_sec = 0;
         day.tm_isdst = -1;
 
-        dayStart = mktime(&day);
+
+        dayStart =
+            mktime(&day);
     }
+
 
     return totalSeconds;
 }

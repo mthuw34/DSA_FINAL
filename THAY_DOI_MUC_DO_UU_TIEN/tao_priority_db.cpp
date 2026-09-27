@@ -13,8 +13,20 @@ int main()
     if (sqlite3_open(dbPath, &db) != SQLITE_OK)
     {
         cerr << "Khong mo duoc priority.db\n";
+
+        if (db != nullptr)
+            sqlite3_close(db);
+
         return 1;
     }
+
+    sqlite3_exec(
+        db,
+        "PRAGMA foreign_keys = ON;",
+        nullptr,
+        nullptr,
+        nullptr
+    );
 
     const char* sql = R"(
 
@@ -34,7 +46,15 @@ int main()
             current_priority INTEGER NOT NULL
                 CHECK(current_priority BETWEEN 1 AND 5),
 
-            last_update TEXT
+            last_update TEXT,
+
+            waiting_seconds INTEGER NOT NULL
+                DEFAULT 0
+                CHECK(waiting_seconds >= 0),
+
+            last_processed_period INTEGER NOT NULL
+                DEFAULT 0
+                CHECK(last_processed_period >= 0)
         );
 
     )";
@@ -54,12 +74,13 @@ int main()
              << '\n';
 
         sqlite3_free(error);
+
         sqlite3_close(db);
 
         return 1;
     }
 
-    cout << "Tao priority.db thanh cong.\n";
+    cout << "Tao bang priority_checkins thanh cong.\n";
 
     sqlite3_close(db);
 

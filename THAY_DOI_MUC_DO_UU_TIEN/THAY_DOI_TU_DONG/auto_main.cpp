@@ -9,7 +9,7 @@
 #include <sqlite3.h>
 
 #include "WorkingTime.h"
-#include "HANG_DOI_UU_TIEN/AutoPriorityHeap.h"
+#include "AutoPriority.h"
 
 using namespace std;
 
@@ -18,11 +18,12 @@ using namespace std;
 // 1 MOC = 90 PHUT = 5400 GIAY
 // ========================================
 
-const long long THOI_GIAN_TANG = 90 * 60;
+const long long THOI_GIAN_TANG =
+    90 * 60;
 
 
 // ========================================
-// DOI CHUOI THOI GIAN SANG time_t
+// DOI CHUOI THOI GIAN -> time_t
 // ========================================
 
 bool parseTime(
@@ -32,29 +33,42 @@ bool parseTime(
 {
     tm t = {};
 
+
     stringstream ss(text);
+
 
     ss >> get_time(
         &t,
         "%Y-%m-%d %H:%M:%S"
     );
 
+
     if (ss.fail())
+    {
         return false;
+    }
+
 
     t.tm_isdst = -1;
 
+
     result = mktime(&t);
 
-    return true;
+
+    return
+        result
+        !=
+        static_cast<time_t>(-1);
 }
 
 
 // ========================================
-// CAP NHAT waiting_seconds
+// CAP NHAT THOI GIAN CHO
 // ========================================
 
-bool updateWaitingTime(sqlite3* db)
+void updateWaitingTime(
+    sqlite3* db
+)
 {
     const char* selectSql = R"(
 
@@ -67,27 +81,8 @@ bool updateWaitingTime(sqlite3* db)
     )";
 
 
-    const char* updateSql = R"(
-
-        INSERT INTO waiting_time_progress
-        (
-            checkin_id,
-            waiting_seconds
-        )
-
-        VALUES (?, ?)
-
-        ON CONFLICT(checkin_id)
-
-        DO UPDATE SET
-            waiting_seconds =
-                excluded.waiting_seconds;
-
-    )";
-
-
-    sqlite3_stmt* selectStmt = nullptr;
-    sqlite3_stmt* updateStmt = nullptr;
+    sqlite3_stmt* selectStmt =
+        nullptr;
 
 
     if (sqlite3_prepare_v2(
@@ -98,8 +93,23 @@ bool updateWaitingTime(sqlite3* db)
             nullptr
         ) != SQLITE_OK)
     {
-        return false;
+        return;
     }
+
+
+    const char* updateSql = R"(
+
+        UPDATE priority_checkins
+
+        SET waiting_seconds = ?
+
+        WHERE checkin_id = ?;
+
+    )";
+
+
+    sqlite3_stmt* updateStmt =
+        nullptr;
 
 
     if (sqlite3_prepare_v2(
@@ -111,11 +121,13 @@ bool updateWaitingTime(sqlite3* db)
         ) != SQLITE_OK)
     {
         sqlite3_finalize(selectStmt);
-        return false;
+
+        return;
     }
 
 
-    time_t now = time(nullptr);
+    time_t now =
+        time(nullptr);
 
 
     while (
@@ -138,7 +150,9 @@ bool updateWaitingTime(sqlite3* db)
 
 
         if (text == nullptr)
+        {
             continue;
+        }
 
 
         string checkinTime =
@@ -173,17 +187,17 @@ bool updateWaitingTime(sqlite3* db)
         );
 
 
-        sqlite3_bind_int(
+        sqlite3_bind_int64(
             updateStmt,
             1,
-            checkinId
+            waitingSeconds
         );
 
 
-        sqlite3_bind_int64(
+        sqlite3_bind_int(
             updateStmt,
             2,
-            waitingSeconds
+            checkinId
         );
 
 
@@ -192,29 +206,30 @@ bool updateWaitingTime(sqlite3* db)
 
 
     sqlite3_finalize(selectStmt);
+
     sqlite3_finalize(updateStmt);
-
-
-    return true;
 }
 
 
 // ========================================
-// LAY MOC CUOI CUNG DA XU LY
+// NAP DU LIEU VAO MIN-HEAP
 // ========================================
 
-int getLastPeriod(
+void loadHeap(
     sqlite3* db,
-    int checkinId
+    AutoPriorityHeap& heap
 )
 {
     const char* sql = R"(
 
-        SELECT MAX(waiting_hour)
+        SELECT
+            checkin_id,
+            waiting_seconds,
+            last_processed_period
 
-        FROM auto_priority_history
+        FROM priority_checkins
 
-        WHERE checkin_id = ?;
+        WHERE current_priority > 1;
 
     )";
 
@@ -230,46 +245,61 @@ int getLastPeriod(
             nullptr
         ) != SQLITE_OK)
     {
-        return 0;
+        return;
     }
 
 
-    sqlite3_bind_int(
-        stmt,
-        1,
-        checkinId
-    );
-
-
-    int lastPeriod = 0;
-
-
-    if (
+    while (
         sqlite3_step(stmt)
         == SQLITE_ROW
     )
     {
-        if (
-            sqlite3_column_type(
+        AutoPriorityItem item;
+
+
+        item.checkinId =
+            sqlite3_column_int(
                 stmt,
                 0
+            );
+
+
+        item.waitingSeconds =
+            sqlite3_column_int64(
+                stmt,
+                1
+            );
+
+
+        int lastProcessed =
+            sqlite3_column_int(
+                stmt,
+                2
+            );
+
+
+        item.nextPeriod =
+            lastProcessed + 1;
+
+
+        long long nextThreshold =
+            static_cast<long long>(
+                item.nextPeriod
             )
-            != SQLITE_NULL
-        )
-        {
-            lastPeriod =
-                sqlite3_column_int(
-                    stmt,
-                    0
-                );
-        }
+            * THOI_GIAN_TANG;
+
+
+        item.remainingSeconds =
+            nextThreshold
+            -
+            item.waitingSeconds;
+
+
+        heap.insert(item);
     }
 
 
     sqlite3_finalize(stmt);
-
-
-    return lastPeriod;
 }
 
 
@@ -339,26 +369,35 @@ int getCurrentPriority(
 
 
 // ========================================
-// NAP DU LIEU VAO MIN-HEAP
+// TANG 1 CAP UU TIEN
 // ========================================
 
-void loadHeap(
+bool increasePriority(
     sqlite3* db,
-    AutoPriorityHeap& heap
+    int checkinId,
+    int period
 )
 {
     const char* sql = R"(
 
-        SELECT
-            p.checkin_id,
-            w.waiting_seconds
+        UPDATE priority_checkins
 
-        FROM priority_checkins p
+        SET
+            current_priority =
+                current_priority - 1,
 
-        JOIN waiting_time_progress w
-            ON p.checkin_id = w.checkin_id
+            last_processed_period = ?,
 
-        WHERE p.current_priority > 1;
+            last_update =
+                datetime(
+                    'now',
+                    'localtime'
+                )
+
+        WHERE
+            checkin_id = ?
+
+            AND current_priority > 1;
 
     )";
 
@@ -374,218 +413,33 @@ void loadHeap(
             nullptr
         ) != SQLITE_OK)
     {
-        return;
-    }
-
-
-    while (
-        sqlite3_step(stmt)
-        == SQLITE_ROW
-    )
-    {
-        int checkinId =
-            sqlite3_column_int(
-                stmt,
-                0
-            );
-
-
-        long long waitingSeconds =
-            sqlite3_column_int64(
-                stmt,
-                1
-            );
-
-
-        int lastPeriod =
-            getLastPeriod(
-                db,
-                checkinId
-            );
-
-
-        int nextPeriod =
-            lastPeriod + 1;
-
-
-        long long nextThreshold =
-            static_cast<long long>(
-                nextPeriod
-            )
-            * THOI_GIAN_TANG;
-
-
-        long long remainingSeconds =
-            nextThreshold
-            - waitingSeconds;
-
-
-        AutoPriorityItem item;
-
-        item.checkinId =
-            checkinId;
-
-        item.waitingSeconds =
-            waitingSeconds;
-
-        item.nextHour =
-            nextPeriod;
-
-        item.remainingSeconds =
-            remainingSeconds;
-
-
-        heap.insert(item);
-    }
-
-
-    sqlite3_finalize(stmt);
-}
-
-
-// ========================================
-// TANG 1 CAP UU TIEN
-// ========================================
-
-bool increasePriority(
-    sqlite3* db,
-    int checkinId,
-    int period
-)
-{
-    int currentPriority =
-        getCurrentPriority(
-            db,
-            checkinId
-        );
-
-
-    if (currentPriority <= 1)
-        return false;
-
-
-    int newPriority =
-        currentPriority - 1;
-
-
-    // ====================================
-    // CAP NHAT PRIORITY
-    // ====================================
-
-    const char* updateSql = R"(
-
-        UPDATE priority_checkins
-
-        SET
-            current_priority = ?,
-
-            last_update =
-                datetime('now', 'localtime')
-
-        WHERE checkin_id = ?;
-
-    )";
-
-
-    sqlite3_stmt* updateStmt =
-        nullptr;
-
-
-    if (sqlite3_prepare_v2(
-            db,
-            updateSql,
-            -1,
-            &updateStmt,
-            nullptr
-        ) != SQLITE_OK)
-    {
         return false;
     }
 
 
     sqlite3_bind_int(
-        updateStmt,
+        stmt,
         1,
-        newPriority
-    );
-
-
-    sqlite3_bind_int(
-        updateStmt,
-        2,
-        checkinId
-    );
-
-
-    sqlite3_step(updateStmt);
-
-    sqlite3_finalize(updateStmt);
-
-
-    // ====================================
-    // GHI LAI MOC DA XU LY
-    // ====================================
-
-    const char* historySql = R"(
-
-        INSERT OR IGNORE INTO
-        auto_priority_history
-        (
-            checkin_id,
-            waiting_hour
-        )
-
-        VALUES (?, ?);
-
-    )";
-
-
-    sqlite3_stmt* historyStmt =
-        nullptr;
-
-
-    if (sqlite3_prepare_v2(
-            db,
-            historySql,
-            -1,
-            &historyStmt,
-            nullptr
-        ) != SQLITE_OK)
-    {
-        return false;
-    }
-
-
-    sqlite3_bind_int(
-        historyStmt,
-        1,
-        checkinId
-    );
-
-
-    sqlite3_bind_int(
-        historyStmt,
-        2,
         period
     );
 
 
-    sqlite3_step(historyStmt);
-
-    sqlite3_finalize(historyStmt);
-
-
-    cout
-        << "Checkin ID "
-        << checkinId
-        << ": "
-        << currentPriority
-        << " -> "
-        << newPriority
-        << '\n';
+    sqlite3_bind_int(
+        stmt,
+        2,
+        checkinId
+    );
 
 
-    return true;
+    bool success =
+        sqlite3_step(stmt)
+        == SQLITE_DONE;
+
+
+    sqlite3_finalize(stmt);
+
+
+    return success;
 }
 
 
@@ -593,16 +447,16 @@ bool increasePriority(
 // XU LY TU DONG
 // ========================================
 
-void processAutoPriority(
+void processAuto(
     sqlite3* db
 )
 {
-    // Cap nhat tong thoi gian cho
+    // Tinh lai tong thoi gian cho
 
     updateWaitingTime(db);
 
 
-    // Tao Heap moi
+    // Tao Min-Heap
 
     AutoPriorityHeap heap;
 
@@ -616,9 +470,13 @@ void processAutoPriority(
     AutoPriorityItem item;
 
 
-    // Lay benh nhan den han som nhat
+    // ====================================
+    // LAY BENH NHAN DEN HAN SOM NHAT
+    // ====================================
 
-    while (heap.peek(item))
+    while (
+        heap.peek(item)
+    )
     {
         // Root chua den han
         // => cac phan tu sau cung chua den han
@@ -641,33 +499,36 @@ void processAutoPriority(
             );
 
 
-        if (currentPriority <= 1)
+        if (
+            currentPriority <= 1
+        )
         {
             continue;
         }
 
 
-        // Tong so moc 90 phut da hoan thanh
+        // Tong so moc 90 phut
+        // benh nhan da hoan thanh
 
         int completedPeriods =
-            item.waitingSeconds
-            / THOI_GIAN_TANG;
-
-
-        // Moc cuoi da xu ly
-
-        int lastPeriod =
-            getLastPeriod(
-                db,
-                item.checkinId
+            static_cast<int>(
+                item.waitingSeconds
+                /
+                THOI_GIAN_TANG
             );
 
 
-        // Xu ly tung moc chua duoc tang
+        int lastProcessed =
+            item.nextPeriod - 1;
+
+
+        // ====================================
+        // XU LY CAC MOC CHUA CAP NHAT
+        // ====================================
 
         for (
             int period =
-                lastPeriod + 1;
+                lastProcessed + 1;
 
             period <=
                 completedPeriods;
@@ -675,7 +536,7 @@ void processAutoPriority(
             period++
         )
         {
-            currentPriority =
+            int oldPriority =
                 getCurrentPriority(
                     db,
                     item.checkinId
@@ -684,17 +545,36 @@ void processAutoPriority(
 
             // Muc 1 la cao nhat
 
-            if (currentPriority <= 1)
+            if (oldPriority <= 1)
             {
                 break;
             }
 
 
-            increasePriority(
-                db,
-                item.checkinId,
-                period
-            );
+            if (
+                increasePriority(
+                    db,
+                    item.checkinId,
+                    period
+                )
+            )
+            {
+                int newPriority =
+                    getCurrentPriority(
+                        db,
+                        item.checkinId
+                    );
+
+
+                cout
+                    << "Checkin ID "
+                    << item.checkinId
+                    << ": "
+                    << oldPriority
+                    << " -> "
+                    << newPriority
+                    << '\n';
+            }
         }
     }
 }
@@ -737,7 +617,7 @@ int main()
         << "========================================\n";
 
     cout
-        << "Moi 90 phut cho hop le: tang 1 cap.\n";
+        << "Moi 90 phut cho hop le: tang 1 muc do uu tien.\n";
 
     cout
         << "Nhan S de dung chuong trinh.\n\n";
@@ -754,7 +634,8 @@ int main()
 
 
             if (
-                key == 's' ||
+                key == 's'
+                ||
                 key == 'S'
             )
             {
@@ -766,19 +647,21 @@ int main()
         }
 
 
-        // Chi xu ly trong gio lam viec
-
         time_t now =
             time(nullptr);
 
 
-        if (isWorkingTime(now))
+        // Chi tang priority trong gio lam viec
+
+        if (
+            isWorkingTime(now)
+        )
         {
-            processAutoPriority(db);
+            processAuto(db);
         }
 
 
-        // Sau 10 giay kiem tra lai
+        // 10 giay kiem tra lai
 
         this_thread::sleep_for(
             chrono::seconds(10)
