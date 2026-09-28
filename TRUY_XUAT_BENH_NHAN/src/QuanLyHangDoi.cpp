@@ -8,7 +8,7 @@
 using namespace std;
 
 bool QuanLyHangDoi::taiVaXuLyBenhNhan() {
-    const char* priorityPath = "THAY_DOI_MUC_DO_UU_TIEN/priority.db";
+    const char* priorityPath = "THAY_DOI_MUC_DO_UU_TIEN/db/priority.db";
     sqlite3* priorityDatabase = nullptr;
 
     if (sqlite3_open_v2(priorityPath, &priorityDatabase, SQLITE_OPEN_READONLY, nullptr) != SQLITE_OK) {

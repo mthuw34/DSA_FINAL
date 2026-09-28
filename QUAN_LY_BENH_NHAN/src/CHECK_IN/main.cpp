@@ -55,13 +55,12 @@ static string resolveDatabasePath(const char* argv0)
             exePath = filesystem::absolute(exePath);
         }
 
-        candidates.push_back(exePath.parent_path() / "hospital.db");
-        candidates.push_back(exePath.parent_path().parent_path() / "hospital.db");
-        candidates.push_back(exePath.parent_path().parent_path() / "QUAN_LY_BENH_NHAN" / "hospital.db");
+        candidates.push_back(exePath.parent_path().parent_path() / "db" / "hospital.db");
+        candidates.push_back(exePath.parent_path().parent_path().parent_path() / "QUAN_LY_BENH_NHAN" / "db" / "hospital.db");
     }
 
-    candidates.push_back(filesystem::current_path() / "hospital.db");
-    candidates.push_back(filesystem::path("hospital.db"));
+    candidates.push_back(filesystem::current_path() / "QUAN_LY_BENH_NHAN" / "db" / "hospital.db");
+    candidates.push_back(filesystem::current_path() / "db" / "hospital.db");
 
     for (const filesystem::path& candidate : candidates)
     {
@@ -71,7 +70,7 @@ static string resolveDatabasePath(const char* argv0)
         }
     }
 
-    return "hospital.db";
+    return "QUAN_LY_BENH_NHAN/db/hospital.db";
 }
 
 int main(int argc, char* argv[])

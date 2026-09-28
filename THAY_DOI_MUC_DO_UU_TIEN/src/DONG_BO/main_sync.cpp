@@ -11,7 +11,7 @@ int main()
     sqlite3* priorityDb = nullptr;
 
     if (sqlite3_open(
-            "QUAN_LY_BENH_NHAN/hospital.db",
+            "QUAN_LY_BENH_NHAN/db/hospital.db",
             &hospitalDb
         ) != SQLITE_OK)
     {
@@ -20,7 +20,7 @@ int main()
     }
 
     if (sqlite3_open(
-            "THAY_DOI_MUC_DO_UU_TIEN/priority.db",
+            "THAY_DOI_MUC_DO_UU_TIEN/db/priority.db",
             &priorityDb
         ) != SQLITE_OK)
     {

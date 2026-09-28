@@ -590,7 +590,7 @@ int main()
 
 
     const char* dbPath =
-        "THAY_DOI_MUC_DO_UU_TIEN/priority.db";
+        "THAY_DOI_MUC_DO_UU_TIEN/db/priority.db";
 
 
     if (sqlite3_open_v2(
