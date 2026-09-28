@@ -5,8 +5,7 @@
 
 #include "check_in.h"
 #include "patient_lookup.h"
-
-#include "../chon_khoa/khoa.h"
+#include "khoa.h"
 
 using namespace std;
 

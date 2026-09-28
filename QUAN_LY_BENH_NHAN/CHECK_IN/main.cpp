@@ -9,7 +9,7 @@
 #endif
 
 #include "check_in.h"
-#include "../bang_check_in/bang_check_in.h"
+#include "bang_check_in.h"
 
 using namespace std;
 
