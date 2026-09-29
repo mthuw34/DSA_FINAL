@@ -12,11 +12,16 @@ bool XuLyDuLieu::layDanhSachBenhNhan(
         SELECT checkin_id, patient_id, department, checkin_time,
                base_priority, current_priority, last_update,
                CASE department
-                   WHEN 'Khoa Cap cuu' THEN 1 WHEN 'Khoa Noi' THEN 2
-                   WHEN 'Khoa Ngoai' THEN 3 WHEN 'Khoa Tim mach' THEN 4
-                   WHEN 'Khoa Nhi' THEN 5 WHEN 'Khoa San' THEN 6
-                   WHEN 'Khoa Tai Mui Hong' THEN 7 WHEN 'Khoa Mat' THEN 8
-                   WHEN 'Khoa Da lieu' THEN 9 WHEN 'Khoa Than kinh' THEN 10
+                   WHEN 'Khoa Cap cuu' THEN 1 
+                   WHEN 'Khoa Noi' THEN 2
+                   WHEN 'Khoa Ngoai' THEN 3 
+                   WHEN 'Khoa Tim mach' THEN 4
+                   WHEN 'Khoa Nhi' THEN 5 
+                   WHEN 'Khoa San' THEN 6
+                   WHEN 'Khoa Tai Mui Hong' THEN 7 
+                   WHEN 'Khoa Mat' THEN 8
+                   WHEN 'Khoa Da lieu' THEN 9 
+                   WHEN 'Khoa Than kinh' THEN 10
                    ELSE 0
                END
         FROM priority_checkins;
@@ -71,9 +76,15 @@ bool XuLyDuLieu::xuatDuLieuDaSapXep(const vector<HoSoTruyXuat>& sortedRecords, c
     }
 
     const char* tableNames[] = {
-        "queue_khoa_cap_cuu", "queue_khoa_noi", "queue_khoa_ngoai",
-        "queue_khoa_tim_mach", "queue_khoa_nhi", "queue_khoa_san",
-        "queue_khoa_tai_mui_hong", "queue_khoa_mat", "queue_khoa_da_lieu",
+        "queue_khoa_cap_cuu", 
+        "queue_khoa_noi", 
+        "queue_khoa_ngoai",
+        "queue_khoa_tim_mach", 
+        "queue_khoa_nhi", 
+        "queue_khoa_san",
+        "queue_khoa_tai_mui_hong", 
+        "queue_khoa_mat", 
+        "queue_khoa_da_lieu",
         "queue_khoa_than_kinh"
     };
 
