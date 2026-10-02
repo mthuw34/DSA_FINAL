@@ -1,0 +1,29 @@
+{
+    "tasks": [
+        {
+            "type": "cppbuild",
+            "label": "Build DSA Project",
+            "command": "C:\\msys64\\ucrt64\\bin\\g++.exe",
+            "args": [
+                "-fdiagnostics-color=always",
+                "-g",
+                "${workspaceFolder}\\XU_LY_BN_VUA_KHAM\\main.cpp",
+                "${workspaceFolder}\\XU_LY_BN_VUA_KHAM\\FixedCapacityList.cpp",
+                "-o",
+                "${workspaceFolder}\\XU_LY_BN_VUA_KHAM\\main.exe"
+            ],
+            "options": {
+                "cwd": "${workspaceFolder}"
+            },
+            "problemMatcher": [
+                "$gcc"
+            ],
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            },
+            "detail": "Build DSA Project"
+        }
+    ],
+    "version": "2.0.0"
+}
