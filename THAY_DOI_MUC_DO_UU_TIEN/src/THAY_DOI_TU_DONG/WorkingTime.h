@@ -5,7 +5,7 @@
 
 
 bool isWorkingTime(
-    time_t timestamp
+    time_t timestamp 
 );
 
 

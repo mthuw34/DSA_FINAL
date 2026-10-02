@@ -3,13 +3,11 @@
 
 #include <sqlite3.h>
 
-
 class PriorityManager
 {
 private:
 
     sqlite3* db;
-
 
 public:
 
@@ -17,11 +15,9 @@ public:
         sqlite3* database
     );
 
-
     bool checkinExists(
         int checkinId
     );
-
 
     bool getPriority(
         int checkinId,
@@ -29,12 +25,10 @@ public:
         int& currentPriority
     );
 
-
     bool updatePriority(
         int checkinId,
         int newPriority
     );
 };
-
 
 #endif

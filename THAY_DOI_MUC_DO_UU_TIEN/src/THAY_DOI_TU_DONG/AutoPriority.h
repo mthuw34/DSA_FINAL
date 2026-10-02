@@ -1,22 +1,22 @@
 #ifndef AUTO_PRIORITY_H
 #define AUTO_PRIORITY_H
 
-
-// Thong tin cua mot luot check-in
+// Thông tin của 1 lượt checkin 
 struct AutoPriorityItem
 {
     int checkinId;
-
-    // Tong thoi gian cho hop le
+    int currentPriority;
+    
+    // Tổng thời gian chờ hợp lệ 
     long long waitingSeconds;
 
-    // Moc 90 phut tiep theo
+    // Mốc 90 phút tiếp theo
     int nextPeriod;
 
-    // So giay con lai de den moc tiep theo
+    // Số giây còn lại để đến mốc tiếp theo
     long long remainingSeconds;
-};
 
+};
 
 // Binary Min-Heap tu cai dat
 class AutoPriorityHeap
@@ -28,11 +28,8 @@ private:
     int size;
     int capacity;
 
-
     int parent(int i);
-
     int leftChild(int i);
-
     int rightChild(int i);
 
 
@@ -41,19 +38,16 @@ private:
         const AutoPriorityItem& b
     );
 
-
     void swapItem(
         AutoPriorityItem& a,
         AutoPriorityItem& b
     );
-
 
     void resize();
 
     void siftUp(int index);
 
     void siftDown(int index);
-
 
 public:
 
@@ -62,7 +56,6 @@ public:
     );
 
     ~AutoPriorityHeap();
-
 
     void insert(
         const AutoPriorityItem& item
@@ -78,11 +71,8 @@ public:
         AutoPriorityItem& item
     );
 
-
     bool isEmpty() const;
-
     int getSize() const;
 };
-
 
 #endif

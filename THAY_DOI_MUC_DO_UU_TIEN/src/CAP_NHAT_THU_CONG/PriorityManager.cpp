@@ -5,21 +5,13 @@
 
 using namespace std;
 
-
-// ==================================================
-// KHOI TAO
-// ==================================================
-
+//Khởi tạo
 PriorityManager::PriorityManager(sqlite3* database)
 {
     db = database;
 }
 
-
-// ==================================================
-// KIEM TRA CHECK-IN ID CO TON TAI KHONG
-// ==================================================
-
+//Kiểm tra checkin id có tồn tại hay không
 bool PriorityManager::checkinExists(int checkinId)
 {
     const char* sql = R"(
@@ -32,9 +24,7 @@ bool PriorityManager::checkinExists(int checkinId)
 
     )";
 
-
     sqlite3_stmt* stmt = nullptr;
-
 
     if (sqlite3_prepare_v2(
             db,
@@ -47,13 +37,11 @@ bool PriorityManager::checkinExists(int checkinId)
         return false;
     }
 
-
     sqlite3_bind_int(
         stmt,
         1,
         checkinId
     );
-
 
     bool exists =
         sqlite3_step(stmt)
@@ -62,15 +50,10 @@ bool PriorityManager::checkinExists(int checkinId)
 
     sqlite3_finalize(stmt);
 
-
     return exists;
 }
 
-
-// ==================================================
-// LAY PRIORITY GOC VA PRIORITY HIEN TAI
-// ==================================================
-
+//Lấy priority gốc và priority hiện tại 
 bool PriorityManager::getPriority(
     int checkinId,
     int& basePriority,
@@ -89,9 +72,7 @@ bool PriorityManager::getPriority(
 
     )";
 
-
     sqlite3_stmt* stmt = nullptr;
-
 
     if (sqlite3_prepare_v2(
             db,
@@ -104,13 +85,11 @@ bool PriorityManager::getPriority(
         return false;
     }
 
-
     sqlite3_bind_int(
         stmt,
         1,
         checkinId
     );
-
 
     if (
         sqlite3_step(stmt)
@@ -122,13 +101,11 @@ bool PriorityManager::getPriority(
         return false;
     }
 
-
     basePriority =
         sqlite3_column_int(
             stmt,
             0
         );
-
 
     currentPriority =
         sqlite3_column_int(
@@ -136,27 +113,18 @@ bool PriorityManager::getPriority(
             1
         );
 
-
     sqlite3_finalize(stmt);
-
 
     return true;
 }
 
-
-// ==================================================
-// CAP NHAT MUC DO UU TIEN THU CONG
-// ==================================================
-
+//Cập nhật mức độ ưu tiên thủ công
 bool PriorityManager::updatePriority(
     int checkinId,
     int newPriority
 )
 {
-    // ------------------------------------------
-    // 1. KIEM TRA ID
-    // ------------------------------------------
-
+    //Check ID
     if (!checkinExists(checkinId))
     {
         cout
@@ -165,11 +133,7 @@ bool PriorityManager::updatePriority(
         return false;
     }
 
-
-    // ------------------------------------------
-    // 2. KIEM TRA PRIORITY MOI
-    // ------------------------------------------
-
+    //Check priority mới 
     if (
         newPriority < 1
         ||
@@ -182,15 +146,9 @@ bool PriorityManager::updatePriority(
         return false;
     }
 
-
-    // ------------------------------------------
-    // 3. DOC PRIORITY HIEN TAI
-    // ------------------------------------------
-
+    //Đọc priority hiện tại
     int basePriority;
-
     int currentPriority;
-
 
     if (!getPriority(
             checkinId,
@@ -204,16 +162,8 @@ bool PriorityManager::updatePriority(
         return false;
     }
 
-
-    // ------------------------------------------
-    // 4. NEU KHONG THAY DOI
-    // ------------------------------------------
-
-    if (
-        newPriority
-        ==
-        currentPriority
-    )
+    //Nếu ko thay đổi
+    if ( newPriority == currentPriority )
     {
         cout
             << "Muc do uu tien moi giong muc hien tai.\n";
@@ -221,10 +171,7 @@ bool PriorityManager::updatePriority(
         return false;
     }
 
-
-    // ------------------------------------------
     // 5. CAP NHAT
-    // ------------------------------------------
 
     const char* sql = R"(
 
@@ -303,10 +250,7 @@ bool PriorityManager::updatePriority(
         return false;
     }
 
-
-    // ------------------------------------------
     // 6. THONG BAO KET QUA
-    // ------------------------------------------
 
     cout
         << "Cap nhat thanh cong.\n";

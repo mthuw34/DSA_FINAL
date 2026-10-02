@@ -1,10 +1,6 @@
 #include "AutoPriority.h"
 
-
-// ========================================
-// KHOI TAO
-// ========================================
-
+//Khởi tạo
 AutoPriorityHeap::AutoPriorityHeap(
     int initialCapacity
 )
@@ -15,58 +11,41 @@ AutoPriorityHeap::AutoPriorityHeap(
     }
 
     size = 0;
-
     capacity = initialCapacity;
 
     heap =
         new AutoPriorityItem[capacity];
 }
 
-
-// ========================================
-// GIAI PHONG BO NHO
-// ========================================
-
+//Giải phóng bộ nhớ
 AutoPriorityHeap::~AutoPriorityHeap()
 {
     delete[] heap;
 }
 
-
-// ========================================
 // VI TRI CHA VA CON
-// ========================================
-
 int AutoPriorityHeap::parent(int i)
 {
     return (i - 1) / 2;
 }
-
 
 int AutoPriorityHeap::leftChild(int i)
 {
     return 2 * i + 1;
 }
 
-
 int AutoPriorityHeap::rightChild(int i)
 {
     return 2 * i + 2;
 }
 
-
-// ========================================
 // SO SANH HAI PHAN TU
-// ========================================
-
 bool AutoPriorityHeap::higherPriority(
     const AutoPriorityItem& a,
     const AutoPriorityItem& b
 )
 {
-    // Ai con it thoi gian hon
-    // thi den han som hon
-
+    //Còn ít thời gian thì đến hạn khám sớm hơn 
     if (
         a.remainingSeconds
         !=
@@ -79,20 +58,14 @@ bool AutoPriorityHeap::higherPriority(
             b.remainingSeconds;
     }
 
-    // Neu bang nhau:
-    // checkin_id nho hon dung truoc
-
+    //Bằng nhau -> checkin_id nhỏ hơn đứng trước
     return
         a.checkinId
         <
         b.checkinId;
 }
 
-
-// ========================================
-// DOI CHO
-// ========================================
-
+//Đổi chỗ 
 void AutoPriorityHeap::swapItem(
     AutoPriorityItem& a,
     AutoPriorityItem& b
@@ -105,16 +78,12 @@ void AutoPriorityHeap::swapItem(
     b = temp;
 }
 
-
-// ========================================
-// MO RONG MANG DONG
-// ========================================
+//Mở rộng mảng động
 
 void AutoPriorityHeap::resize()
 {
     int newCapacity =
         capacity * 2;
-
 
     AutoPriorityItem* newHeap =
         new AutoPriorityItem[newCapacity];
@@ -138,11 +107,7 @@ void AutoPriorityHeap::resize()
     capacity = newCapacity;
 }
 
-
-// ========================================
-// SIFT UP
-// ========================================
-
+//Sift up
 void AutoPriorityHeap::siftUp(
     int index
 )
@@ -175,11 +140,7 @@ void AutoPriorityHeap::siftUp(
     }
 }
 
-
-// ========================================
-// SIFT DOWN
-// ========================================
-
+//Sift down
 void AutoPriorityHeap::siftDown(
     int index
 )
@@ -221,12 +182,10 @@ void AutoPriorityHeap::siftDown(
             smallest = right;
         }
 
-
         if (smallest == index)
         {
             break;
         }
-
 
         swapItem(
             heap[index],
@@ -238,11 +197,7 @@ void AutoPriorityHeap::siftDown(
     }
 }
 
-
-// ========================================
 // INSERT
-// ========================================
-
 void AutoPriorityHeap::insert(
     const AutoPriorityItem& item
 )
@@ -252,23 +207,15 @@ void AutoPriorityHeap::insert(
         resize();
     }
 
-
     heap[size] = item;
-
-
     int index = size;
 
     size++;
 
-
     siftUp(index);
 }
 
-
-// ========================================
-// PEEK
-// ========================================
-
+//Peek
 bool AutoPriorityHeap::peek(
     AutoPriorityItem& item
 ) const
@@ -278,18 +225,13 @@ bool AutoPriorityHeap::peek(
         return false;
     }
 
-
     item = heap[0];
 
 
     return true;
 }
 
-
-// ========================================
-// EXTRACT MIN
-// ========================================
-
+//Extract min
 bool AutoPriorityHeap::extractMin(
     AutoPriorityItem& item
 )
@@ -299,13 +241,10 @@ bool AutoPriorityHeap::extractMin(
         return false;
     }
 
-
     item = heap[0];
-
 
     heap[0] =
         heap[size - 1];
-
 
     size--;
 
@@ -315,25 +254,17 @@ bool AutoPriorityHeap::extractMin(
         siftDown(0);
     }
 
-
     return true;
 }
 
 
-// ========================================
-// KIEM TRA RONG
-// ========================================
-
+//Kiểm tra rộng
 bool AutoPriorityHeap::isEmpty() const
 {
     return size == 0;
 }
 
-
-// ========================================
-// SO LUONG PHAN TU
-// ========================================
-
+//Số lượng phần tử 
 int AutoPriorityHeap::getSize() const
 {
     return size;

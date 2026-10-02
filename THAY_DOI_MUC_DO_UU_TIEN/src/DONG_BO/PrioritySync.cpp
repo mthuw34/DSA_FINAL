@@ -18,10 +18,7 @@ PrioritySync::PrioritySync(
 
 bool PrioritySync::syncAll()
 {
-    // =============================
-    // 1. DOC DU LIEU TU hospital.db
-    // =============================
-
+    // 1. Đọc dữ liệu từ hospital.db
     const char* selectSql = R"(
 
         SELECT
@@ -49,12 +46,10 @@ bool PrioritySync::syncAll()
         return false;
     }
 
-    // ===================================
-    // 2. THEM / CAP NHAT VAO priority.db
-    // ===================================
-
+    // Thêm/ cập nhật vào priority.db
     const char* upsertSql = R"(
 
+        //Thêm cột vào bảng 
         INSERT INTO priority_checkins
         (
             checkin_id,
@@ -67,6 +62,7 @@ bool PrioritySync::syncAll()
 
         VALUES (?, ?, ?, ?, ?, ?)
 
+        //check id từ hospital.db
         ON CONFLICT(checkin_id)
 
         DO UPDATE SET
@@ -95,6 +91,7 @@ bool PrioritySync::syncAll()
 
     unordered_set<int> validIds;
 
+    //duyệt từng dòng, mỗi lần gọi tiến đến 1 dòng kết quả tiếp theo
     while (sqlite3_step(selectStmt) == SQLITE_ROW)
     {
         int checkinId =
@@ -161,8 +158,7 @@ bool PrioritySync::syncAll()
             basePriority
         );
 
-        // Neu check-in moi:
-        // current_priority ban dau = base_priority
+        // checkin mới: current_priority ban đầu = base_priority
         sqlite3_bind_int(
             upsertStmt,
             6,
@@ -187,9 +183,7 @@ bool PrioritySync::syncAll()
     sqlite3_finalize(selectStmt);
     sqlite3_finalize(upsertStmt);
 
-    // =====================================
-    // 3. XOA CAC CHECK-IN KHONG CON O GOC
-    // =====================================
+    // Xóa các checkin ko còn ở database gốc
 
     const char* readSql =
         "SELECT checkin_id FROM priority_checkins;";

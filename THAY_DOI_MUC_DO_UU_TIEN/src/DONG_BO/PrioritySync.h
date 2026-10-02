@@ -10,8 +10,8 @@ private:
     sqlite3* priorityDb;
 
 public:
+    //Khởi tạo đồng bộ
     PrioritySync(sqlite3* hospital, sqlite3* priority);
-
     bool syncAll();
 };
 
