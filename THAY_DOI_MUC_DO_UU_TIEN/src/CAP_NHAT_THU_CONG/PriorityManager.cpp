@@ -172,20 +172,12 @@ bool PriorityManager::updatePriority(
     }
 
     // 5. CAP NHAT
-
     const char* sql = R"(
 
         UPDATE priority_checkins
 
         SET
-
             current_priority = ?,
-
-            last_processed_period =
-                CAST(
-                    waiting_seconds / 5400
-                    AS INTEGER
-                ),
 
             last_update =
                 datetime(

@@ -33,31 +33,26 @@ int main()
     //Tạo bảng
     const char* sql = R"(
 
-        CREATE TABLE IF NOT EXISTS priority_checkins
-        (
-            checkin_id INTEGER PRIMARY KEY,             //id checkin
-            patient_id INTEGER NOT NULL,                //id bệnh nhân
-            department TEXT NOT NULL,                   //Khoa
-            checkin_time TEXT NOT NULL,                 //Thời gian checkin
-            base_priority INTEGER NOT NULL              //Mức độ ưu tiên ban đầu
-                CHECK(base_priority BETWEEN 1 AND 5),
+    CREATE TABLE IF NOT EXISTS priority_checkins
+    (
+        checkin_id INTEGER PRIMARY KEY,
 
-            current_priority INTEGER NOT NULL           //Mức độ ưu tiên hiện tại
-                CHECK(current_priority BETWEEN 1 AND 5),
+        patient_id INTEGER NOT NULL,
 
-            last_update TEXT,                           //Thời điểm mức độ ưu tiên được cập nhật gần nhất 
+        department TEXT NOT NULL,
 
-            waiting_seconds INTEGER NOT NULL            //Thời gian đợi cập nhật mức độ ưu tiên
-                DEFAULT 0
-                CHECK(waiting_seconds >= 0),            
+        checkin_time TEXT NOT NULL,
 
-            last_processed_period INTEGER NOT NULL      //Mốc tăng tự động cuối cùng đã xử lí
-                DEFAULT 0
-                CHECK(last_processed_period >= 0)
-        );
+        base_priority INTEGER NOT NULL
+            CHECK(base_priority BETWEEN 1 AND 5),
 
-    )";
+        current_priority INTEGER NOT NULL
+            CHECK(current_priority BETWEEN 1 AND 5),
 
+        last_update TEXT
+    );
+
+)";
     char* error = nullptr;
 
     if (sqlite3_exec(
