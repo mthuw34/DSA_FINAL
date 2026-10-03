@@ -57,7 +57,7 @@ int main()
         return 1;
     }
 
-    std::ifstream file("QUAN_LY_BENH_NHAN/benh_nhan_20000.csv");
+    std::ifstream file("QUAN_LY_BENH_NHAN/db/benh_nhan_20000.csv");
 
     if (!file.is_open())
     {
