@@ -2,6 +2,7 @@
 #include <string>
 #include <limits>
 #include <sqlite3.h>
+#include "../patient_validation.h"
 
 using namespace std;
 
@@ -17,9 +18,17 @@ int main() {
     int id;
 
     cout << "Nhap ID benh nhan can sua: ";
-    cin >> id;
+    string idInput;
+    getline(cin, idInput);
+    try {
+        id = parseNonNegativeInt(idInput);
+        if (id <= 0) throw invalid_argument("ID khong hop le");
+    } catch (const exception&) {
+        cerr << "ID khong hop le\n";
+        sqlite3_close(db);
+        return 1;
+    }
 
-    cin.ignore(numeric_limits<streamsize>::max(), '\n');
 
     // =============================
     // 1. Tìm bệnh nhân
@@ -80,7 +89,11 @@ int main() {
 
     cout << "ID: " << id << endl;
     cout << "Ten: " << oldName << endl;
-    cout << "Tuoi: " << oldAge << endl;
+    try {
+        cout << "Tuoi: " << ageFromBirthDate(oldBirthDate) << endl;
+    } catch (const exception&) {
+        cout << "Ngay sinh cu khong hop le; vui long sua ngay sinh." << endl;
+    }
     cout << "SDT: " << oldPhone << endl;
     cout << "Ngay sinh: " << oldBirthDate << endl;
     cout << "Gioi tinh: " << oldGender << endl;
@@ -105,21 +118,7 @@ int main() {
         oldName = input;
 
 
-    cout << "Tuoi moi [" << oldAge << "]: ";
-    getline(cin, input);
-
-    if (!input.empty()) {
-        try {
-            oldAge = stoi(input);
-        }
-        catch (...) {
-            cout << "Tuoi khong hop le." << endl;
-            sqlite3_close(db);
-            return 1;
-        }
-    }
-
-
+    // Tuoi duoc tinh tu ngay sinh, khong nhap rieng.
     cout << "SDT moi [" << oldPhone << "]: ";
     getline(cin, input);
 
@@ -159,6 +158,14 @@ int main() {
     // =============================
     // 3. UPDATE database
     // =============================
+
+    try {
+        oldAge = ageFromBirthDate(oldBirthDate);
+    } catch (const std::exception& error) {
+        cerr << error.what() << '\n';
+        sqlite3_close(db);
+        return 1;
+    }
 
     const char* updateSql =
         "UPDATE patients "

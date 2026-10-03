@@ -4,6 +4,7 @@
 #include <sqlite3.h>
 
 #include "patient_lookup.h"
+#include "../patient_validation.h"
 
 using namespace std;
 
@@ -130,6 +131,14 @@ bool timBenhNhan(
             stmt,
             4
         );
+
+    try {
+        patient.age = ageFromBirthDate(patient.birthDate);
+    } catch (const std::exception& error) {
+        cerr << "Ngay sinh khong hop le: " << error.what() << '\n';
+        sqlite3_finalize(stmt);
+        return false;
+    }
 
     patient.gender =
         getText(

@@ -28,6 +28,7 @@ void deleteList (FixedCapacityList& list)
 // Thêm bệnh nhân vừa khám vào đầu danh sách
 void insertExaminedPatient (FixedCapacityList& list, const Patient& p)
 {
+    if (list.capacity <= 0) return;
     Node* newNode = new Node;
     newNode -> data = p;
     newNode -> prev = NULL;
@@ -57,7 +58,7 @@ void insertExaminedPatient (FixedCapacityList& list, const Patient& p)
     }
 }
 // Hàm in ra thông tin về một bệnh nhân trong danh sách
-void printPatient(const FixedCapacityList& list, const Patient& p)
+void printPatient(const FixedCapacityList&, const Patient& p)
 {
     cout << "Ten benh nhan: " << p.name << endl;
     cout << "ID: " << p.id << endl;
