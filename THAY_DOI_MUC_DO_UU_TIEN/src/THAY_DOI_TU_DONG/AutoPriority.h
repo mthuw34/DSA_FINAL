@@ -2,6 +2,7 @@
 #define AUTO_PRIORITY_H
 
 #include <ctime>
+#include <sqlite3.h>
 
 struct AutoPriorityItem
 {
@@ -48,5 +49,8 @@ public:
 
     int getSize() const;
 };
+
+void loadPatients(sqlite3* db, AutoPriorityHeap& heap);
+void processAuto(sqlite3* db, AutoPriorityHeap& heap);
 
 #endif

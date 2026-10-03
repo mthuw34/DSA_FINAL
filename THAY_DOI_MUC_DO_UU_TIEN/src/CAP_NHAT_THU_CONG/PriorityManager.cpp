@@ -2,7 +2,6 @@
 
 #include <iostream>
 #include <sqlite3.h>
-
 using namespace std;
 
 // KHỞI TẠO 
@@ -35,7 +34,6 @@ bool PriorityManager::checkinExists(int checkinId)
     sqlite3_finalize(stmt);
     return exists;
 }
-
 
 // LẤY MỨC ĐỘ ƯU TIÊN BAN ĐẦU VÀ HIỆN TẠI 
 bool PriorityManager::getPriority(int checkinId, int& basePriority, int& currentPriority)
@@ -72,7 +70,6 @@ bool PriorityManager::getPriority(int checkinId, int& basePriority, int& current
 
     return true;
 }
-
 
 // CẬP NHẬT MỨC DỘ ƯU TIÊN THỦ CÔNG
 bool PriorityManager::updatePriority(int checkinId, int newPriority)
