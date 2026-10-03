@@ -1,7 +1,4 @@
-#include "QuanLyHangDoi.h"
-#include "HoSoTruyXuat.h"
-#include "ThuatToanSapXep.h"
-#include "XuLyDuLieu.h"
+#include "TruyXuat.h"
 #include <vector>
 #include <sqlite3.h>
 
@@ -22,7 +19,7 @@ bool QuanLyHangDoi::taiVaXuLyBenhNhan() {
     bool success = false;
     
     // 1. Lấy dữ liệu trực tiếp từ priority.db
-    if (XuLyDuLieu::layDanhSachBenhNhan(priorityDatabase, records)) {
+    if (DocDuLieu::layDanhSachBenhNhan(priorityDatabase, records)) {
         
         // 2. Thuật toán Merge Sort sắp xếp dữ liệu
         if (!records.empty()) {
@@ -32,7 +29,7 @@ bool QuanLyHangDoi::taiVaXuLyBenhNhan() {
         
         // 3. Đổ dữ liệu đã sort vào truyXuat.db và lưu lại trạng thái thành công
         const char* outputPath = "TRUY_XUAT_BENH_NHAN/db/truyXuat.db";
-        success = XuLyDuLieu::xuatDuLieuDaSapXep(records, outputPath);
+        success = GhiDuLieu::ghiDanhSachDaSapXep(records, outputPath);
     }
 
     sqlite3_close(priorityDatabase);

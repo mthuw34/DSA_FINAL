@@ -1,4 +1,4 @@
-#include "ThuatToanSapXep.h"
+#include "TruyXuat.h"
 
 using namespace std;
 
