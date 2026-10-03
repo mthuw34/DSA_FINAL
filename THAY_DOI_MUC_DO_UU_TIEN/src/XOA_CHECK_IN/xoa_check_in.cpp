@@ -1,25 +1,9 @@
-#include <array>
 #include <filesystem>
 #include <iostream>
 #include <limits>
 #include <sqlite3.h>
 
 using namespace std;
-
-static const array<const char*, 12> deleteStatements = {
-    "DELETE FROM main.checkins WHERE checkin_id = ?;",
-    "DELETE FROM priority.priority_checkins WHERE checkin_id = ?;",
-    "DELETE FROM retrieval.queue_khoa_cap_cuu WHERE checkin_id = ?;",
-    "DELETE FROM retrieval.queue_khoa_noi WHERE checkin_id = ?;",
-    "DELETE FROM retrieval.queue_khoa_ngoai WHERE checkin_id = ?;",
-    "DELETE FROM retrieval.queue_khoa_tim_mach WHERE checkin_id = ?;",
-    "DELETE FROM retrieval.queue_khoa_nhi WHERE checkin_id = ?;",
-    "DELETE FROM retrieval.queue_khoa_san WHERE checkin_id = ?;",
-    "DELETE FROM retrieval.queue_khoa_tai_mui_hong WHERE checkin_id = ?;",
-    "DELETE FROM retrieval.queue_khoa_mat WHERE checkin_id = ?;",
-    "DELETE FROM retrieval.queue_khoa_da_lieu WHERE checkin_id = ?;",
-    "DELETE FROM retrieval.queue_khoa_than_kinh WHERE checkin_id = ?;"
-};
 
 static bool executeSql(sqlite3* db, const char* sql)
 {
@@ -46,19 +30,16 @@ static bool executeDelete(sqlite3* db, const char* sql, int checkinId)
 
 static bool checkinExists(sqlite3* db, int checkinId)
 {
-    const char* sql = R"(
-        SELECT EXISTS(SELECT 1 FROM main.checkins WHERE checkin_id = ?)
-            OR EXISTS(SELECT 1 FROM priority.priority_checkins WHERE checkin_id = ?);
-    )";
+    const char* sql =
+        "SELECT 1 FROM priority_checkins WHERE checkin_id = ? LIMIT 1;";
 
     sqlite3_stmt* statement = nullptr;
     if (sqlite3_prepare_v2(db, sql, -1, &statement, nullptr) != SQLITE_OK)
         return false;
 
     sqlite3_bind_int(statement, 1, checkinId);
-    sqlite3_bind_int(statement, 2, checkinId);
     const bool exists = sqlite3_step(statement) == SQLITE_ROW
-        && sqlite3_column_int(statement, 0) != 0;
+        ;
     sqlite3_finalize(statement);
     return exists;
 }
@@ -74,13 +55,14 @@ static bool deleteOneCheckin(sqlite3* db, int checkinId)
     if (!executeSql(db, "BEGIN IMMEDIATE;"))
         return false;
 
-    for (const char* sql : deleteStatements)
+    if (!executeDelete(
+            db,
+            "DELETE FROM priority_checkins WHERE checkin_id = ?;",
+            checkinId
+        ))
     {
-        if (!executeDelete(db, sql, checkinId))
-        {
-            executeSql(db, "ROLLBACK;");
-            return false;
-        }
+        executeSql(db, "ROLLBACK;");
+        return false;
     }
 
     if (!executeSql(db, "COMMIT;"))
@@ -89,7 +71,7 @@ static bool deleteOneCheckin(sqlite3* db, int checkinId)
         return false;
     }
 
-    cout << "Da xoa check-in ID " << checkinId << " khoi cac database.\n";
+    cout << "Da xoa check-in ID " << checkinId << " khoi priority.db.\n";
     return true;
 }
 
@@ -98,18 +80,10 @@ static bool deleteAllCheckins(sqlite3* db)
     if (!executeSql(db, "BEGIN IMMEDIATE;"))
         return false;
 
-    for (const char* sql : deleteStatements)
+    if (!executeSql(db, "DELETE FROM priority_checkins;"))
     {
-        string deleteAllSql(sql);
-        const size_t wherePosition = deleteAllSql.find(" WHERE checkin_id = ?");
-        if (wherePosition != string::npos)
-            deleteAllSql.erase(wherePosition);
-
-        if (!executeSql(db, deleteAllSql.c_str()))
-        {
-            executeSql(db, "ROLLBACK;");
-            return false;
-        }
+        executeSql(db, "ROLLBACK;");
+        return false;
     }
 
     if (!executeSql(db, "COMMIT;"))
@@ -118,41 +92,29 @@ static bool deleteAllCheckins(sqlite3* db)
         return false;
     }
 
-    cout << "Da xoa toan bo check-in khoi cac database.\n";
+    cout << "Da xoa toan bo check-in khoi priority.db.\n";
     return true;
 }
 
 int main()
 {
-    const array<const char*, 3> databasePaths = {
-        "QUAN_LY_BENH_NHAN/db/hospital.db",
-        "THAY_DOI_MUC_DO_UU_TIEN/db/priority.db",
-        "TRUY_XUAT_BENH_NHAN/db/truyXuat.db"
-    };
-
-    for (const char* path : databasePaths)
+    const char* databasePath = "THAY_DOI_MUC_DO_UU_TIEN/db/priority.db";
+    if (!filesystem::exists(databasePath))
     {
-        if (!filesystem::exists(path))
-        {
-            cerr << "Khong tim thay database: " << path << '\n';
-            cerr << "Hay chay chuong trinh tu thu muc goc workspace.\n";
-            return 1;
-        }
-    }
-
-    sqlite3* db = nullptr;
-    if (sqlite3_open(databasePaths[0], &db) != SQLITE_OK)
-    {
-        cerr << "Khong mo duoc hospital.db: " << sqlite3_errmsg(db) << '\n';
-        sqlite3_close(db);
+        cerr << "Khong tim thay priority.db: " << databasePath << '\n';
+        cerr << "Hay chay chuong trinh tu thu muc goc workspace.\n";
         return 1;
     }
 
-    const string attachSql =
-        "ATTACH DATABASE '" + string(databasePaths[1]) + "' AS priority;"
-        "ATTACH DATABASE '" + string(databasePaths[2]) + "' AS retrieval;";
-    if (!executeSql(db, attachSql.c_str()))
+    sqlite3* db = nullptr;
+    if (sqlite3_open_v2(
+            databasePath,
+            &db,
+            SQLITE_OPEN_READWRITE,
+            nullptr
+        ) != SQLITE_OK)
     {
+        cerr << "Khong mo duoc priority.db: " << sqlite3_errmsg(db) << '\n';
         sqlite3_close(db);
         return 1;
     }
