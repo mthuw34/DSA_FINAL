@@ -1,6 +1,6 @@
 #pragma once
 #include <vector>
-#include "../../XU_LY_BN_VUA_KHAM/patient.h"
+#include "../../XU_LY_BN_VUA_KHAM/src/patient.h"
 
 using namespace std;
 

@@ -5,7 +5,7 @@
 #include <string>
 
 #include "BacSi.h"
-#include "../../XU_LY_BN_VUA_KHAM/FixedCapacityList.h"
+#include "../../XU_LY_BN_VUA_KHAM/src/FixedCapacityList.h"
 
 using namespace std;
 

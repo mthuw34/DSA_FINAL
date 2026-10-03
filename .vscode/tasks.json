@@ -7,10 +7,10 @@
             "args": [
                 "-fdiagnostics-color=always",
                 "-g",
-                "${workspaceFolder}\\XU_LY_BN_VUA_KHAM\\main.cpp",
-                "${workspaceFolder}\\XU_LY_BN_VUA_KHAM\\FixedCapacityList.cpp",
+                "${workspaceFolder}\\XU_LY_BN_VUA_KHAM\\src\\main.cpp",
+                "${workspaceFolder}\\XU_LY_BN_VUA_KHAM\\src\\FixedCapacityList.cpp",
                 "-o",
-                "${workspaceFolder}\\XU_LY_BN_VUA_KHAM\\main.exe"
+                "${workspaceFolder}\\XU_LY_BN_VUA_KHAM\\build\\main.exe"
             ],
             "options": {
                 "cwd": "${workspaceFolder}"
