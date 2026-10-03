@@ -1,8 +1,6 @@
 #include <iostream>
 #include <sqlite3.h>
-
 #include "PriorityManager.h"
-
 using namespace std;
 
 int main()
