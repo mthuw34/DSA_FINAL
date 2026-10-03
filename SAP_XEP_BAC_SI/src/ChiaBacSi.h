@@ -5,7 +5,7 @@
 #include <string>
 
 #include "BacSi.h"
-#include "FixedCapacityList.h"
+#include "../../XU_LY_BN_VUA_KHAM/FixedCapacityList.h"
 
 using namespace std;
 
@@ -50,7 +50,7 @@ public:
 
     // Khám xong bệnh nhân ở đầu Heap
     // và chuyển sang FixedCapacityList
-    bool KhamXongVaChuyenBuoc5(
+    bool KhamXongVaChuyenBuocCuoi(
         const string& idBenhNhan,
         FixedCapacityList& danhSachDaKham
     );

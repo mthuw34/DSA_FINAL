@@ -21,7 +21,7 @@ string ChiaBacSi::ChuanHoaTenKhoa(const string& khoa)
 
 bool ChiaBacSi::DocDanhSachBacSi(const string& tenFile)
 {
-    ifstream file(bac_si_500_chia_khoa.csv);
+    ifstream file(tenFile);
     if (!file.is_open()) {
         cout << "Khong mo duoc file: " << tenFile << endl;
         return false;
@@ -61,7 +61,7 @@ bool ChiaBacSi::DocDanhSachBacSi(const string& tenFile)
         string tenKhoa = ChuanHoaTenKhoa(cot[8]);
 
         char ma[20];
-        sprintf_s(ma, "BS%03d", soBacSi + 1);
+        snprintf(ma, sizeof(ma), "BS%03d", soBacSi + 1);
 
         ThemBacSi(ma, tenBacSi, tenKhoa);
         soBacSi++;

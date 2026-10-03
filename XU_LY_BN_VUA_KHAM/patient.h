@@ -22,5 +22,6 @@ struct Patient
     string address;
     string lastDiagnosis;       // chẩn đoán, thuốc vừa kê
     checkoutTime time;
+    string department = "";
+    int priority = 5; // Giá trị nhỏ hơn tương ứng với mức ưu tiên cao hơn.
 };
-

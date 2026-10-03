@@ -1,6 +1,6 @@
 #pragma once
 #include <vector>
-#include "patient.h"
+#include "../../XU_LY_BN_VUA_KHAM/patient.h"
 
 using namespace std;
 
@@ -16,7 +16,7 @@ public:
     // Trộn thêm một mảng bệnh nhân vào Heap
     void NoiMangCapToc(const vector<Patient>& danhSach);
 
-    // Xây lại Max-Heap từ đầu
+    // Xây lại Min-Heap từ đầu (priority nhỏ hơn được xử lý trước)
     void PhucHoiHeap();
 
     // Lấy bệnh nhân ưu tiên cao nhất ra khỏi Heap

@@ -1,4 +1,5 @@
 #include "HangDoiBacSi.h"
+#include <utility>
 
 using namespace std;
 
@@ -12,9 +13,9 @@ void HangDoiBacSi::VunLen(int viTri)
     {
         int cha = (viTri - 1) / 2;
 
-        // Nếu cha đã lớn hơn hoặc bằng con
-        // thì Heap đã đúng
-        if (MangDuLieu[cha].priority >= MangDuLieu[viTri].priority)
+        // Số ưu tiên nhỏ hơn tương ứng với mức ưu tiên cao hơn.
+        // Nếu cha có ưu tiên cao hơn hoặc bằng con thì heap đã đúng.
+        if (MangDuLieu[cha].priority <= MangDuLieu[viTri].priority)
             break;
 
         // Đổi chỗ
@@ -36,23 +37,23 @@ void HangDoiBacSi::VunXuong(int viTri)
     {
         int trai = 2 * viTri + 1;
         int phai = 2 * viTri + 2;
-        int lonNhat = viTri;
+        int uuTienNhat = viTri;
 
         // So sánh với con trái
-        if (trai < n && MangDuLieu[trai].priority > MangDuLieu[lonNhat].priority)
-            lonNhat = trai;
+        if (trai < n && MangDuLieu[trai].priority < MangDuLieu[uuTienNhat].priority)
+            uuTienNhat = trai;
 
         // So sánh với con phải
-        if (phai < n && MangDuLieu[phai].priority > MangDuLieu[lonNhat].priority)
-            lonNhat = phai;
+        if (phai < n && MangDuLieu[phai].priority < MangDuLieu[uuTienNhat].priority)
+            uuTienNhat = phai;
 
-        // Không còn con nào lớn hơn
-        if (lonNhat == viTri)
+        // Không còn con nào có mức ưu tiên cao hơn
+        if (uuTienNhat == viTri)
             break;
 
-        swap(MangDuLieu[viTri], MangDuLieu[lonNhat]);
+        swap(MangDuLieu[viTri], MangDuLieu[uuTienNhat]);
 
-        viTri = lonNhat;
+        viTri = uuTienNhat;
     }
 }
 
@@ -65,7 +66,7 @@ void HangDoiBacSi::ThemBenhNhan(const Patient& benhNhan)
 {
     MangDuLieu.push_back(benhNhan);
 
-    // Node mới nằm ở cuối -> vun lên để khôi phục Max-Heap
+    // Node mới nằm ở cuối -> vun lên để khôi phục Min-Heap
     VunLen((int)MangDuLieu.size() - 1);
 }
 
@@ -80,6 +81,8 @@ void HangDoiBacSi::NoiMangCapToc(const vector<Patient>& danhSach)
     {
         MangDuLieu.push_back(benhNhan);
     }
+
+    PhucHoiHeap();
 }
 
 
@@ -110,7 +113,7 @@ bool HangDoiBacSi::LayBenhNhanUuTienNhat(Patient& benhNhan)
         return false;
     }
 
-    // Phần tử đầu tiên của Max-Heap
+    // Phần tử đầu tiên của Min-Heap
     // luôn là bệnh nhân có priority cao nhất
     benhNhan = MangDuLieu[0];
 
