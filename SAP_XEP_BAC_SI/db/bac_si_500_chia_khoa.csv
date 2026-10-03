@@ -1,501 +1,501 @@
 ﻿name,birth_date,age,gender,hometown,address,phone,exp_years,khoa_chuyen_mon
-Phạm Văn Đức,3/8/1999,27,Nam,Hà Nội,"150 Phan Chu Trinh, Nha Trang, Khánh Hòa",931924806,4,khoa_ngoai
-Hồ Thanh Phong,1/1/1970,56,Nam,Thanh Hóa,"568 Phan Chu Trinh, Thuận An, Bình Dương",925368981,17,khoa_mat
-Huỳnh Phương Nhung,9/26/1977,48,Nữ,Huế,"106 Nguyễn Huệ, Dĩ An, Bình Dương",736894215,20,tai_mui_hong
-Bùi Mỹ Quỳnh,6/12/1991,35,Nữ,Nghệ An,"233 Điện Biên Phủ, Cái Răng, Cần Thơ",662651481,2,khoa_san
-Phan Thu Yến,5/28/1987,39,Nữ,Huế,"495 Lê Lợi, Thuận Hóa, Huế",799440943,14,khoa_san
-Trần Diệu Nga,12/14/1981,44,Nữ,TP. Hồ Chí Minh,"854 Hoàng Văn Thụ, Hạ Long, Quảng Ninh",389481181,1,khoa_than_kinh
-Lý Thị Trang,2/7/1993,33,Nữ,Quảng Ninh,"9 Hai Bà Trưng, Thuận An, Bình Dương",361739412,5,tai_mui_hong
-Ngô Thanh Thảo,11/4/1988,37,Nữ,Đà Nẵng,"377 Lý Thường Kiệt, Thanh Khê, Đà Nẵng",174911054,4,khoa_da_lieu
-Dương Thị Vy,2/15/1967,59,Nữ,Cần Thơ,"690 Trần Hưng Đạo, Nha Trang, Khánh Hòa",597178087,2,khoa_cap_cuu
-Võ Bảo Hà,12/25/1977,48,Nữ,Khánh Hòa,"776 Lê Lợi, Quận 3, TP. Hồ Chí Minh",701913856,17,khoa_ngoai
-Nguyễn Kim Anh,7/7/1984,42,Nữ,Cần Thơ,"726 Nguyễn Huệ, Thuận An, Bình Dương",172753601,1,khoa_mat
-Trần Ngọc My,12/19/1960,65,Nữ,Thanh Hóa,"785 Cách Mạng Tháng Tám, Cẩm Phả, Quảng Ninh",618724591,1,khoa_ngoai
-Lý Trọng Thành,9/3/1997,29,Nam,Cần Thơ,"471 Hoàng Văn Thụ, Thuận Hóa, Huế",719260257,4,khoa_cap_cuu
-Phạm Hoàng Tuấn,6/23/1964,62,Nam,Đà Nẵng,"741 Điện Biên Phủ, Ngũ Hành Sơn, Đà Nẵng",726807822,39,tai_mui_hong
-Dương Bảo Mai,6/21/1984,42,Nữ,Hải Phòng,"636 Cách Mạng Tháng Tám, Thuận Hóa, Huế",208672343,14,khoa_cap_cuu
-Phan Quốc Đức,3/31/1983,43,Nam,Nghệ An,"599 Hai Bà Trưng, Long Khánh, Đồng Nai",687030447,14,khoa_than_kinh
-Đỗ Phương Châu,11/6/1972,53,Nữ,Nghệ An,"449 Nguyễn Trãi, Dĩ An, Bình Dương",374204007,11,khoa_ngoai
-Vũ Ngọc Giang,11/5/1979,46,Nữ,Đà Nẵng,"465 Trần Hưng Đạo, TP. Thanh Hóa, Thanh Hóa",970045771,6,khoa_san
-Lý Trọng Khang,12/22/1963,62,Nam,Nghệ An,"284 Trần Hưng Đạo, Hoàng Mai, Hà Nội",361416309,11,khoa_san
-Nguyễn Bảo Nhung,4/25/1993,33,Nữ,Thanh Hóa,"684 Phan Chu Trinh, Sầm Sơn, Thanh Hóa",337663279,1,khoa_mat
-Phan Ngọc Trinh,5/15/1992,34,Nữ,Khánh Hòa,"395 Nguyễn Trãi, Trảng Bom, Đồng Nai",671467055,5,khoa_san
-Bùi Minh Vinh,12/31/1985,40,Nam,Cần Thơ,"74 Nguyễn Huệ, Lê Chân, Hải Phòng",435886401,5,khoa_ngoai
-Huỳnh Kim Phương,12/21/1976,49,Nữ,Đồng Nai,"647 Lê Lợi, Thuận An, Bình Dương",994283351,14,khoa_san
-Phan Khánh Phương,5/16/1974,52,Nữ,Huế,"884 Lê Lợi, Biên Hòa, Đồng Nai",692240797,29,khoa_mat
-Hoàng Trọng Đạt,8/1/1995,31,Nam,Thanh Hóa,"375 Điện Biên Phủ, Thanh Khê, Đà Nẵng",393435792,2,khoa_ngoai
-Phan Phương Phương,10/11/1985,40,Nữ,Bình Dương,"586 Trần Hưng Đạo, Nha Trang, Khánh Hòa",135579407,7,khoa_noi
-Dương Đức Sơn,3/12/1981,45,Nam,Bình Dương,"634 Cách Mạng Tháng Tám, Lê Chân, Hải Phòng",160736285,8,khoa_cap_cuu
-Lê Thanh Lan,2/9/1996,30,Nữ,TP. Hồ Chí Minh,"799 Nguyễn Trãi, Diễn Châu, Nghệ An",789968379,7,khoa_than_kinh
-Đỗ Thanh Bình,9/3/1974,52,Nam,Đồng Nai,"778 Nguyễn Huệ, Ô Môn, Cần Thơ",827006842,28,khoa_noi
-Đỗ Mỹ Mai,4/4/1976,50,Nữ,Nghệ An,"215 Trần Hưng Đạo, TP. Thanh Hóa, Thanh Hóa",563727109,16,khoa_san
-Trần Thị Hạnh,4/11/1989,37,Nữ,Nghệ An,"923 Trần Hưng Đạo, Cái Răng, Cần Thơ",324982097,7,khoa_san
-Hoàng Đức Nam,7/31/1991,35,Nam,Nghệ An,"848 Nguyễn Trãi, Bình Thủy, Cần Thơ",618855924,8,khoa_tim_mach
-Võ Quốc Sơn,9/25/1960,65,Nam,Đà Nẵng,"379 Nguyễn Trãi, Ngũ Hành Sơn, Đà Nẵng",697058275,9,khoa_nhi
-Võ Phương Lan,4/10/1971,55,Nữ,Nghệ An,"583 Trần Hưng Đạo, Thuận Hóa, Huế",257178364,22,khoa_da_lieu
-Lý Thanh Hạnh,8/6/1979,47,Nữ,Cần Thơ,"433 Nguyễn Huệ, Bình Thủy, Cần Thơ",862865410,7,khoa_nhi
-Võ Đức Phong,6/3/1965,61,Nam,Đà Nẵng,"88 Lê Lợi, Bình Thủy, Cần Thơ",227023437,18,khoa_da_lieu
-Huỳnh Thị Thảo,9/10/1994,32,Nữ,Cần Thơ,"649 Nguyễn Huệ, Thủ Dầu Một, Bình Dương",113055264,5,khoa_mat
-Phạm Hoàng Khang,3/22/1983,43,Nam,Thanh Hóa,"211 Lê Lợi, Hải Châu, Đà Nẵng",851162297,18,khoa_ngoai
-Vũ Thanh Dũng,9/9/1989,37,Nam,Khánh Hòa,"836 Phan Chu Trinh, Hải Châu, Đà Nẵng",484869823,7,khoa_than_kinh
-Phạm Thanh Trang,8/4/1965,61,Nữ,Quảng Ninh,"390 Nguyễn Trãi, Kiến An, Hải Phòng",981153306,4,khoa_da_lieu
-Đặng Trọng Minh,2/8/2001,25,Nam,TP. Hồ Chí Minh,"181 Lê Lợi, Thủ Đức, TP. Hồ Chí Minh",429531635,1,khoa_mat
-Trần Thị Ngân,8/20/1979,47,Nữ,Đồng Nai,"166 Điện Biên Phủ, Phú Xuân, Huế",851425673,21,tai_mui_hong
-Bùi Xuân Hùng,1/10/1976,50,Nam,TP. Hồ Chí Minh,"735 Cách Mạng Tháng Tám, Cam Ranh, Khánh Hòa",827462019,23,khoa_nhi
-Nguyễn Khánh Phương,3/27/1965,61,Nữ,Huế,"798 Nguyễn Huệ, Cẩm Phả, Quảng Ninh",467570800,29,khoa_than_kinh
-Đỗ Bảo Giang,1/21/1961,65,Nữ,TP. Hồ Chí Minh,"281 Hoàng Văn Thụ, Phú Xuân, Huế",592516072,35,khoa_than_kinh
-Phan Ngọc Hạnh,7/12/1967,59,Nữ,Đà Nẵng,"97 Lê Lợi, Ngũ Hành Sơn, Đà Nẵng",801624536,31,khoa_tim_mach
-Dương Phương Hương,11/25/1964,61,Nữ,Đà Nẵng,"725 Lê Lợi, Sầm Sơn, Thanh Hóa",941781775,15,khoa_da_lieu
-Phan Đức Long,1/29/1986,40,Nam,Thanh Hóa,"681 Điện Biên Phủ, Ninh Hòa, Khánh Hòa",266787181,3,khoa_cap_cuu
-Phạm Kim Nhung,12/6/1992,33,Nữ,Đồng Nai,"886 Trần Hưng Đạo, Ngũ Hành Sơn, Đà Nẵng",114102597,10,khoa_tim_mach
-Hoàng Thu Châu,3/25/1962,64,Nữ,Khánh Hòa,"282 Hai Bà Trưng, Nha Trang, Khánh Hòa",501052118,35,khoa_san
-Võ Gia An,12/29/2000,25,Nam,Đồng Nai,"419 Trần Hưng Đạo, Trảng Bom, Đồng Nai",158470109,1,khoa_da_lieu
-Phạm Trọng Nam,6/16/1971,55,Nam,Đồng Nai,"433 Nguyễn Trãi, Thủ Dầu Một, Bình Dương",971174604,8,khoa_noi
-Vũ Thanh Anh,5/26/1996,30,Nữ,Khánh Hòa,"493 Lê Lợi, Cầu Giấy, Hà Nội",408907447,2,khoa_cap_cuu
-Lê Minh Hải,3/3/1994,32,Nam,Cần Thơ,"504 Nguyễn Huệ, Biên Hòa, Đồng Nai",104138466,3,khoa_cap_cuu
-Đỗ Xuân Quân,12/3/1993,32,Nam,Khánh Hòa,"103 Lê Lợi, Ngô Quyền, Hải Phòng",678269939,9,khoa_cap_cuu
-Đặng Văn Phong,6/4/1983,43,Nam,Cần Thơ,"648 Nguyễn Huệ, Quận 7, TP. Hồ Chí Minh",708249313,10,khoa_than_kinh
-Đỗ Thanh Ngân,8/16/1966,60,Nữ,Bình Dương,"972 Cách Mạng Tháng Tám, Bình Thủy, Cần Thơ",712585494,16,khoa_than_kinh
-Đỗ Thanh Sơn,2/24/1983,43,Nam,Quảng Ninh,"94 Nguyễn Trãi, Quỳnh Lưu, Nghệ An",372764051,7,khoa_tim_mach
-Phạm Thị Thảo,8/27/1992,34,Nữ,Quảng Ninh,"862 Hoàng Văn Thụ, Sầm Sơn, Thanh Hóa",637442807,3,khoa_san
-Huỳnh Diệu Thảo,1/5/1997,29,Nữ,Quảng Ninh,"260 Nguyễn Huệ, Sầm Sơn, Thanh Hóa",829981465,4,tai_mui_hong
-Đỗ Phương Quỳnh,11/15/1984,41,Nữ,Nghệ An,"763 Lý Thường Kiệt, Lê Chân, Hải Phòng",464667418,17,khoa_san
-Hồ Hoàng Long,4/7/2001,25,Nam,Hải Phòng,"736 Lê Lợi, Vinh, Nghệ An",323215065,1,khoa_da_lieu
-Lê Phương My,12/6/1989,36,Nữ,Bình Dương,"424 Hoàng Văn Thụ, Kiến An, Hải Phòng",893082893,1,khoa_da_lieu
-Lê Gia Anh,4/23/1965,61,Nam,Đồng Nai,"849 Cách Mạng Tháng Tám, Sầm Sơn, Thanh Hóa",943538466,21,khoa_cap_cuu
-Lê Ngọc Vy,3/2/1969,57,Nữ,Hà Nội,"126 Nguyễn Huệ, Bình Thạnh, TP. Hồ Chí Minh",10792274,17,khoa_mat
-Ngô Trọng Phong,4/14/1981,45,Nam,Khánh Hòa,"433 Trần Hưng Đạo, Kiến An, Hải Phòng",841398498,22,khoa_da_lieu
-Hồ Thanh Tuấn,9/27/1981,44,Nam,Cần Thơ,"562 Hoàng Văn Thụ, Uông Bí, Quảng Ninh",620863505,4,khoa_tim_mach
-Võ Hoàng Dũng,6/21/1970,56,Nam,Hà Nội,"444 Điện Biên Phủ, Hồng Bàng, Hải Phòng",170372315,20,tai_mui_hong
-Phạm Diệu Linh,8/12/1989,37,Nữ,Khánh Hòa,"832 Hai Bà Trưng, Nha Trang, Khánh Hòa",867515684,13,khoa_mat
-Đặng Hoàng Minh,4/17/1966,60,Nam,Đồng Nai,"68 Nguyễn Huệ, Ngũ Hành Sơn, Đà Nẵng",193487964,37,khoa_ngoai
-Dương Văn Dũng,8/25/1986,40,Nam,Đồng Nai,"169 Trần Hưng Đạo, Biên Hòa, Đồng Nai",507209230,6,khoa_da_lieu
-Nguyễn Diệu Lan,12/7/1992,33,Nữ,Đồng Nai,"170 Lê Lợi, Hai Bà Trưng, Hà Nội",378429410,8,khoa_tim_mach
-Ngô Đức Minh,11/9/1976,49,Nam,Thanh Hóa,"146 Phan Chu Trinh, Cam Ranh, Khánh Hòa",963828103,21,khoa_cap_cuu
-Bùi Minh An,10/28/1983,42,Nam,Thanh Hóa,"258 Cách Mạng Tháng Tám, Dĩ An, Bình Dương",495857271,15,khoa_da_lieu
-Hoàng Bảo Lan,1/14/1993,33,Nữ,Đà Nẵng,"897 Hai Bà Trưng, Sơn Trà, Đà Nẵng",219331963,9,khoa_ngoai
-Lý Xuân Đức,11/11/1999,26,Nam,Đồng Nai,"683 Phan Chu Trinh, Hồng Bàng, Hải Phòng",388342095,3,khoa_mat
-Hồ Trọng Hùng,11/14/1978,47,Nam,TP. Hồ Chí Minh,"605 Điện Biên Phủ, Thủ Dầu Một, Bình Dương",711176688,10,khoa_cap_cuu
-Dương Thu Nhung,8/30/1979,47,Nữ,Đồng Nai,"858 Phan Chu Trinh, Long Khánh, Đồng Nai",579973228,5,khoa_cap_cuu
-Phan Khánh Anh,1/4/1982,44,Nữ,Thanh Hóa,"682 Nguyễn Huệ, Sơn Trà, Đà Nẵng",754033907,21,khoa_than_kinh
-Nguyễn Hoàng Hiếu,12/8/1970,55,Nam,Cần Thơ,"820 Hai Bà Trưng, Dĩ An, Bình Dương",494103199,7,tai_mui_hong
-Bùi Kim Mai,2/9/1962,64,Nữ,Đà Nẵng,"438 Nguyễn Trãi, Quận 3, TP. Hồ Chí Minh",145767120,29,tai_mui_hong
-Đỗ Thanh An,8/6/1992,34,Nam,Thanh Hóa,"652 Lý Thường Kiệt, Ngũ Hành Sơn, Đà Nẵng",473738990,11,khoa_nhi
-Nguyễn Hữu Hùng,8/21/1984,42,Nam,TP. Hồ Chí Minh,"591 Phan Chu Trinh, Thuận Hóa, Huế",688475924,18,khoa_san
-Đỗ Thanh My,1/20/1964,62,Nữ,TP. Hồ Chí Minh,"548 Cách Mạng Tháng Tám, Long Khánh, Đồng Nai",179670792,33,khoa_mat
-Lê Thu Hà,8/19/2000,26,Nữ,Nghệ An,"699 Cách Mạng Tháng Tám, Bỉm Sơn, Thanh Hóa",723836274,3,khoa_san
-Bùi Thị Giang,8/25/1986,40,Nữ,Nghệ An,"743 Nguyễn Huệ, Ngô Quyền, Hải Phòng",566081118,16,khoa_nhi
-Võ Trọng Nam,3/6/1991,35,Nam,Bình Dương,"412 Điện Biên Phủ, Ninh Hòa, Khánh Hòa",783677544,5,khoa_noi
-Lê Thị Yến,6/2/1994,32,Nữ,Hà Nội,"875 Trần Hưng Đạo, Hai Bà Trưng, Hà Nội",993732076,6,tai_mui_hong
-Phạm Văn Minh,5/14/1965,61,Nam,Hải Phòng,"631 Phan Chu Trinh, Ô Môn, Cần Thơ",938683182,23,tai_mui_hong
-Phan Thanh Tuấn,4/3/1975,51,Nam,Bình Dương,"583 Nguyễn Trãi, Ninh Hòa, Khánh Hòa",633112093,6,khoa_nhi
-Võ Diệu Quỳnh,9/7/1965,61,Nữ,Quảng Ninh,"121 Nguyễn Huệ, Quận 7, TP. Hồ Chí Minh",760001742,2,khoa_san
-Phạm Khánh Trang,12/5/1970,55,Nữ,Quảng Ninh,"802 Nguyễn Huệ, Diễn Châu, Nghệ An",304734520,29,khoa_tim_mach
-Lý Ngọc Nhung,3/12/1997,29,Nữ,Cần Thơ,"640 Điện Biên Phủ, Thuận Hóa, Huế",41419428,4,khoa_tim_mach
-Huỳnh Phương Nga,6/8/1976,50,Nữ,Đồng Nai,"131 Lê Lợi, Sầm Sơn, Thanh Hóa",517085314,24,khoa_ngoai
-Nguyễn Khánh My,5/19/1963,63,Nữ,Bình Dương,"25 Cách Mạng Tháng Tám, Bình Thạnh, TP. Hồ Chí Minh",459185326,12,khoa_mat
-Võ Thị Lan,2/28/1985,41,Nữ,Thanh Hóa,"420 Hai Bà Trưng, Thủ Đức, TP. Hồ Chí Minh",467297756,12,khoa_nhi
-Nguyễn Đức Tuấn,12/11/1977,48,Nam,Đà Nẵng,"832 Hai Bà Trưng, Trảng Bom, Đồng Nai",904711089,20,khoa_cap_cuu
-Võ Gia Đạt,7/3/1976,50,Nam,Hải Phòng,"793 Lê Lợi, Nha Trang, Khánh Hòa",634255503,17,khoa_tim_mach
-Bùi Thanh Hùng,10/18/1973,52,Nam,TP. Hồ Chí Minh,"692 Nguyễn Huệ, Thuận Hóa, Huế",755985726,13,khoa_nhi
-Lý Hoàng Thành,4/26/1966,60,Nam,Thanh Hóa,"246 Cách Mạng Tháng Tám, Diễn Châu, Nghệ An",757691193,19,khoa_noi
-Bùi Diệu Nhung,7/19/1975,51,Nữ,TP. Hồ Chí Minh,"516 Lê Lợi, Ninh Kiều, Cần Thơ",783412088,26,khoa_noi
-Lý Bảo Châu,9/19/1992,34,Nữ,Đà Nẵng,"823 Cách Mạng Tháng Tám, Long Khánh, Đồng Nai",739627769,8,khoa_noi
-Lê Văn Tuấn,1/26/1982,44,Nam,TP. Hồ Chí Minh,"885 Nguyễn Huệ, TP. Thanh Hóa, Thanh Hóa",255526494,12,khoa_mat
-Dương Diệu Lan,2/24/1966,60,Nữ,Quảng Ninh,"771 Nguyễn Huệ, Kiến An, Hải Phòng",902917624,7,tai_mui_hong
-Đặng Quốc Đức,3/16/1987,39,Nam,Quảng Ninh,"509 Điện Biên Phủ, Lê Chân, Hải Phòng",958965911,16,khoa_cap_cuu
-Huỳnh Hoàng Tuấn,2/25/1999,27,Nam,Khánh Hòa,"99 Nguyễn Huệ, Ninh Hòa, Khánh Hòa",889675534,1,khoa_tim_mach
-Bùi Trọng Đức,10/31/1970,55,Nam,Hà Nội,"861 Hai Bà Trưng, Thuận Hóa, Huế",992408608,3,khoa_than_kinh
-Phan Xuân Hiếu,2/1/1980,46,Nam,Quảng Ninh,"683 Cách Mạng Tháng Tám, Thuận Hóa, Huế",25980231,17,khoa_mat
-Dương Mỹ Giang,11/30/1998,27,Nữ,TP. Hồ Chí Minh,"672 Hoàng Văn Thụ, Gò Vấp, TP. Hồ Chí Minh",467908817,2,khoa_san
-Ngô Diệu Châu,8/3/2001,25,Nữ,Cần Thơ,"970 Phan Chu Trinh, Ninh Hòa, Khánh Hòa",572027806,2,khoa_tim_mach
-Hồ Văn Anh,4/22/1972,54,Nam,Hải Phòng,"943 Lý Thường Kiệt, Hạ Long, Quảng Ninh",197677457,3,khoa_mat
-Nguyễn Minh Phong,1/19/1991,35,Nam,Quảng Ninh,"648 Hoàng Văn Thụ, Quận 1, TP. Hồ Chí Minh",636814520,6,khoa_cap_cuu
-Dương Thanh Nga,12/6/1980,45,Nữ,Đồng Nai,"460 Cách Mạng Tháng Tám, Quận 7, TP. Hồ Chí Minh",828738294,1,khoa_cap_cuu
-Huỳnh Quốc Phong,5/14/1986,40,Nam,Thanh Hóa,"26 Nguyễn Huệ, Biên Hòa, Đồng Nai",799224522,15,khoa_da_lieu
-Lý Khánh Hà,5/2/1966,60,Nữ,Hải Phòng,"724 Lý Thường Kiệt, Sơn Trà, Đà Nẵng",965258129,14,khoa_da_lieu
-Võ Thanh Giang,11/7/1975,50,Nữ,Huế,"592 Lý Thường Kiệt, Thủ Dầu Một, Bình Dương",390220153,22,khoa_ngoai
-Dương Gia Tuấn,9/17/1984,42,Nam,Thanh Hóa,"206 Cách Mạng Tháng Tám, Lê Chân, Hải Phòng",768889807,19,khoa_noi
-Huỳnh Phương My,8/8/1972,54,Nữ,Khánh Hòa,"187 Cách Mạng Tháng Tám, Uông Bí, Quảng Ninh",706729031,11,khoa_da_lieu
-Hồ Hữu Long,11/23/1992,33,Nam,Hà Nội,"91 Nguyễn Huệ, Đống Đa, Hà Nội",430593820,1,khoa_da_lieu
-Phạm Bảo Anh,4/2/1994,32,Nữ,Nghệ An,"557 Hoàng Văn Thụ, Ngô Quyền, Hải Phòng",142787120,1,khoa_noi
-Trần Thanh Trang,9/15/1981,45,Nữ,Khánh Hòa,"275 Hai Bà Trưng, Quận 1, TP. Hồ Chí Minh",950432250,10,khoa_mat
-Hồ Kim Yến,9/20/1999,27,Nữ,Khánh Hòa,"985 Lê Lợi, Phú Xuân, Huế",836477380,2,khoa_tim_mach
-Ngô Thu Hương,5/7/1975,51,Nữ,Nghệ An,"415 Điện Biên Phủ, Uông Bí, Quảng Ninh",89205556,21,tai_mui_hong
-Vũ Thanh Ngân,5/26/1966,60,Nữ,Quảng Ninh,"619 Cách Mạng Tháng Tám, Ninh Kiều, Cần Thơ",615145597,26,khoa_cap_cuu
-Đỗ Thanh An,12/12/1975,50,Nam,Hà Nội,"700 Nguyễn Trãi, Hai Bà Trưng, Hà Nội",378631835,2,khoa_mat
-Đặng Xuân Minh,5/23/1975,51,Nam,TP. Hồ Chí Minh,"575 Hai Bà Trưng, Biên Hòa, Đồng Nai",221319388,2,khoa_nhi
-Võ Trọng Minh,8/29/1984,42,Nam,Hải Phòng,"319 Lê Lợi, Long Khánh, Đồng Nai",711735628,19,khoa_mat
-Huỳnh Ngọc Giang,9/14/1965,61,Nữ,Quảng Ninh,"376 Điện Biên Phủ, Phú Xuân, Huế",964647348,19,tai_mui_hong
-Lê Hoàng Nam,8/6/2001,25,Nam,Cần Thơ,"194 Cách Mạng Tháng Tám, Hoàng Mai, Hà Nội",567440723,2,khoa_nhi
-Bùi Diệu Lan,2/28/1992,34,Nữ,Huế,"8 Phan Chu Trinh, Thủ Đức, TP. Hồ Chí Minh",467274508,11,khoa_cap_cuu
-Võ Hoàng An,11/13/1991,34,Nam,Hải Phòng,"293 Điện Biên Phủ, TP. Thanh Hóa, Thanh Hóa",334476079,3,khoa_than_kinh
-Nguyễn Minh Anh,9/4/1976,50,Nam,Cần Thơ,"164 Hai Bà Trưng, Thuận Hóa, Huế",587868503,14,khoa_tim_mach
-Lý Trọng Phong,4/25/1993,33,Nam,TP. Hồ Chí Minh,"394 Nguyễn Trãi, Trảng Bom, Đồng Nai",141719295,4,khoa_da_lieu
-Đặng Ngọc Yến,10/17/1961,64,Nữ,Đồng Nai,"912 Lý Thường Kiệt, Thuận An, Bình Dương",303049881,20,khoa_noi
-Phạm Phương Ngân,8/25/1966,60,Nữ,Thanh Hóa,"546 Hoàng Văn Thụ, Nha Trang, Khánh Hòa",925880560,9,khoa_cap_cuu
-Phạm Gia Sơn,2/9/1975,51,Nam,Khánh Hòa,"158 Lê Lợi, Trảng Bom, Đồng Nai",313244403,3,khoa_tim_mach
-Hoàng Kim Nga,5/7/1967,59,Nữ,Quảng Ninh,"137 Điện Biên Phủ, Cầu Giấy, Hà Nội",877075919,8,khoa_tim_mach
-Bùi Xuân Việt,9/26/1961,64,Nam,Đồng Nai,"361 Lý Thường Kiệt, Thủ Đức, TP. Hồ Chí Minh",273986904,23,khoa_noi
-Trần Hữu Long,12/13/1994,31,Nam,Cần Thơ,"418 Lê Lợi, Đống Đa, Hà Nội",999731491,3,khoa_than_kinh
-Hồ Quốc Tuấn,7/9/1991,35,Nam,Bình Dương,"136 Cách Mạng Tháng Tám, Thủ Dầu Một, Bình Dương",227947359,3,khoa_ngoai
-Phan Diệu Lan,10/6/1973,52,Nữ,Hải Phòng,"276 Nguyễn Trãi, Hồng Bàng, Hải Phòng",249832752,14,khoa_nhi
-Võ Văn Hiếu,6/1/1970,56,Nam,Đà Nẵng,"211 Hoàng Văn Thụ, Ngũ Hành Sơn, Đà Nẵng",287267421,16,khoa_than_kinh
-Phan Phương Trinh,10/7/1983,42,Nữ,TP. Hồ Chí Minh,"316 Cách Mạng Tháng Tám, Thanh Khê, Đà Nẵng",21021413,13,khoa_cap_cuu
-Phan Thanh Hà,11/3/1981,44,Nữ,Huế,"708 Trần Hưng Đạo, Bỉm Sơn, Thanh Hóa",722192812,12,khoa_da_lieu
-Đặng Hoàng Thành,8/16/1983,43,Nam,Nghệ An,"631 Lý Thường Kiệt, Vinh, Nghệ An",236876563,10,khoa_tim_mach
-Phan Minh Thành,1/6/1992,34,Nam,Khánh Hòa,"465 Trần Hưng Đạo, Lê Chân, Hải Phòng",133699138,5,khoa_cap_cuu
-Phạm Hoàng Phong,10/3/1974,51,Nam,Đồng Nai,"849 Trần Hưng Đạo, Thanh Khê, Đà Nẵng",848326513,10,khoa_cap_cuu
-Hồ Xuân Minh,1/25/1995,31,Nam,Đồng Nai,"982 Nguyễn Trãi, Cẩm Phả, Quảng Ninh",120499308,7,khoa_noi
-Phan Minh Khang,8/4/1998,28,Nam,Đà Nẵng,"425 Hai Bà Trưng, Bỉm Sơn, Thanh Hóa",613983340,3,tai_mui_hong
-Võ Ngọc Mai,5/21/1992,34,Nữ,Quảng Ninh,"629 Lê Lợi, Thủ Đức, TP. Hồ Chí Minh",715368760,4,khoa_tim_mach
-Phan Văn Đức,11/15/1963,62,Nam,Bình Dương,"50 Nguyễn Huệ, Bình Thạnh, TP. Hồ Chí Minh",215883356,38,khoa_ngoai
-Lê Thanh Hà,10/31/1970,55,Nữ,Hà Nội,"148 Lý Thường Kiệt, Gò Vấp, TP. Hồ Chí Minh",41794480,26,khoa_mat
-Huỳnh Thanh Mai,12/13/1991,34,Nữ,Hà Nội,"719 Phan Chu Trinh, Ngũ Hành Sơn, Đà Nẵng",590100782,7,khoa_cap_cuu
-Vũ Gia Tuấn,9/16/1984,42,Nam,Đà Nẵng,"704 Trần Hưng Đạo, Biên Hòa, Đồng Nai",379698970,11,tai_mui_hong
-Võ Hoàng Hùng,6/16/1990,36,Nam,Bình Dương,"485 Cách Mạng Tháng Tám, Bỉm Sơn, Thanh Hóa",703649527,7,khoa_san
-Nguyễn Xuân Minh,7/4/1972,54,Nam,Hải Phòng,"400 Cách Mạng Tháng Tám, Long Khánh, Đồng Nai",976712788,20,khoa_ngoai
-Hồ Phương My,8/5/1988,38,Nữ,Quảng Ninh,"199 Nguyễn Huệ, Quận 1, TP. Hồ Chí Minh",372750647,5,khoa_noi
-Vũ Hoàng Bình,12/20/1961,64,Nam,Khánh Hòa,"474 Nguyễn Trãi, Dĩ An, Bình Dương",138256758,28,khoa_ngoai
-Nguyễn Gia Bình,9/17/1971,55,Nam,Hải Phòng,"65 Hai Bà Trưng, Quỳnh Lưu, Nghệ An",459111451,12,khoa_than_kinh
-Nguyễn Xuân Nam,3/20/1996,30,Nam,Nghệ An,"586 Lê Lợi, Phú Xuân, Huế",583074776,4,khoa_mat
-Lý Khánh Hương,4/20/1988,38,Nữ,Cần Thơ,"456 Hoàng Văn Thụ, Ngô Quyền, Hải Phòng",787985443,7,khoa_than_kinh
-Trần Diệu Thảo,10/10/1967,58,Nữ,Bình Dương,"601 Nguyễn Huệ, Ninh Kiều, Cần Thơ",559868747,16,khoa_da_lieu
-Ngô Thị Trinh,9/16/1988,38,Nữ,Huế,"898 Trần Hưng Đạo, Cẩm Phả, Quảng Ninh",290696143,1,khoa_san
-Dương Mỹ Quỳnh,5/2/1993,33,Nữ,Quảng Ninh,"145 Nguyễn Trãi, Hoàng Mai, Hà Nội",846071153,1,khoa_ngoai
-Ngô Ngọc Thảo,3/20/1977,49,Nữ,Hà Nội,"927 Cách Mạng Tháng Tám, Phú Xuân, Huế",593797369,16,khoa_tim_mach
-Đỗ Thanh Hiếu,3/11/2000,26,Nam,Cần Thơ,"215 Nguyễn Trãi, Long Khánh, Đồng Nai",701157879,1,khoa_ngoai
-Huỳnh Thanh Châu,3/17/1995,31,Nữ,Đà Nẵng,"478 Cách Mạng Tháng Tám, Ninh Hòa, Khánh Hòa",833793254,8,khoa_san
-Bùi Phương Ngân,4/14/1971,55,Nữ,Thanh Hóa,"590 Nguyễn Huệ, Bỉm Sơn, Thanh Hóa",921478690,27,tai_mui_hong
-Hồ Thanh Dũng,7/8/1999,27,Nam,Cần Thơ,"523 Nguyễn Trãi, Uông Bí, Quảng Ninh",236213118,2,khoa_noi
-Võ Thị Mai,10/30/1987,38,Nữ,Khánh Hòa,"96 Lê Lợi, Hoàng Mai, Hà Nội",374572342,11,khoa_tim_mach
-Hồ Gia Hùng,2/2/1987,39,Nam,Bình Dương,"734 Hai Bà Trưng, Thuận Hóa, Huế",897131665,12,khoa_nhi
-Phan Gia Quân,2/12/1976,50,Nam,Khánh Hòa,"459 Nguyễn Trãi, Kiến An, Hải Phòng",118221756,9,khoa_ngoai
-Ngô Phương Lan,2/3/2000,26,Nữ,Nghệ An,"257 Lê Lợi, Quỳnh Lưu, Nghệ An",479493481,3,khoa_noi
-Hoàng Thị Thảo,4/16/1981,45,Nữ,Bình Dương,"764 Nguyễn Trãi, Nha Trang, Khánh Hòa",73590457,5,khoa_nhi
-Trần Mỹ Vy,10/2/1986,39,Nữ,Bình Dương,"962 Lý Thường Kiệt, Hoàng Mai, Hà Nội",318084195,6,khoa_nhi
-Dương Bảo Mai,2/24/2001,25,Nữ,Huế,"381 Lê Lợi, Cầu Giấy, Hà Nội",620991509,2,khoa_cap_cuu
-Võ Thanh Nam,1/15/1996,30,Nam,Hải Phòng,"135 Nguyễn Huệ, Cửa Lò, Nghệ An",208785953,4,khoa_da_lieu
-Lý Xuân Sơn,12/9/1985,40,Nam,Bình Dương,"85 Nguyễn Trãi, Thuận Hóa, Huế",556257842,10,khoa_noi
-Hoàng Kim Nhung,8/8/1984,42,Nữ,Đồng Nai,"410 Lê Lợi, Uông Bí, Quảng Ninh",520910782,14,khoa_than_kinh
-Phạm Mỹ Trinh,6/11/1987,39,Nữ,Hải Phòng,"334 Lý Thường Kiệt, Bỉm Sơn, Thanh Hóa",350493272,12,khoa_noi
-Bùi Bảo Quỳnh,9/9/1968,58,Nữ,TP. Hồ Chí Minh,"568 Cách Mạng Tháng Tám, Nha Trang, Khánh Hòa",778602460,18,khoa_nhi
-Nguyễn Trọng Vinh,6/15/1969,57,Nam,Bình Dương,"383 Lý Thường Kiệt, Vinh, Nghệ An",761958562,17,khoa_ngoai
-Lê Đức Thành,5/27/1985,41,Nam,Hà Nội,"315 Trần Hưng Đạo, Kiến An, Hải Phòng",762756531,12,khoa_than_kinh
-Phan Diệu Anh,10/19/1978,47,Nữ,Thanh Hóa,"55 Nguyễn Trãi, Hoàng Mai, Hà Nội",787173574,19,khoa_than_kinh
-Nguyễn Đức Dũng,5/6/1961,65,Nam,Bình Dương,"74 Nguyễn Huệ, Biên Hòa, Đồng Nai",96889901,7,khoa_da_lieu
-Lê Thanh Ngân,10/15/1985,40,Nữ,Bình Dương,"615 Lê Lợi, Ninh Kiều, Cần Thơ",494136586,1,khoa_than_kinh
-Huỳnh Hữu Việt,5/13/1986,40,Nam,Đồng Nai,"658 Hoàng Văn Thụ, Lê Chân, Hải Phòng",570823762,9,khoa_tim_mach
-Vũ Đức Thành,3/4/1988,38,Nam,Đà Nẵng,"45 Nguyễn Huệ, Biên Hòa, Đồng Nai",186827464,8,khoa_cap_cuu
-Huỳnh Phương Linh,6/12/1983,43,Nữ,Khánh Hòa,"138 Trần Hưng Đạo, Ba Đình, Hà Nội",543507123,6,khoa_da_lieu
-Võ Hoàng Anh,10/29/1990,35,Nam,Đồng Nai,"335 Hai Bà Trưng, Ngô Quyền, Hải Phòng",555180321,5,khoa_ngoai
-Ngô Trọng Tuấn,5/21/1979,47,Nam,Huế,"677 Lê Lợi, Hạ Long, Quảng Ninh",989049355,22,khoa_cap_cuu
-Trần Đức An,11/14/1996,29,Nam,TP. Hồ Chí Minh,"503 Lê Lợi, Bỉm Sơn, Thanh Hóa",248105011,1,khoa_mat
-Ngô Khánh Anh,6/14/1990,36,Nữ,Hải Phòng,"62 Phan Chu Trinh, Nha Trang, Khánh Hòa",60760497,6,khoa_san
-Hồ Mỹ Nhung,7/24/1978,48,Nữ,Nghệ An,"903 Lê Lợi, Cái Răng, Cần Thơ",757870948,8,khoa_nhi
-Ngô Mỹ Giang,9/18/2001,25,Nữ,Cần Thơ,"325 Nguyễn Trãi, Hồng Bàng, Hải Phòng",326306809,1,tai_mui_hong
-Phạm Gia Minh,2/7/1966,60,Nam,Hải Phòng,"813 Nguyễn Huệ, Dĩ An, Bình Dương",531934758,16,khoa_cap_cuu
-Vũ Ngọc Phương,1/17/1995,31,Nữ,Nghệ An,"317 Hoàng Văn Thụ, Nha Trang, Khánh Hòa",799465997,1,khoa_san
-Vũ Văn Sơn,5/14/1996,30,Nam,Đà Nẵng,"810 Nguyễn Trãi, Thuận An, Bình Dương",432371536,2,khoa_nhi
-Huỳnh Mỹ Nga,7/15/1964,62,Nữ,Cần Thơ,"769 Hoàng Văn Thụ, Biên Hòa, Đồng Nai",878714030,20,khoa_cap_cuu
-Lê Đức Hiếu,8/5/1963,63,Nam,Đà Nẵng,"672 Hoàng Văn Thụ, Sầm Sơn, Thanh Hóa",851371885,14,khoa_cap_cuu
-Đỗ Kim Nga,5/21/1997,29,Nữ,Khánh Hòa,"802 Hoàng Văn Thụ, Hạ Long, Quảng Ninh",598220078,4,khoa_mat
-Huỳnh Kim Trang,1/23/1973,53,Nữ,TP. Hồ Chí Minh,"346 Lý Thường Kiệt, Bỉm Sơn, Thanh Hóa",375206846,29,khoa_tim_mach
-Hồ Thanh Quỳnh,3/4/1964,62,Nữ,Đà Nẵng,"221 Hoàng Văn Thụ, Uông Bí, Quảng Ninh",245703538,15,khoa_noi
-Ngô Quốc Hải,3/11/1974,52,Nam,Bình Dương,"780 Lý Thường Kiệt, Thủ Dầu Một, Bình Dương",327964157,9,khoa_tim_mach
-Vũ Trọng Khang,3/26/1964,62,Nam,Thanh Hóa,"180 Cách Mạng Tháng Tám, Hạ Long, Quảng Ninh",546500565,28,khoa_nhi
-Phan Diệu Lan,1/26/1974,52,Nữ,Nghệ An,"87 Phan Chu Trinh, Sơn Trà, Đà Nẵng",518902310,19,khoa_tim_mach
-Bùi Đức Hiếu,2/16/1977,49,Nam,Khánh Hòa,"721 Cách Mạng Tháng Tám, Hai Bà Trưng, Hà Nội",823542395,8,khoa_mat
-Phạm Khánh Hạnh,3/9/1968,58,Nữ,Bình Dương,"90 Phan Chu Trinh, Cẩm Phả, Quảng Ninh",671923608,26,khoa_ngoai
-Lê Trọng Thành,8/3/1971,55,Nam,Hải Phòng,"981 Hoàng Văn Thụ, Thuận Hóa, Huế",555033647,6,tai_mui_hong
-Đỗ Ngọc Thảo,3/9/1987,39,Nữ,Thanh Hóa,"923 Lý Thường Kiệt, Ninh Hòa, Khánh Hòa",838715354,3,khoa_ngoai
-Nguyễn Thanh Hương,10/3/1973,52,Nữ,Thanh Hóa,"945 Lê Lợi, Ô Môn, Cần Thơ",944949216,27,khoa_than_kinh
-Lê Gia Hiếu,7/19/1985,41,Nam,Nghệ An,"327 Lê Lợi, Cam Ranh, Khánh Hòa",58600090,7,khoa_noi
-Võ Gia Bình,5/23/1981,45,Nam,Khánh Hòa,"602 Phan Chu Trinh, Vinh, Nghệ An",459604608,1,khoa_than_kinh
-Võ Thu Anh,5/12/1980,46,Nữ,Đà Nẵng,"365 Hoàng Văn Thụ, Long Khánh, Đồng Nai",677612199,20,khoa_ngoai
-Dương Hoàng Long,12/14/1985,40,Nam,Hà Nội,"220 Trần Hưng Đạo, Cam Ranh, Khánh Hòa",430272256,12,khoa_than_kinh
-Trần Trọng Vinh,4/27/1969,57,Nam,Nghệ An,"704 Phan Chu Trinh, Vinh, Nghệ An",935038801,1,khoa_cap_cuu
-Lý Thu Phương,5/31/1992,34,Nữ,Cần Thơ,"158 Điện Biên Phủ, Sơn Trà, Đà Nẵng",612997529,5,khoa_san
-Bùi Thanh Thành,6/27/1982,44,Nam,Đồng Nai,"715 Hoàng Văn Thụ, Quận 1, TP. Hồ Chí Minh",906147310,11,khoa_nhi
-Đặng Ngọc Lan,6/17/1970,56,Nữ,Quảng Ninh,"771 Hai Bà Trưng, Gò Vấp, TP. Hồ Chí Minh",99526159,31,khoa_noi
-Đỗ Thanh Phong,6/20/1988,38,Nam,Thanh Hóa,"558 Lý Thường Kiệt, Quỳnh Lưu, Nghệ An",871933848,1,khoa_mat
-Vũ Minh Việt,7/23/1991,35,Nam,Đồng Nai,"826 Trần Hưng Đạo, Bình Thủy, Cần Thơ",310440375,12,tai_mui_hong
-Lý Phương Linh,10/24/1971,54,Nữ,Hải Phòng,"818 Lý Thường Kiệt, Hạ Long, Quảng Ninh",646022172,20,khoa_nhi
-Huỳnh Bảo Nga,11/4/1997,28,Nữ,Hà Nội,"368 Phan Chu Trinh, Quận 3, TP. Hồ Chí Minh",654941798,2,khoa_ngoai
-Phan Minh Long,5/21/1966,60,Nam,Hà Nội,"124 Cách Mạng Tháng Tám, Quỳnh Lưu, Nghệ An",614091403,30,khoa_cap_cuu
-Lê Quốc Hiếu,4/21/1985,41,Nam,Quảng Ninh,"150 Nguyễn Trãi, Bình Thạnh, TP. Hồ Chí Minh",167457914,18,khoa_nhi
-Bùi Quốc Sơn,6/11/1979,47,Nam,Đồng Nai,"162 Nguyễn Huệ, Cái Răng, Cần Thơ",120485665,21,khoa_mat
-Nguyễn Hoàng Vinh,12/2/1972,53,Nam,Hà Nội,"659 Cách Mạng Tháng Tám, Ba Đình, Hà Nội",940767084,9,khoa_cap_cuu
-Huỳnh Bảo Hạnh,2/26/1996,30,Nữ,Thanh Hóa,"720 Lý Thường Kiệt, Bỉm Sơn, Thanh Hóa",625189129,7,khoa_ngoai
-Ngô Đức Đức,6/14/1981,45,Nam,Hải Phòng,"126 Lê Lợi, Bình Thủy, Cần Thơ",402280187,18,khoa_da_lieu
-Huỳnh Khánh Linh,10/30/1993,32,Nữ,Khánh Hòa,"489 Hoàng Văn Thụ, Cửa Lò, Nghệ An",995544249,5,khoa_san
-Lê Diệu Nhung,5/14/1979,47,Nữ,Đà Nẵng,"127 Hoàng Văn Thụ, Cầu Giấy, Hà Nội",466671343,15,khoa_san
-Vũ Mỹ Trang,1/29/1961,65,Nữ,TP. Hồ Chí Minh,"628 Nguyễn Trãi, Cái Răng, Cần Thơ",399709151,4,khoa_nhi
-Bùi Khánh Châu,5/17/1969,57,Nữ,Hà Nội,"500 Lý Thường Kiệt, TP. Thanh Hóa, Thanh Hóa",706760973,1,khoa_cap_cuu
-Huỳnh Hoàng Phong,3/13/1981,45,Nam,Huế,"361 Nguyễn Trãi, Cầu Giấy, Hà Nội",662800261,13,khoa_tim_mach
-Đỗ Diệu Phương,6/3/1965,61,Nữ,Hà Nội,"186 Hai Bà Trưng, Nha Trang, Khánh Hòa",458313720,8,khoa_tim_mach
-Lê Hữu Khang,4/22/1999,27,Nam,Khánh Hòa,"507 Lê Lợi, Hạ Long, Quảng Ninh",198847008,3,khoa_nhi
-Võ Ngọc Thảo,3/27/2000,26,Nữ,Hà Nội,"573 Hoàng Văn Thụ, Phú Xuân, Huế",199350949,2,khoa_da_lieu
-Võ Hữu Đức,9/9/1974,52,Nam,Cần Thơ,"363 Hai Bà Trưng, Cẩm Phả, Quảng Ninh",33825344,24,khoa_than_kinh
-Đặng Khánh Linh,12/30/1965,60,Nữ,Cần Thơ,"714 Nguyễn Trãi, Phú Xuân, Huế",580380493,35,khoa_nhi
-Bùi Đức Thành,9/19/1986,40,Nam,Thanh Hóa,"152 Nguyễn Trãi, Uông Bí, Quảng Ninh",140224324,13,tai_mui_hong
-Phan Đức Sơn,12/17/1969,56,Nam,Quảng Ninh,"368 Trần Hưng Đạo, Cái Răng, Cần Thơ",209623207,4,khoa_san
-Phạm Văn Đạt,5/31/1973,53,Nam,Cần Thơ,"4 Hai Bà Trưng, Hồng Bàng, Hải Phòng",454660014,29,tai_mui_hong
-Đặng Gia Khang,1/24/1974,52,Nam,TP. Hồ Chí Minh,"751 Phan Chu Trinh, Thuận An, Bình Dương",935391810,29,khoa_tim_mach
-Huỳnh Thị Mai,5/31/1983,43,Nữ,Khánh Hòa,"300 Nguyễn Trãi, Quận 7, TP. Hồ Chí Minh",281019318,14,khoa_ngoai
-Ngô Gia Khang,10/31/1983,42,Nam,Thanh Hóa,"969 Nguyễn Trãi, Thuận Hóa, Huế",187621903,19,khoa_da_lieu
-Lý Quốc Thành,5/11/1969,57,Nam,Hà Nội,"433 Lý Thường Kiệt, Cửa Lò, Nghệ An",384497948,10,khoa_noi
-Nguyễn Khánh Yến,10/3/1998,27,Nữ,Hà Nội,"608 Trần Hưng Đạo, Phú Xuân, Huế",668829052,3,khoa_da_lieu
-Đỗ Xuân Bình,5/1/1983,43,Nam,Đà Nẵng,"851 Cách Mạng Tháng Tám, Long Khánh, Đồng Nai",273422077,13,khoa_noi
-Lê Thu Nhung,5/4/1985,41,Nữ,Hà Nội,"231 Điện Biên Phủ, Nha Trang, Khánh Hòa",606804627,6,khoa_cap_cuu
-Bùi Phương Trinh,2/24/1964,62,Nữ,Hải Phòng,"452 Hoàng Văn Thụ, Vinh, Nghệ An",343273269,8,khoa_nhi
-Lê Diệu Mai,6/4/1965,61,Nữ,TP. Hồ Chí Minh,"423 Lý Thường Kiệt, Biên Hòa, Đồng Nai",288614217,13,khoa_da_lieu
-Hoàng Thanh Hiếu,1/16/1967,59,Nam,Quảng Ninh,"24 Hai Bà Trưng, Kiến An, Hải Phòng",736122701,17,khoa_cap_cuu
-Hồ Thanh Ngân,7/20/1977,49,Nữ,Quảng Ninh,"736 Lê Lợi, Ba Đình, Hà Nội",400448324,9,khoa_cap_cuu
-Phạm Thanh My,4/1/1981,45,Nữ,Quảng Ninh,"405 Lý Thường Kiệt, Thanh Khê, Đà Nẵng",877176559,6,khoa_than_kinh
-Lý Thanh Trang,3/30/1996,30,Nữ,Đà Nẵng,"301 Cách Mạng Tháng Tám, Phú Xuân, Huế",342993146,5,khoa_noi
-Bùi Thị Phương,2/19/1996,30,Nữ,TP. Hồ Chí Minh,"912 Lý Thường Kiệt, Ninh Kiều, Cần Thơ",82791754,3,khoa_mat
-Lý Xuân Hùng,2/9/1992,34,Nam,Thanh Hóa,"244 Hai Bà Trưng, Sầm Sơn, Thanh Hóa",79826234,10,khoa_cap_cuu
-Huỳnh Thanh Vinh,7/5/1967,59,Nam,Đồng Nai,"183 Nguyễn Huệ, Thuận Hóa, Huế",977022957,8,tai_mui_hong
-Võ Quốc Tuấn,4/23/1982,44,Nam,Đồng Nai,"155 Trần Hưng Đạo, Cái Răng, Cần Thơ",180763622,7,khoa_ngoai
-Lý Thị Linh,11/26/1987,38,Nữ,Đồng Nai,"317 Hai Bà Trưng, Ngô Quyền, Hải Phòng",175532697,2,khoa_da_lieu
-Nguyễn Hoàng An,10/19/1960,65,Nam,Khánh Hòa,"954 Phan Chu Trinh, Vinh, Nghệ An",47972796,41,khoa_san
-Bùi Hoàng Minh,1/27/1996,30,Nam,TP. Hồ Chí Minh,"108 Trần Hưng Đạo, TP. Thanh Hóa, Thanh Hóa",288617315,7,khoa_cap_cuu
-Vũ Đức Hiếu,8/20/1961,65,Nam,Bình Dương,"639 Hai Bà Trưng, Dĩ An, Bình Dương",346844926,6,khoa_noi
-Phan Quốc Sơn,7/13/2001,25,Nam,TP. Hồ Chí Minh,"628 Cách Mạng Tháng Tám, Thuận An, Bình Dương",615547755,2,khoa_than_kinh
-Huỳnh Phương Ngân,11/7/1979,46,Nữ,TP. Hồ Chí Minh,"620 Trần Hưng Đạo, Phú Xuân, Huế",710978322,8,khoa_ngoai
-Đặng Hoàng Nam,10/30/1965,60,Nam,Hà Nội,"875 Nguyễn Huệ, Bình Thủy, Cần Thơ",161132336,20,khoa_mat
-Võ Bảo Mai,12/17/1977,48,Nữ,Hà Nội,"968 Cách Mạng Tháng Tám, Cam Ranh, Khánh Hòa",679867292,11,khoa_nhi
-Đặng Minh Việt,3/15/1995,31,Nam,Huế,"360 Phan Chu Trinh, Sầm Sơn, Thanh Hóa",298353952,7,khoa_san
-Vũ Hoàng Dũng,2/11/1985,41,Nam,TP. Hồ Chí Minh,"418 Lý Thường Kiệt, TP. Thanh Hóa, Thanh Hóa",307786979,3,tai_mui_hong
-Hoàng Bảo Hương,6/22/1967,59,Nữ,Nghệ An,"106 Hai Bà Trưng, Đống Đa, Hà Nội",227930196,33,khoa_cap_cuu
-Huỳnh Thanh Thành,3/1/1982,44,Nam,TP. Hồ Chí Minh,"119 Điện Biên Phủ, Cầu Giấy, Hà Nội",801367187,5,khoa_than_kinh
-Nguyễn Gia Việt,9/11/1982,44,Nam,Cần Thơ,"459 Cách Mạng Tháng Tám, Thủ Dầu Một, Bình Dương",735595549,13,khoa_ngoai
-Trần Quốc Bình,11/17/1980,45,Nam,TP. Hồ Chí Minh,"643 Cách Mạng Tháng Tám, Cam Ranh, Khánh Hòa",228094788,8,khoa_tim_mach
-Lý Đức Tuấn,3/7/1982,44,Nam,Khánh Hòa,"926 Phan Chu Trinh, Cửa Lò, Nghệ An",708455476,2,khoa_tim_mach
-Hồ Phương Nhung,2/20/1992,34,Nữ,Thanh Hóa,"763 Trần Hưng Đạo, TP. Thanh Hóa, Thanh Hóa",434542819,8,khoa_mat
-Võ Quốc Hải,10/26/1979,46,Nam,Thanh Hóa,"635 Hai Bà Trưng, Sầm Sơn, Thanh Hóa",958314636,22,khoa_mat
-Bùi Văn Minh,1/6/1983,43,Nam,Hà Nội,"867 Cách Mạng Tháng Tám, Trảng Bom, Đồng Nai",806642854,15,khoa_tim_mach
-Nguyễn Hoàng Dũng,12/10/1997,28,Nam,TP. Hồ Chí Minh,"701 Cách Mạng Tháng Tám, Quận 3, TP. Hồ Chí Minh",581707330,2,khoa_mat
-Vũ Văn Đạt,9/18/1972,54,Nam,Hải Phòng,"156 Trần Hưng Đạo, Biên Hòa, Đồng Nai",918001124,10,khoa_than_kinh
-Nguyễn Xuân Tuấn,12/21/1980,45,Nam,Đà Nẵng,"47 Trần Hưng Đạo, Hải Châu, Đà Nẵng",485730190,5,khoa_mat
-Hồ Ngọc Nga,4/15/2000,26,Nữ,Bình Dương,"264 Hai Bà Trưng, Thuận An, Bình Dương",711517990,1,tai_mui_hong
-Ngô Hữu Tuấn,5/4/1965,61,Nam,Hà Nội,"364 Nguyễn Trãi, Thanh Khê, Đà Nẵng",741351866,16,khoa_noi
-Vũ Ngọc Hạnh,6/3/1981,45,Nữ,Đà Nẵng,"225 Điện Biên Phủ, Thủ Dầu Một, Bình Dương",750273887,15,khoa_mat
-Huỳnh Văn Thành,11/14/1994,31,Nam,Cần Thơ,"331 Phan Chu Trinh, Hải Châu, Đà Nẵng",29568100,4,khoa_cap_cuu
-Hồ Kim Nga,6/2/1974,52,Nữ,Hà Nội,"86 Điện Biên Phủ, Bình Thủy, Cần Thơ",449325140,11,khoa_nhi
-Đặng Trọng Anh,3/4/1995,31,Nam,Cần Thơ,"382 Phan Chu Trinh, Nha Trang, Khánh Hòa",181239852,2,khoa_noi
-Hồ Xuân Đức,1/5/1992,34,Nam,Đồng Nai,"783 Nguyễn Trãi, Phú Xuân, Huế",44139030,7,khoa_da_lieu
-Vũ Quốc Phong,5/6/1982,44,Nam,Cần Thơ,"646 Nguyễn Trãi, Cái Răng, Cần Thơ",290174390,5,khoa_cap_cuu
-Lê Quốc Đức,10/2/1999,26,Nam,Nghệ An,"665 Điện Biên Phủ, Quận 3, TP. Hồ Chí Minh",999936127,1,khoa_cap_cuu
-Phan Thanh Vinh,9/9/1968,58,Nam,TP. Hồ Chí Minh,"308 Phan Chu Trinh, Quận 7, TP. Hồ Chí Minh",974108286,6,khoa_ngoai
-Nguyễn Quốc Đạt,3/2/1966,60,Nam,Bình Dương,"214 Hai Bà Trưng, Cửa Lò, Nghệ An",377565315,13,khoa_da_lieu
-Lý Khánh Hạnh,11/9/1969,56,Nữ,Hải Phòng,"578 Hoàng Văn Thụ, Quận 7, TP. Hồ Chí Minh",77542913,28,khoa_than_kinh
-Nguyễn Trọng Minh,7/19/1998,28,Nam,Khánh Hòa,"209 Lê Lợi, Đống Đa, Hà Nội",314015061,2,khoa_da_lieu
-Phạm Thanh Ngân,10/1/1969,56,Nữ,Hải Phòng,"36 Trần Hưng Đạo, Ninh Hòa, Khánh Hòa",809831106,29,khoa_da_lieu
-Võ Mỹ Linh,11/27/1998,27,Nữ,Thanh Hóa,"465 Phan Chu Trinh, Phú Xuân, Huế",367752803,2,khoa_nhi
-Đặng Thu Linh,12/31/1980,45,Nữ,Quảng Ninh,"339 Điện Biên Phủ, Hoàng Mai, Hà Nội",620916738,1,khoa_san
-Đỗ Hữu An,12/8/1982,43,Nam,Thanh Hóa,"531 Hai Bà Trưng, Bỉm Sơn, Thanh Hóa",256930475,16,khoa_mat
-Phạm Phương Nhung,5/19/1987,39,Nữ,Cần Thơ,"276 Điện Biên Phủ, Thuận Hóa, Huế",84662901,13,khoa_san
-Hồ Văn Phong,6/24/1979,47,Nam,Khánh Hòa,"535 Điện Biên Phủ, Cam Ranh, Khánh Hòa",540958365,15,khoa_noi
-Hồ Mỹ My,4/14/1996,30,Nữ,Đà Nẵng,"917 Nguyễn Trãi, Cẩm Phả, Quảng Ninh",497392586,6,khoa_mat
-Dương Quốc Dũng,4/3/1992,34,Nam,Huế,"748 Hai Bà Trưng, Long Khánh, Đồng Nai",208114868,11,khoa_mat
-Võ Mỹ Lan,5/27/1977,49,Nữ,Cần Thơ,"49 Nguyễn Trãi, Cái Răng, Cần Thơ",794034188,25,khoa_tim_mach
-Nguyễn Thanh Lan,8/8/1971,55,Nữ,Nghệ An,"512 Nguyễn Trãi, Cẩm Phả, Quảng Ninh",445215497,20,khoa_mat
-Đỗ Ngọc Trinh,7/18/1968,58,Nữ,Quảng Ninh,"104 Cách Mạng Tháng Tám, Thuận Hóa, Huế",749495378,7,tai_mui_hong
-Bùi Khánh Thảo,1/5/1962,64,Nữ,Đồng Nai,"590 Trần Hưng Đạo, Hoàng Mai, Hà Nội",773294387,34,khoa_tim_mach
-Phạm Khánh Phương,5/30/1968,58,Nữ,Khánh Hòa,"964 Hoàng Văn Thụ, Gò Vấp, TP. Hồ Chí Minh",196756384,28,khoa_than_kinh
-Phan Thanh Ngân,1/11/1991,35,Nữ,Quảng Ninh,"418 Cách Mạng Tháng Tám, Gò Vấp, TP. Hồ Chí Minh",501729536,11,tai_mui_hong
-Phan Kim Trang,8/13/1987,39,Nữ,Thanh Hóa,"480 Hai Bà Trưng, Bình Thạnh, TP. Hồ Chí Minh",62319669,3,khoa_ngoai
-Võ Hoàng Vinh,2/11/2000,26,Nam,TP. Hồ Chí Minh,"453 Cách Mạng Tháng Tám, Cam Ranh, Khánh Hòa",463234634,1,tai_mui_hong
-Nguyễn Khánh Thảo,11/28/1989,36,Nữ,Quảng Ninh,"731 Hoàng Văn Thụ, TP. Thanh Hóa, Thanh Hóa",848003666,2,khoa_nhi
-Phạm Mỹ Yến,11/28/1969,56,Nữ,Huế,"514 Phan Chu Trinh, Quỳnh Lưu, Nghệ An",415445942,21,tai_mui_hong
-Ngô Hữu Nam,8/3/1961,65,Nam,Thanh Hóa,"571 Nguyễn Trãi, Thuận An, Bình Dương",434105655,40,khoa_ngoai
-Bùi Thị Hạnh,12/31/1961,64,Nữ,Cần Thơ,"870 Trần Hưng Đạo, Bình Thạnh, TP. Hồ Chí Minh",913963743,27,tai_mui_hong
-Vũ Thu Anh,10/14/1976,49,Nữ,Hà Nội,"610 Lê Lợi, Ngũ Hành Sơn, Đà Nẵng",130734202,18,khoa_cap_cuu
-Nguyễn Thanh Hùng,10/15/1992,33,Nam,Huế,"215 Lê Lợi, Bình Thủy, Cần Thơ",991968586,4,khoa_than_kinh
-Dương Văn Đạt,2/25/1966,60,Nam,Huế,"59 Nguyễn Trãi, Bình Thủy, Cần Thơ",558940496,3,khoa_mat
-Ngô Hữu Nam,5/23/1963,63,Nam,Nghệ An,"617 Nguyễn Trãi, Thuận Hóa, Huế",665637274,11,khoa_than_kinh
-Vũ Hoàng Long,1/11/1975,51,Nam,Hải Phòng,"705 Nguyễn Trãi, Thuận An, Bình Dương",526657249,13,khoa_ngoai
-Đỗ Văn Hiếu,9/10/1999,27,Nam,Đà Nẵng,"825 Lê Lợi, Phú Xuân, Huế",19690314,2,khoa_than_kinh
-Nguyễn Kim Phương,7/23/1983,43,Nữ,Đà Nẵng,"47 Điện Biên Phủ, Thuận Hóa, Huế",448405872,18,tai_mui_hong
-Lý Gia Tuấn,12/15/1992,33,Nam,Thanh Hóa,"803 Phan Chu Trinh, Ninh Hòa, Khánh Hòa",69868791,4,khoa_cap_cuu
-Phan Trọng Vinh,7/1/1963,63,Nam,Hà Nội,"511 Điện Biên Phủ, Kiến An, Hải Phòng",673413516,13,khoa_noi
-Bùi Ngọc Trinh,9/29/1994,31,Nữ,Bình Dương,"847 Hai Bà Trưng, Cái Răng, Cần Thơ",806957953,5,khoa_ngoai
-Trần Thị Phương,8/25/1972,54,Nữ,Đà Nẵng,"902 Trần Hưng Đạo, Bình Thạnh, TP. Hồ Chí Minh",858527598,17,khoa_than_kinh
-Võ Đức Đức,8/31/1969,57,Nam,TP. Hồ Chí Minh,"317 Lê Lợi, Thanh Khê, Đà Nẵng",996183246,17,tai_mui_hong
-Bùi Mỹ My,6/22/1980,46,Nữ,Huế,"290 Phan Chu Trinh, Long Khánh, Đồng Nai",925979338,6,khoa_san
-Lý Bảo Vy,2/18/1969,57,Nữ,Bình Dương,"547 Lê Lợi, Sơn Trà, Đà Nẵng",545466582,11,khoa_cap_cuu
-Lê Quốc Khang,7/23/1986,40,Nam,TP. Hồ Chí Minh,"687 Hoàng Văn Thụ, Ninh Kiều, Cần Thơ",374171317,13,khoa_noi
-Bùi Minh Hùng,3/3/1987,39,Nam,Thanh Hóa,"941 Lý Thường Kiệt, Ninh Kiều, Cần Thơ",8564308,12,khoa_than_kinh
-Bùi Thanh My,3/19/1993,33,Nữ,Bình Dương,"433 Lê Lợi, Uông Bí, Quảng Ninh",560373664,7,khoa_noi
-Lý Diệu Trang,4/24/1969,57,Nữ,Quảng Ninh,"656 Nguyễn Huệ, Thủ Dầu Một, Bình Dương",613938071,16,khoa_noi
-Lý Bảo Vy,2/17/1988,38,Nữ,Hải Phòng,"846 Trần Hưng Đạo, Đống Đa, Hà Nội",618610575,2,khoa_noi
-Lê Thị Nga,7/30/2000,26,Nữ,Quảng Ninh,"400 Trần Hưng Đạo, Ô Môn, Cần Thơ",63456109,2,khoa_cap_cuu
-Nguyễn Gia Quân,3/2/1981,45,Nam,Hải Phòng,"783 Cách Mạng Tháng Tám, Ngô Quyền, Hải Phòng",634044265,14,khoa_san
-Nguyễn Gia Đức,7/15/1982,44,Nam,Đà Nẵng,"379 Lê Lợi, Quận 1, TP. Hồ Chí Minh",971248119,11,tai_mui_hong
-Huỳnh Ngọc Mai,12/26/1999,26,Nữ,Bình Dương,"146 Lý Thường Kiệt, Hoàng Mai, Hà Nội",766981757,3,khoa_tim_mach
-Lê Gia Quân,6/18/1998,28,Nam,Thanh Hóa,"223 Hoàng Văn Thụ, Cẩm Phả, Quảng Ninh",226704317,5,khoa_tim_mach
-Huỳnh Ngọc Thảo,11/20/1980,45,Nữ,Quảng Ninh,"260 Cách Mạng Tháng Tám, Bình Thạnh, TP. Hồ Chí Minh",990538345,11,khoa_noi
-Huỳnh Ngọc Nhung,12/6/1985,40,Nữ,Hải Phòng,"977 Lý Thường Kiệt, Bình Thủy, Cần Thơ",846713888,12,khoa_san
-Đỗ Thị Linh,1/28/1992,34,Nữ,Đà Nẵng,"457 Hai Bà Trưng, Thuận Hóa, Huế",285227769,5,khoa_cap_cuu
-Võ Diệu Hạnh,2/11/1984,42,Nữ,Khánh Hòa,"729 Hai Bà Trưng, Bình Thạnh, TP. Hồ Chí Minh",271033383,6,khoa_cap_cuu
-Bùi Thanh Trang,10/5/1963,62,Nữ,Bình Dương,"224 Nguyễn Huệ, Phú Xuân, Huế",899795219,27,khoa_san
-Hồ Hữu Minh,6/1/1991,35,Nam,Hà Nội,"299 Điện Biên Phủ, Hồng Bàng, Hải Phòng",993027476,12,khoa_san
-Đặng Hoàng Đức,5/28/1995,31,Nam,TP. Hồ Chí Minh,"291 Trần Hưng Đạo, Cam Ranh, Khánh Hòa",731091668,2,tai_mui_hong
-Hoàng Kim Anh,1/25/1994,32,Nữ,Đồng Nai,"460 Lê Lợi, Thủ Đức, TP. Hồ Chí Minh",63143644,5,khoa_nhi
-Võ Trọng Sơn,2/4/1974,52,Nam,Nghệ An,"649 Điện Biên Phủ, Quỳnh Lưu, Nghệ An",989203775,28,khoa_than_kinh
-Hoàng Thu Châu,3/10/1991,35,Nữ,Huế,"190 Trần Hưng Đạo, Bình Thủy, Cần Thơ",518470577,7,khoa_mat
-Phan Thanh Minh,6/23/1992,34,Nam,Nghệ An,"361 Hai Bà Trưng, Hai Bà Trưng, Hà Nội",521815708,4,khoa_noi
-Lý Kim Trang,3/19/1964,62,Nữ,Thanh Hóa,"94 Lê Lợi, Dĩ An, Bình Dương",903094095,14,khoa_cap_cuu
-Huỳnh Mỹ Phương,7/1/1975,51,Nữ,Quảng Ninh,"888 Hai Bà Trưng, Ninh Kiều, Cần Thơ",520797921,20,khoa_tim_mach
-Vũ Đức Dũng,8/29/1990,36,Nam,Nghệ An,"958 Điện Biên Phủ, Diễn Châu, Nghệ An",931455761,10,khoa_tim_mach
-Đặng Minh Dũng,4/1/1994,32,Nam,Cần Thơ,"773 Lý Thường Kiệt, Phú Xuân, Huế",624922171,3,khoa_da_lieu
-Ngô Thanh Hùng,5/21/1970,56,Nam,Hà Nội,"368 Hai Bà Trưng, Bình Thủy, Cần Thơ",881281967,24,tai_mui_hong
-Phạm Thu Nga,3/28/1981,45,Nữ,Đồng Nai,"485 Phan Chu Trinh, Hải Châu, Đà Nẵng",622643472,10,khoa_noi
-Lý Thanh Thảo,10/20/1992,33,Nữ,Thanh Hóa,"973 Điện Biên Phủ, Cái Răng, Cần Thơ",530199187,4,khoa_san
-Dương Mỹ Hạnh,4/21/1980,46,Nữ,Hải Phòng,"147 Cách Mạng Tháng Tám, Long Khánh, Đồng Nai",732394039,6,khoa_noi
-Hồ Hữu Sơn,12/11/1964,61,Nam,Đà Nẵng,"771 Trần Hưng Đạo, Hải Châu, Đà Nẵng",42342310,24,khoa_noi
-Hồ Diệu Linh,11/14/1982,43,Nữ,Hải Phòng,"810 Lý Thường Kiệt, Quận 7, TP. Hồ Chí Minh",62250490,16,khoa_tim_mach
-Võ Đức Việt,1/6/1986,40,Nam,Khánh Hòa,"54 Lê Lợi, Đống Đa, Hà Nội",345706155,17,khoa_nhi
-Hồ Hoàng Hải,2/6/1964,62,Nam,Đà Nẵng,"930 Lê Lợi, Lê Chân, Hải Phòng",276112045,16,khoa_ngoai
-Võ Trọng Việt,9/24/1979,46,Nam,Hải Phòng,"388 Hai Bà Trưng, Hải Châu, Đà Nẵng",778054126,13,tai_mui_hong
-Phạm Văn Tuấn,9/30/1974,51,Nam,Cần Thơ,"467 Cách Mạng Tháng Tám, Quận 1, TP. Hồ Chí Minh",344353318,9,khoa_mat
-Hoàng Mỹ Anh,2/11/1982,44,Nữ,Nghệ An,"230 Trần Hưng Đạo, Kiến An, Hải Phòng",422465696,1,khoa_cap_cuu
-Ngô Gia Dũng,9/16/1972,54,Nam,Đà Nẵng,"107 Điện Biên Phủ, TP. Thanh Hóa, Thanh Hóa",700744065,29,khoa_mat
-Phan Thanh Bình,5/29/1995,31,Nam,TP. Hồ Chí Minh,"271 Lê Lợi, Bình Thạnh, TP. Hồ Chí Minh",332490451,2,khoa_cap_cuu
-Bùi Văn An,4/4/1989,37,Nam,Quảng Ninh,"403 Nguyễn Huệ, Vinh, Nghệ An",996556212,9,khoa_mat
-Đặng Mỹ Yến,8/2/1992,34,Nữ,Huế,"438 Hoàng Văn Thụ, Đống Đa, Hà Nội",244624967,10,khoa_san
-Đỗ Văn Đạt,6/8/1965,61,Nam,Quảng Ninh,"898 Hoàng Văn Thụ, Ngô Quyền, Hải Phòng",559174875,12,khoa_than_kinh
-Phạm Xuân Hiếu,6/9/1999,27,Nam,Cần Thơ,"171 Trần Hưng Đạo, Biên Hòa, Đồng Nai",566348338,3,khoa_nhi
-Trần Phương My,3/16/1985,41,Nữ,Đồng Nai,"495 Phan Chu Trinh, Bình Thủy, Cần Thơ",365302073,4,khoa_da_lieu
-Trần Xuân An,10/12/1969,56,Nam,Đồng Nai,"728 Nguyễn Huệ, TP. Thanh Hóa, Thanh Hóa",905471140,23,khoa_cap_cuu
-Vũ Văn Anh,6/30/1970,56,Nam,Cần Thơ,"552 Trần Hưng Đạo, Thanh Khê, Đà Nẵng",177761810,17,khoa_nhi
-Võ Thị Yến,9/17/1976,50,Nữ,TP. Hồ Chí Minh,"515 Cách Mạng Tháng Tám, Biên Hòa, Đồng Nai",586889187,6,khoa_san
-Huỳnh Đức Vinh,8/19/1985,41,Nam,Hải Phòng,"711 Điện Biên Phủ, Biên Hòa, Đồng Nai",56650416,1,khoa_noi
-Võ Gia Phong,8/25/1999,27,Nam,Bình Dương,"778 Nguyễn Huệ, Quỳnh Lưu, Nghệ An",570758163,2,khoa_san
-Lý Khánh Trinh,11/5/1999,26,Nữ,Bình Dương,"738 Hoàng Văn Thụ, Diễn Châu, Nghệ An",742252326,2,tai_mui_hong
-Huỳnh Minh Khang,10/4/1994,31,Nam,TP. Hồ Chí Minh,"18 Cách Mạng Tháng Tám, Uông Bí, Quảng Ninh",508213744,2,khoa_ngoai
-Đặng Gia Hải,6/3/1993,33,Nam,Đà Nẵng,"820 Lê Lợi, Quận 3, TP. Hồ Chí Minh",395808266,5,khoa_da_lieu
-Lê Đức An,12/19/1982,43,Nam,Thanh Hóa,"191 Lê Lợi, Gò Vấp, TP. Hồ Chí Minh",869033233,15,tai_mui_hong
-Đặng Minh Hải,8/28/1992,34,Nam,Nghệ An,"67 Hoàng Văn Thụ, Hoàng Mai, Hà Nội",860605825,6,khoa_tim_mach
-Võ Hoàng Anh,8/22/1974,52,Nam,Đồng Nai,"645 Hoàng Văn Thụ, Biên Hòa, Đồng Nai",174490374,1,khoa_ngoai
-Võ Minh Việt,1/5/1992,34,Nam,Thanh Hóa,"738 Lê Lợi, Phú Xuân, Huế",677842409,4,khoa_noi
-Hồ Minh Sơn,10/28/1990,35,Nam,Cần Thơ,"712 Nguyễn Trãi, Hai Bà Trưng, Hà Nội",795672622,5,khoa_cap_cuu
-Lý Xuân Thành,2/27/1993,33,Nam,Thanh Hóa,"253 Hai Bà Trưng, Thủ Dầu Một, Bình Dương",186124638,6,khoa_than_kinh
-Bùi Trọng Hải,7/6/1962,64,Nam,Nghệ An,"980 Nguyễn Huệ, Uông Bí, Quảng Ninh",553025852,8,khoa_cap_cuu
-Nguyễn Quốc Anh,3/22/1963,63,Nam,Nghệ An,"763 Trần Hưng Đạo, Quỳnh Lưu, Nghệ An",703784788,23,khoa_ngoai
-Lê Phương Thảo,6/23/1995,31,Nữ,Khánh Hòa,"234 Lý Thường Kiệt, Thủ Dầu Một, Bình Dương",687514476,8,khoa_da_lieu
-Hồ Bảo Anh,6/29/1979,47,Nữ,Cần Thơ,"831 Nguyễn Trãi, Trảng Bom, Đồng Nai",947129604,16,khoa_cap_cuu
-Lê Hữu Đạt,7/25/1999,27,Nam,Đồng Nai,"860 Hai Bà Trưng, Ninh Hòa, Khánh Hòa",854873500,4,khoa_noi
-Lý Trọng Khang,2/17/1967,59,Nam,Đà Nẵng,"490 Trần Hưng Đạo, TP. Thanh Hóa, Thanh Hóa",303891562,12,khoa_ngoai
-Huỳnh Kim Vy,7/2/1981,45,Nữ,Huế,"784 Lý Thường Kiệt, Ba Đình, Hà Nội",84488967,18,khoa_da_lieu
-Phan Phương Phương,5/25/1971,55,Nữ,Hà Nội,"548 Hoàng Văn Thụ, Cái Răng, Cần Thơ",81332368,22,khoa_cap_cuu
-Lê Hữu Dũng,4/12/1969,57,Nam,Cần Thơ,"451 Hoàng Văn Thụ, Quận 3, TP. Hồ Chí Minh",78553353,26,khoa_cap_cuu
-Huỳnh Phương Quỳnh,6/6/1977,49,Nữ,Khánh Hòa,"417 Nguyễn Huệ, Ba Đình, Hà Nội",904329213,3,khoa_cap_cuu
-Nguyễn Bảo Ngân,10/25/1991,34,Nữ,Hải Phòng,"62 Lý Thường Kiệt, Trảng Bom, Đồng Nai",265778781,6,khoa_noi
-Trần Quốc An,8/1/1998,28,Nam,Huế,"528 Điện Biên Phủ, Hải Châu, Đà Nẵng",740662928,3,khoa_noi
-Phạm Kim Nhung,6/7/1976,50,Nữ,Bình Dương,"157 Phan Chu Trinh, Cẩm Phả, Quảng Ninh",347480944,15,khoa_cap_cuu
-Vũ Hoàng Anh,9/17/1973,53,Nam,Quảng Ninh,"473 Nguyễn Huệ, Đống Đa, Hà Nội",435132121,11,khoa_nhi
-Phạm Mỹ My,1/17/1977,49,Nữ,Thanh Hóa,"49 Lê Lợi, Ninh Hòa, Khánh Hòa",889827051,23,khoa_mat
-Phan Bảo Quỳnh,5/22/1969,57,Nữ,Đồng Nai,"730 Lý Thường Kiệt, Vinh, Nghệ An",933314943,21,khoa_tim_mach
-Phạm Gia An,3/19/1991,35,Nam,Khánh Hòa,"189 Hoàng Văn Thụ, Ô Môn, Cần Thơ",267026486,6,khoa_ngoai
-Vũ Hoàng Khang,9/14/1988,38,Nam,Khánh Hòa,"493 Nguyễn Trãi, Ba Đình, Hà Nội",294791206,2,khoa_san
-Đỗ Thanh An,4/25/1992,34,Nam,Cần Thơ,"184 Trần Hưng Đạo, Kiến An, Hải Phòng",210212887,9,khoa_noi
-Phan Minh Hiếu,8/31/1997,29,Nam,Đồng Nai,"486 Trần Hưng Đạo, Sơn Trà, Đà Nẵng",376719937,4,tai_mui_hong
-Lý Trọng Minh,9/7/1991,35,Nam,TP. Hồ Chí Minh,"740 Nguyễn Trãi, Cái Răng, Cần Thơ",362030290,1,tai_mui_hong
-Đỗ Hữu An,4/26/1986,40,Nam,Hà Nội,"905 Trần Hưng Đạo, Thuận An, Bình Dương",985402794,12,tai_mui_hong
-Ngô Gia Khang,2/23/1979,47,Nam,Khánh Hòa,"674 Điện Biên Phủ, Thanh Khê, Đà Nẵng",424020344,13,khoa_san
-Lê Quốc Minh,4/23/1969,57,Nam,Đồng Nai,"868 Lý Thường Kiệt, TP. Thanh Hóa, Thanh Hóa",892775719,4,khoa_san
-Ngô Đức Anh,6/6/1974,52,Nam,Cần Thơ,"800 Nguyễn Huệ, Sầm Sơn, Thanh Hóa",406692624,11,khoa_nhi
-Võ Khánh Hương,4/14/1995,31,Nữ,Thanh Hóa,"444 Lê Lợi, Diễn Châu, Nghệ An",519482983,8,tai_mui_hong
-Hoàng Hoàng Hải,7/8/1975,51,Nam,Cần Thơ,"596 Trần Hưng Đạo, TP. Thanh Hóa, Thanh Hóa",548808220,1,khoa_da_lieu
-Dương Xuân An,10/30/1965,60,Nam,Khánh Hòa,"476 Phan Chu Trinh, Hạ Long, Quảng Ninh",766175527,32,khoa_than_kinh
-Huỳnh Phương Lan,5/4/1982,44,Nữ,Đồng Nai,"161 Cách Mạng Tháng Tám, Quỳnh Lưu, Nghệ An",309287436,10,khoa_da_lieu
-Dương Văn Việt,3/21/1994,32,Nam,Thanh Hóa,"989 Cách Mạng Tháng Tám, Nha Trang, Khánh Hòa",299743513,6,khoa_da_lieu
-Huỳnh Bảo Nga,10/26/1980,45,Nữ,Đồng Nai,"46 Hoàng Văn Thụ, Kiến An, Hải Phòng",791385067,15,khoa_mat
-Hồ Gia Vinh,7/29/1985,41,Nam,Khánh Hòa,"3 Lý Thường Kiệt, Quận 7, TP. Hồ Chí Minh",807209838,13,tai_mui_hong
-Đặng Diệu Nga,1/30/1998,28,Nữ,Khánh Hòa,"177 Hoàng Văn Thụ, Trảng Bom, Đồng Nai",657559787,4,khoa_cap_cuu
-Võ Gia Đạt,3/12/1986,40,Nam,Đồng Nai,"358 Phan Chu Trinh, Cẩm Phả, Quảng Ninh",915086752,11,khoa_tim_mach
-Phan Quốc Long,9/10/2000,26,Nam,Cần Thơ,"598 Lê Lợi, Sầm Sơn, Thanh Hóa",198268910,1,khoa_noi
-Lê Đức Hùng,10/9/1992,33,Nam,TP. Hồ Chí Minh,"182 Lý Thường Kiệt, Kiến An, Hải Phòng",344313357,1,khoa_cap_cuu
-Vũ Thanh Hiếu,6/10/1981,45,Nam,Quảng Ninh,"854 Trần Hưng Đạo, Vinh, Nghệ An",590631874,10,khoa_san
-Võ Văn Anh,5/22/1980,46,Nam,Huế,"474 Hai Bà Trưng, Sơn Trà, Đà Nẵng",929699160,6,tai_mui_hong
-Bùi Ngọc Hà,3/16/1962,64,Nữ,Nghệ An,"468 Cách Mạng Tháng Tám, Sơn Trà, Đà Nẵng",660131059,40,khoa_nhi
-Bùi Đức Quân,10/28/1989,36,Nam,Nghệ An,"468 Lý Thường Kiệt, Kiến An, Hải Phòng",319745224,1,khoa_nhi
-Võ Diệu Ngân,3/1/1976,50,Nữ,Thanh Hóa,"744 Lý Thường Kiệt, Trảng Bom, Đồng Nai",490710303,16,khoa_nhi
-Trần Kim Hạnh,3/29/1984,42,Nữ,Cần Thơ,"430 Phan Chu Trinh, Trảng Bom, Đồng Nai",470741470,17,khoa_mat
-Ngô Trọng Đức,3/21/1966,60,Nam,Thanh Hóa,"640 Lý Thường Kiệt, Uông Bí, Quảng Ninh",949475278,12,khoa_than_kinh
-Lê Phương Mai,4/25/1992,34,Nữ,Thanh Hóa,"86 Lý Thường Kiệt, Trảng Bom, Đồng Nai",596196342,9,khoa_noi
-Hoàng Mỹ Linh,8/15/1965,61,Nữ,Quảng Ninh,"26 Phan Chu Trinh, Ninh Kiều, Cần Thơ",444650630,37,khoa_da_lieu
-Ngô Khánh Yến,4/22/1978,48,Nữ,Hà Nội,"444 Hai Bà Trưng, Long Khánh, Đồng Nai",769284786,5,khoa_nhi
-Phan Khánh Mai,5/30/1963,63,Nữ,Đồng Nai,"93 Điện Biên Phủ, Thuận An, Bình Dương",257286670,5,khoa_mat
-Phan Phương Trang,10/11/1999,26,Nữ,Cần Thơ,"802 Nguyễn Huệ, Lê Chân, Hải Phòng",53679202,3,khoa_cap_cuu
-Hoàng Diệu Lan,8/9/1991,35,Nữ,Quảng Ninh,"603 Hai Bà Trưng, Ba Đình, Hà Nội",139478904,2,khoa_cap_cuu
-Trần Quốc Đạt,9/24/1988,37,Nam,Hà Nội,"242 Điện Biên Phủ, Bình Thủy, Cần Thơ",545766086,9,tai_mui_hong
-Ngô Phương Vy,11/27/1972,53,Nữ,Cần Thơ,"217 Phan Chu Trinh, Dĩ An, Bình Dương",331414294,1,khoa_nhi
-Huỳnh Thanh Long,3/4/1971,55,Nam,Khánh Hòa,"610 Cách Mạng Tháng Tám, Hai Bà Trưng, Hà Nội",629912094,12,khoa_tim_mach
-Dương Thu Trang,11/15/1987,38,Nữ,Cần Thơ,"15 Nguyễn Trãi, Trảng Bom, Đồng Nai",687690333,11,khoa_cap_cuu
-Võ Xuân Khang,8/5/1987,39,Nam,Hà Nội,"161 Trần Hưng Đạo, Cẩm Phả, Quảng Ninh",986466224,10,tai_mui_hong
-Bùi Hoàng Đức,11/12/1991,34,Nam,Hà Nội,"127 Lý Thường Kiệt, Thuận An, Bình Dương",125201959,4,khoa_tim_mach
-Huỳnh Thanh Nam,9/26/1983,42,Nam,Huế,"655 Nguyễn Huệ, Sầm Sơn, Thanh Hóa",179060851,16,khoa_ngoai
-Vũ Hữu Bình,2/14/1969,57,Nam,Bình Dương,"966 Cách Mạng Tháng Tám, Ngũ Hành Sơn, Đà Nẵng",401125802,34,khoa_da_lieu
-Trần Trọng An,6/25/1979,47,Nam,Khánh Hòa,"127 Nguyễn Huệ, Dĩ An, Bình Dương",396241160,13,khoa_san
-Đỗ Thu Nhung,12/25/1993,32,Nữ,Hà Nội,"246 Hai Bà Trưng, Gò Vấp, TP. Hồ Chí Minh",642825970,5,khoa_ngoai
-Dương Quốc Đức,9/29/1971,54,Nam,Hà Nội,"617 Nguyễn Trãi, Hồng Bàng, Hải Phòng",576036530,29,khoa_nhi
-Đặng Diệu My,5/7/1983,43,Nữ,Bình Dương,"537 Hai Bà Trưng, Quận 7, TP. Hồ Chí Minh",561227919,20,khoa_than_kinh
-Dương Bảo Giang,3/5/1973,53,Nữ,Nghệ An,"378 Phan Chu Trinh, Phú Xuân, Huế",316965797,17,khoa_than_kinh
-Vũ Trọng Hải,8/1/1990,36,Nam,Bình Dương,"543 Hoàng Văn Thụ, Thuận Hóa, Huế",478304912,3,khoa_cap_cuu
-Lý Diệu My,6/26/1963,63,Nữ,Bình Dương,"489 Phan Chu Trinh, Trảng Bom, Đồng Nai",39939586,9,khoa_ngoai
-Hoàng Khánh Hương,3/21/1974,52,Nữ,TP. Hồ Chí Minh,"738 Phan Chu Trinh, Thuận An, Bình Dương",110208057,17,khoa_da_lieu
-Lý Thị Trinh,8/12/1965,61,Nữ,Quảng Ninh,"225 Lê Lợi, Bỉm Sơn, Thanh Hóa",538181362,14,khoa_than_kinh
-Hồ Ngọc Linh,7/4/1991,35,Nữ,Đà Nẵng,"729 Lý Thường Kiệt, Cam Ranh, Khánh Hòa",549163502,9,khoa_san
-Dương Xuân Việt,12/25/1968,57,Nam,Hà Nội,"494 Lê Lợi, Sơn Trà, Đà Nẵng",784000353,5,khoa_nhi
-Trần Phương Anh,10/28/1980,45,Nữ,Thanh Hóa,"213 Phan Chu Trinh, Ngô Quyền, Hải Phòng",846101317,18,khoa_san
-Nguyễn Minh Anh,9/29/2000,25,Nam,TP. Hồ Chí Minh,"772 Nguyễn Trãi, Sơn Trà, Đà Nẵng",397498518,1,khoa_ngoai
-Phạm Xuân Phong,12/22/1970,55,Nam,Khánh Hòa,"344 Trần Hưng Đạo, Trảng Bom, Đồng Nai",766274954,28,khoa_tim_mach
-Ngô Phương Thảo,11/2/1968,57,Nữ,Hà Nội,"279 Hoàng Văn Thụ, Nha Trang, Khánh Hòa",290571072,19,khoa_nhi
-Lê Gia Đức,1/21/1993,33,Nam,TP. Hồ Chí Minh,"285 Hai Bà Trưng, Dĩ An, Bình Dương",970449891,2,khoa_than_kinh
-Phạm Phương Hạnh,3/10/1976,50,Nữ,TP. Hồ Chí Minh,"476 Cách Mạng Tháng Tám, Ô Môn, Cần Thơ",420458637,19,khoa_than_kinh
-Huỳnh Thu Trinh,3/18/1967,59,Nữ,Đồng Nai,"934 Lê Lợi, Hai Bà Trưng, Hà Nội",254381885,25,khoa_ngoai
-Trần Mỹ Hà,6/26/1974,52,Nữ,Nghệ An,"251 Hoàng Văn Thụ, Uông Bí, Quảng Ninh",518021910,5,khoa_nhi
-Trần Hữu Vinh,9/2/1991,35,Nam,Quảng Ninh,"860 Nguyễn Huệ, Bình Thạnh, TP. Hồ Chí Minh",669324463,6,khoa_mat
-Trần Khánh Nhung,12/29/1981,44,Nữ,Đồng Nai,"416 Nguyễn Trãi, Kiến An, Hải Phòng",597116458,10,khoa_san
-Bùi Gia Khang,1/1/1999,27,Nam,TP. Hồ Chí Minh,"182 Lê Lợi, Quận 1, TP. Hồ Chí Minh",173173851,1,khoa_da_lieu
-Phạm Phương Trinh,7/16/1984,42,Nữ,Quảng Ninh,"573 Hoàng Văn Thụ, Ninh Hòa, Khánh Hòa",812036162,14,khoa_san
-Phan Quốc Dũng,3/26/1994,32,Nam,TP. Hồ Chí Minh,"501 Phan Chu Trinh, Cầu Giấy, Hà Nội",892655199,3,khoa_san
-Dương Phương Nhung,3/6/1982,44,Nữ,Hải Phòng,"889 Lý Thường Kiệt, Cái Răng, Cần Thơ",807715839,3,khoa_tim_mach
-Lê Xuân Anh,3/22/1979,47,Nam,Bình Dương,"539 Điện Biên Phủ, Cẩm Phả, Quảng Ninh",3925650,1,khoa_ngoai
-Trần Thu Lan,4/13/1994,32,Nữ,Cần Thơ,"976 Trần Hưng Đạo, Thanh Khê, Đà Nẵng",917912064,2,khoa_than_kinh
-Phan Phương Linh,6/28/1962,64,Nữ,Cần Thơ,"28 Phan Chu Trinh, Quận 7, TP. Hồ Chí Minh",616359067,27,khoa_noi
-Nguyễn Bảo Châu,1/11/1996,30,Nữ,Cần Thơ,"746 Điện Biên Phủ, Thanh Khê, Đà Nẵng",461306853,3,khoa_noi
-Trần Bảo Phương,12/22/1980,45,Nữ,Bình Dương,"202 Hai Bà Trưng, Biên Hòa, Đồng Nai",442390439,2,khoa_tim_mach
-Huỳnh Thanh Trang,8/21/1977,49,Nữ,Bình Dương,"260 Cách Mạng Tháng Tám, Phú Xuân, Huế",674740027,4,khoa_cap_cuu
-Đỗ Diệu Châu,5/2/1994,32,Nữ,Đà Nẵng,"681 Nguyễn Trãi, Hạ Long, Quảng Ninh",971593392,7,khoa_cap_cuu
-Bùi Ngọc Vy,11/20/1992,33,Nữ,Khánh Hòa,"744 Nguyễn Trãi, Quận 7, TP. Hồ Chí Minh",927939177,6,khoa_nhi
-Vũ Xuân Sơn,1/9/1962,64,Nam,Thanh Hóa,"136 Trần Hưng Đạo, Thanh Khê, Đà Nẵng",282306461,4,khoa_mat
-Hoàng Văn Hiếu,5/13/1987,39,Nam,Hải Phòng,"528 Cách Mạng Tháng Tám, Hồng Bàng, Hải Phòng",439893348,9,khoa_than_kinh
-Vũ Ngọc Hương,9/22/1997,28,Nữ,Đà Nẵng,"424 Hoàng Văn Thụ, Quận 7, TP. Hồ Chí Minh",173290019,5,khoa_tim_mach
-Võ Hoàng Sơn,10/16/1974,51,Nam,Hải Phòng,"671 Trần Hưng Đạo, Vinh, Nghệ An",625642396,13,khoa_mat
-Đỗ Phương Quỳnh,7/8/1993,33,Nữ,Khánh Hòa,"552 Trần Hưng Đạo, Hồng Bàng, Hải Phòng",762725374,3,khoa_da_lieu
-Vũ Hoàng Tuấn,12/9/1990,35,Nam,Đà Nẵng,"699 Hoàng Văn Thụ, Dĩ An, Bình Dương",688063770,12,khoa_cap_cuu
-Hồ Hoàng Đạt,12/21/1977,48,Nam,Thanh Hóa,"626 Điện Biên Phủ, Thuận Hóa, Huế",597501832,14,tai_mui_hong
-Nguyễn Minh Thành,1/17/1967,59,Nam,Bình Dương,"926 Phan Chu Trinh, Trảng Bom, Đồng Nai",903246725,6,khoa_da_lieu
-Phan Phương Mai,1/11/1968,58,Nữ,Cần Thơ,"345 Hoàng Văn Thụ, Thuận Hóa, Huế",886172728,16,tai_mui_hong
-Phạm Minh Việt,3/13/1989,37,Nam,Thanh Hóa,"296 Hai Bà Trưng, Cửa Lò, Nghệ An",977648535,14,khoa_cap_cuu
-Phạm Minh Việt,3/8/1968,58,Nam,Bình Dương,"141 Cách Mạng Tháng Tám, Uông Bí, Quảng Ninh",378102747,8,tai_mui_hong
-Hoàng Hoàng Đức,4/11/1970,56,Nam,Quảng Ninh,"765 Trần Hưng Đạo, Vinh, Nghệ An",912463385,29,khoa_tim_mach
-Dương Ngọc Linh,1/16/1994,32,Nữ,Huế,"568 Hai Bà Trưng, Sơn Trà, Đà Nẵng",28961121,1,khoa_nhi
-Huỳnh Mỹ Yến,4/5/1972,54,Nữ,Quảng Ninh,"833 Phan Chu Trinh, Quỳnh Lưu, Nghệ An",886317162,30,khoa_nhi
-Dương Trọng Hiếu,1/9/1979,47,Nam,Khánh Hòa,"114 Cách Mạng Tháng Tám, Diễn Châu, Nghệ An",799532103,3,khoa_noi
-Vũ Văn Phong,2/13/1964,62,Nam,Hải Phòng,"750 Hai Bà Trưng, Cam Ranh, Khánh Hòa",936700139,39,khoa_mat
-Võ Phương Linh,1/1/1988,38,Nữ,Thanh Hóa,"889 Hoàng Văn Thụ, Long Khánh, Đồng Nai",813707975,15,khoa_san
-Vũ Văn Phong,2/7/1978,48,Nam,Đà Nẵng,"192 Điện Biên Phủ, Trảng Bom, Đồng Nai",248914419,15,khoa_tim_mach
-Phạm Thanh Bình,9/11/1963,63,Nam,Hà Nội,"253 Lý Thường Kiệt, Thuận Hóa, Huế",643787308,2,khoa_cap_cuu
-Đỗ Phương Ngân,6/22/1981,45,Nữ,Quảng Ninh,"179 Lý Thường Kiệt, Bình Thủy, Cần Thơ",398698918,21,khoa_da_lieu
-Huỳnh Quốc Thành,2/29/2000,26,Nam,Hải Phòng,"922 Nguyễn Trãi, Trảng Bom, Đồng Nai",51331123,3,khoa_da_lieu
-Hoàng Hoàng Khang,6/17/1995,31,Nam,Hải Phòng,"717 Nguyễn Trãi, Biên Hòa, Đồng Nai",837086648,5,khoa_da_lieu
-Hoàng Văn Minh,11/21/1992,33,Nam,Hải Phòng,"73 Trần Hưng Đạo, Quận 1, TP. Hồ Chí Minh",284324760,3,khoa_nhi
-Bùi Quốc Quân,12/10/1976,49,Nam,Bình Dương,"508 Điện Biên Phủ, Cửa Lò, Nghệ An",336250698,19,khoa_tim_mach
-Phạm Xuân Hùng,7/5/1984,42,Nam,Bình Dương,"731 Lý Thường Kiệt, Quận 3, TP. Hồ Chí Minh",745990410,5,khoa_ngoai
-Bùi Mỹ Quỳnh,6/19/1970,56,Nữ,Bình Dương,"44 Lê Lợi, Ninh Kiều, Cần Thơ",375187281,23,khoa_than_kinh
+Phạm Văn Đức,3/8/1999,27,Nam,Hà Nội,"150 Phan Chu Trinh, Nha Trang, Khánh Hòa",931924806,4,Khoa Ngoai
+Hồ Thanh Phong,1/1/1970,56,Nam,Thanh Hóa,"568 Phan Chu Trinh, Thuận An, Bình Dương",925368981,17,Khoa Mat
+Huỳnh Phương Nhung,9/26/1977,48,Nữ,Huế,"106 Nguyễn Huệ, Dĩ An, Bình Dương",736894215,20,Khoa Tai Mui Hong
+Bùi Mỹ Quỳnh,6/12/1991,35,Nữ,Nghệ An,"233 Điện Biên Phủ, Cái Răng, Cần Thơ",662651481,2,Khoa San
+Phan Thu Yến,5/28/1987,39,Nữ,Huế,"495 Lê Lợi, Thuận Hóa, Huế",799440943,14,Khoa San
+Trần Diệu Nga,12/14/1981,44,Nữ,TP. Hồ Chí Minh,"854 Hoàng Văn Thụ, Hạ Long, Quảng Ninh",389481181,1,Khoa Than kinh
+Lý Thị Trang,2/7/1993,33,Nữ,Quảng Ninh,"9 Hai Bà Trưng, Thuận An, Bình Dương",361739412,5,Khoa Tai Mui Hong
+Ngô Thanh Thảo,11/4/1988,37,Nữ,Đà Nẵng,"377 Lý Thường Kiệt, Thanh Khê, Đà Nẵng",174911054,4,Khoa Da lieu
+Dương Thị Vy,2/15/1967,59,Nữ,Cần Thơ,"690 Trần Hưng Đạo, Nha Trang, Khánh Hòa",597178087,2,Khoa Cap cuu
+Võ Bảo Hà,12/25/1977,48,Nữ,Khánh Hòa,"776 Lê Lợi, Quận 3, TP. Hồ Chí Minh",701913856,17,Khoa Ngoai
+Nguyễn Kim Anh,7/7/1984,42,Nữ,Cần Thơ,"726 Nguyễn Huệ, Thuận An, Bình Dương",172753601,1,Khoa Mat
+Trần Ngọc My,12/19/1960,65,Nữ,Thanh Hóa,"785 Cách Mạng Tháng Tám, Cẩm Phả, Quảng Ninh",618724591,1,Khoa Ngoai
+Lý Trọng Thành,9/3/1997,29,Nam,Cần Thơ,"471 Hoàng Văn Thụ, Thuận Hóa, Huế",719260257,4,Khoa Cap cuu
+Phạm Hoàng Tuấn,6/23/1964,62,Nam,Đà Nẵng,"741 Điện Biên Phủ, Ngũ Hành Sơn, Đà Nẵng",726807822,39,Khoa Tai Mui Hong
+Dương Bảo Mai,6/21/1984,42,Nữ,Hải Phòng,"636 Cách Mạng Tháng Tám, Thuận Hóa, Huế",208672343,14,Khoa Cap cuu
+Phan Quốc Đức,3/31/1983,43,Nam,Nghệ An,"599 Hai Bà Trưng, Long Khánh, Đồng Nai",687030447,14,Khoa Than kinh
+Đỗ Phương Châu,11/6/1972,53,Nữ,Nghệ An,"449 Nguyễn Trãi, Dĩ An, Bình Dương",374204007,11,Khoa Ngoai
+Vũ Ngọc Giang,11/5/1979,46,Nữ,Đà Nẵng,"465 Trần Hưng Đạo, TP. Thanh Hóa, Thanh Hóa",970045771,6,Khoa San
+Lý Trọng Khang,12/22/1963,62,Nam,Nghệ An,"284 Trần Hưng Đạo, Hoàng Mai, Hà Nội",361416309,11,Khoa San
+Nguyễn Bảo Nhung,4/25/1993,33,Nữ,Thanh Hóa,"684 Phan Chu Trinh, Sầm Sơn, Thanh Hóa",337663279,1,Khoa Mat
+Phan Ngọc Trinh,5/15/1992,34,Nữ,Khánh Hòa,"395 Nguyễn Trãi, Trảng Bom, Đồng Nai",671467055,5,Khoa San
+Bùi Minh Vinh,12/31/1985,40,Nam,Cần Thơ,"74 Nguyễn Huệ, Lê Chân, Hải Phòng",435886401,5,Khoa Ngoai
+Huỳnh Kim Phương,12/21/1976,49,Nữ,Đồng Nai,"647 Lê Lợi, Thuận An, Bình Dương",994283351,14,Khoa San
+Phan Khánh Phương,5/16/1974,52,Nữ,Huế,"884 Lê Lợi, Biên Hòa, Đồng Nai",692240797,29,Khoa Mat
+Hoàng Trọng Đạt,8/1/1995,31,Nam,Thanh Hóa,"375 Điện Biên Phủ, Thanh Khê, Đà Nẵng",393435792,2,Khoa Ngoai
+Phan Phương Phương,10/11/1985,40,Nữ,Bình Dương,"586 Trần Hưng Đạo, Nha Trang, Khánh Hòa",135579407,7,Khoa Noi
+Dương Đức Sơn,3/12/1981,45,Nam,Bình Dương,"634 Cách Mạng Tháng Tám, Lê Chân, Hải Phòng",160736285,8,Khoa Cap cuu
+Lê Thanh Lan,2/9/1996,30,Nữ,TP. Hồ Chí Minh,"799 Nguyễn Trãi, Diễn Châu, Nghệ An",789968379,7,Khoa Than kinh
+Đỗ Thanh Bình,9/3/1974,52,Nam,Đồng Nai,"778 Nguyễn Huệ, Ô Môn, Cần Thơ",827006842,28,Khoa Noi
+Đỗ Mỹ Mai,4/4/1976,50,Nữ,Nghệ An,"215 Trần Hưng Đạo, TP. Thanh Hóa, Thanh Hóa",563727109,16,Khoa San
+Trần Thị Hạnh,4/11/1989,37,Nữ,Nghệ An,"923 Trần Hưng Đạo, Cái Răng, Cần Thơ",324982097,7,Khoa San
+Hoàng Đức Nam,7/31/1991,35,Nam,Nghệ An,"848 Nguyễn Trãi, Bình Thủy, Cần Thơ",618855924,8,Khoa Tim mach
+Võ Quốc Sơn,9/25/1960,65,Nam,Đà Nẵng,"379 Nguyễn Trãi, Ngũ Hành Sơn, Đà Nẵng",697058275,9,Khoa Nhi
+Võ Phương Lan,4/10/1971,55,Nữ,Nghệ An,"583 Trần Hưng Đạo, Thuận Hóa, Huế",257178364,22,Khoa Da lieu
+Lý Thanh Hạnh,8/6/1979,47,Nữ,Cần Thơ,"433 Nguyễn Huệ, Bình Thủy, Cần Thơ",862865410,7,Khoa Nhi
+Võ Đức Phong,6/3/1965,61,Nam,Đà Nẵng,"88 Lê Lợi, Bình Thủy, Cần Thơ",227023437,18,Khoa Da lieu
+Huỳnh Thị Thảo,9/10/1994,32,Nữ,Cần Thơ,"649 Nguyễn Huệ, Thủ Dầu Một, Bình Dương",113055264,5,Khoa Mat
+Phạm Hoàng Khang,3/22/1983,43,Nam,Thanh Hóa,"211 Lê Lợi, Hải Châu, Đà Nẵng",851162297,18,Khoa Ngoai
+Vũ Thanh Dũng,9/9/1989,37,Nam,Khánh Hòa,"836 Phan Chu Trinh, Hải Châu, Đà Nẵng",484869823,7,Khoa Than kinh
+Phạm Thanh Trang,8/4/1965,61,Nữ,Quảng Ninh,"390 Nguyễn Trãi, Kiến An, Hải Phòng",981153306,4,Khoa Da lieu
+Đặng Trọng Minh,2/8/2001,25,Nam,TP. Hồ Chí Minh,"181 Lê Lợi, Thủ Đức, TP. Hồ Chí Minh",429531635,1,Khoa Mat
+Trần Thị Ngân,8/20/1979,47,Nữ,Đồng Nai,"166 Điện Biên Phủ, Phú Xuân, Huế",851425673,21,Khoa Tai Mui Hong
+Bùi Xuân Hùng,1/10/1976,50,Nam,TP. Hồ Chí Minh,"735 Cách Mạng Tháng Tám, Cam Ranh, Khánh Hòa",827462019,23,Khoa Nhi
+Nguyễn Khánh Phương,3/27/1965,61,Nữ,Huế,"798 Nguyễn Huệ, Cẩm Phả, Quảng Ninh",467570800,29,Khoa Than kinh
+Đỗ Bảo Giang,1/21/1961,65,Nữ,TP. Hồ Chí Minh,"281 Hoàng Văn Thụ, Phú Xuân, Huế",592516072,35,Khoa Than kinh
+Phan Ngọc Hạnh,7/12/1967,59,Nữ,Đà Nẵng,"97 Lê Lợi, Ngũ Hành Sơn, Đà Nẵng",801624536,31,Khoa Tim mach
+Dương Phương Hương,11/25/1964,61,Nữ,Đà Nẵng,"725 Lê Lợi, Sầm Sơn, Thanh Hóa",941781775,15,Khoa Da lieu
+Phan Đức Long,1/29/1986,40,Nam,Thanh Hóa,"681 Điện Biên Phủ, Ninh Hòa, Khánh Hòa",266787181,3,Khoa Cap cuu
+Phạm Kim Nhung,12/6/1992,33,Nữ,Đồng Nai,"886 Trần Hưng Đạo, Ngũ Hành Sơn, Đà Nẵng",114102597,10,Khoa Tim mach
+Hoàng Thu Châu,3/25/1962,64,Nữ,Khánh Hòa,"282 Hai Bà Trưng, Nha Trang, Khánh Hòa",501052118,35,Khoa San
+Võ Gia An,12/29/2000,25,Nam,Đồng Nai,"419 Trần Hưng Đạo, Trảng Bom, Đồng Nai",158470109,1,Khoa Da lieu
+Phạm Trọng Nam,6/16/1971,55,Nam,Đồng Nai,"433 Nguyễn Trãi, Thủ Dầu Một, Bình Dương",971174604,8,Khoa Noi
+Vũ Thanh Anh,5/26/1996,30,Nữ,Khánh Hòa,"493 Lê Lợi, Cầu Giấy, Hà Nội",408907447,2,Khoa Cap cuu
+Lê Minh Hải,3/3/1994,32,Nam,Cần Thơ,"504 Nguyễn Huệ, Biên Hòa, Đồng Nai",104138466,3,Khoa Cap cuu
+Đỗ Xuân Quân,12/3/1993,32,Nam,Khánh Hòa,"103 Lê Lợi, Ngô Quyền, Hải Phòng",678269939,9,Khoa Cap cuu
+Đặng Văn Phong,6/4/1983,43,Nam,Cần Thơ,"648 Nguyễn Huệ, Quận 7, TP. Hồ Chí Minh",708249313,10,Khoa Than kinh
+Đỗ Thanh Ngân,8/16/1966,60,Nữ,Bình Dương,"972 Cách Mạng Tháng Tám, Bình Thủy, Cần Thơ",712585494,16,Khoa Than kinh
+Đỗ Thanh Sơn,2/24/1983,43,Nam,Quảng Ninh,"94 Nguyễn Trãi, Quỳnh Lưu, Nghệ An",372764051,7,Khoa Tim mach
+Phạm Thị Thảo,8/27/1992,34,Nữ,Quảng Ninh,"862 Hoàng Văn Thụ, Sầm Sơn, Thanh Hóa",637442807,3,Khoa San
+Huỳnh Diệu Thảo,1/5/1997,29,Nữ,Quảng Ninh,"260 Nguyễn Huệ, Sầm Sơn, Thanh Hóa",829981465,4,Khoa Tai Mui Hong
+Đỗ Phương Quỳnh,11/15/1984,41,Nữ,Nghệ An,"763 Lý Thường Kiệt, Lê Chân, Hải Phòng",464667418,17,Khoa San
+Hồ Hoàng Long,4/7/2001,25,Nam,Hải Phòng,"736 Lê Lợi, Vinh, Nghệ An",323215065,1,Khoa Da lieu
+Lê Phương My,12/6/1989,36,Nữ,Bình Dương,"424 Hoàng Văn Thụ, Kiến An, Hải Phòng",893082893,1,Khoa Da lieu
+Lê Gia Anh,4/23/1965,61,Nam,Đồng Nai,"849 Cách Mạng Tháng Tám, Sầm Sơn, Thanh Hóa",943538466,21,Khoa Cap cuu
+Lê Ngọc Vy,3/2/1969,57,Nữ,Hà Nội,"126 Nguyễn Huệ, Bình Thạnh, TP. Hồ Chí Minh",10792274,17,Khoa Mat
+Ngô Trọng Phong,4/14/1981,45,Nam,Khánh Hòa,"433 Trần Hưng Đạo, Kiến An, Hải Phòng",841398498,22,Khoa Da lieu
+Hồ Thanh Tuấn,9/27/1981,44,Nam,Cần Thơ,"562 Hoàng Văn Thụ, Uông Bí, Quảng Ninh",620863505,4,Khoa Tim mach
+Võ Hoàng Dũng,6/21/1970,56,Nam,Hà Nội,"444 Điện Biên Phủ, Hồng Bàng, Hải Phòng",170372315,20,Khoa Tai Mui Hong
+Phạm Diệu Linh,8/12/1989,37,Nữ,Khánh Hòa,"832 Hai Bà Trưng, Nha Trang, Khánh Hòa",867515684,13,Khoa Mat
+Đặng Hoàng Minh,4/17/1966,60,Nam,Đồng Nai,"68 Nguyễn Huệ, Ngũ Hành Sơn, Đà Nẵng",193487964,37,Khoa Ngoai
+Dương Văn Dũng,8/25/1986,40,Nam,Đồng Nai,"169 Trần Hưng Đạo, Biên Hòa, Đồng Nai",507209230,6,Khoa Da lieu
+Nguyễn Diệu Lan,12/7/1992,33,Nữ,Đồng Nai,"170 Lê Lợi, Hai Bà Trưng, Hà Nội",378429410,8,Khoa Tim mach
+Ngô Đức Minh,11/9/1976,49,Nam,Thanh Hóa,"146 Phan Chu Trinh, Cam Ranh, Khánh Hòa",963828103,21,Khoa Cap cuu
+Bùi Minh An,10/28/1983,42,Nam,Thanh Hóa,"258 Cách Mạng Tháng Tám, Dĩ An, Bình Dương",495857271,15,Khoa Da lieu
+Hoàng Bảo Lan,1/14/1993,33,Nữ,Đà Nẵng,"897 Hai Bà Trưng, Sơn Trà, Đà Nẵng",219331963,9,Khoa Ngoai
+Lý Xuân Đức,11/11/1999,26,Nam,Đồng Nai,"683 Phan Chu Trinh, Hồng Bàng, Hải Phòng",388342095,3,Khoa Mat
+Hồ Trọng Hùng,11/14/1978,47,Nam,TP. Hồ Chí Minh,"605 Điện Biên Phủ, Thủ Dầu Một, Bình Dương",711176688,10,Khoa Cap cuu
+Dương Thu Nhung,8/30/1979,47,Nữ,Đồng Nai,"858 Phan Chu Trinh, Long Khánh, Đồng Nai",579973228,5,Khoa Cap cuu
+Phan Khánh Anh,1/4/1982,44,Nữ,Thanh Hóa,"682 Nguyễn Huệ, Sơn Trà, Đà Nẵng",754033907,21,Khoa Than kinh
+Nguyễn Hoàng Hiếu,12/8/1970,55,Nam,Cần Thơ,"820 Hai Bà Trưng, Dĩ An, Bình Dương",494103199,7,Khoa Tai Mui Hong
+Bùi Kim Mai,2/9/1962,64,Nữ,Đà Nẵng,"438 Nguyễn Trãi, Quận 3, TP. Hồ Chí Minh",145767120,29,Khoa Tai Mui Hong
+Đỗ Thanh An,8/6/1992,34,Nam,Thanh Hóa,"652 Lý Thường Kiệt, Ngũ Hành Sơn, Đà Nẵng",473738990,11,Khoa Nhi
+Nguyễn Hữu Hùng,8/21/1984,42,Nam,TP. Hồ Chí Minh,"591 Phan Chu Trinh, Thuận Hóa, Huế",688475924,18,Khoa San
+Đỗ Thanh My,1/20/1964,62,Nữ,TP. Hồ Chí Minh,"548 Cách Mạng Tháng Tám, Long Khánh, Đồng Nai",179670792,33,Khoa Mat
+Lê Thu Hà,8/19/2000,26,Nữ,Nghệ An,"699 Cách Mạng Tháng Tám, Bỉm Sơn, Thanh Hóa",723836274,3,Khoa San
+Bùi Thị Giang,8/25/1986,40,Nữ,Nghệ An,"743 Nguyễn Huệ, Ngô Quyền, Hải Phòng",566081118,16,Khoa Nhi
+Võ Trọng Nam,3/6/1991,35,Nam,Bình Dương,"412 Điện Biên Phủ, Ninh Hòa, Khánh Hòa",783677544,5,Khoa Noi
+Lê Thị Yến,6/2/1994,32,Nữ,Hà Nội,"875 Trần Hưng Đạo, Hai Bà Trưng, Hà Nội",993732076,6,Khoa Tai Mui Hong
+Phạm Văn Minh,5/14/1965,61,Nam,Hải Phòng,"631 Phan Chu Trinh, Ô Môn, Cần Thơ",938683182,23,Khoa Tai Mui Hong
+Phan Thanh Tuấn,4/3/1975,51,Nam,Bình Dương,"583 Nguyễn Trãi, Ninh Hòa, Khánh Hòa",633112093,6,Khoa Nhi
+Võ Diệu Quỳnh,9/7/1965,61,Nữ,Quảng Ninh,"121 Nguyễn Huệ, Quận 7, TP. Hồ Chí Minh",760001742,2,Khoa San
+Phạm Khánh Trang,12/5/1970,55,Nữ,Quảng Ninh,"802 Nguyễn Huệ, Diễn Châu, Nghệ An",304734520,29,Khoa Tim mach
+Lý Ngọc Nhung,3/12/1997,29,Nữ,Cần Thơ,"640 Điện Biên Phủ, Thuận Hóa, Huế",41419428,4,Khoa Tim mach
+Huỳnh Phương Nga,6/8/1976,50,Nữ,Đồng Nai,"131 Lê Lợi, Sầm Sơn, Thanh Hóa",517085314,24,Khoa Ngoai
+Nguyễn Khánh My,5/19/1963,63,Nữ,Bình Dương,"25 Cách Mạng Tháng Tám, Bình Thạnh, TP. Hồ Chí Minh",459185326,12,Khoa Mat
+Võ Thị Lan,2/28/1985,41,Nữ,Thanh Hóa,"420 Hai Bà Trưng, Thủ Đức, TP. Hồ Chí Minh",467297756,12,Khoa Nhi
+Nguyễn Đức Tuấn,12/11/1977,48,Nam,Đà Nẵng,"832 Hai Bà Trưng, Trảng Bom, Đồng Nai",904711089,20,Khoa Cap cuu
+Võ Gia Đạt,7/3/1976,50,Nam,Hải Phòng,"793 Lê Lợi, Nha Trang, Khánh Hòa",634255503,17,Khoa Tim mach
+Bùi Thanh Hùng,10/18/1973,52,Nam,TP. Hồ Chí Minh,"692 Nguyễn Huệ, Thuận Hóa, Huế",755985726,13,Khoa Nhi
+Lý Hoàng Thành,4/26/1966,60,Nam,Thanh Hóa,"246 Cách Mạng Tháng Tám, Diễn Châu, Nghệ An",757691193,19,Khoa Noi
+Bùi Diệu Nhung,7/19/1975,51,Nữ,TP. Hồ Chí Minh,"516 Lê Lợi, Ninh Kiều, Cần Thơ",783412088,26,Khoa Noi
+Lý Bảo Châu,9/19/1992,34,Nữ,Đà Nẵng,"823 Cách Mạng Tháng Tám, Long Khánh, Đồng Nai",739627769,8,Khoa Noi
+Lê Văn Tuấn,1/26/1982,44,Nam,TP. Hồ Chí Minh,"885 Nguyễn Huệ, TP. Thanh Hóa, Thanh Hóa",255526494,12,Khoa Mat
+Dương Diệu Lan,2/24/1966,60,Nữ,Quảng Ninh,"771 Nguyễn Huệ, Kiến An, Hải Phòng",902917624,7,Khoa Tai Mui Hong
+Đặng Quốc Đức,3/16/1987,39,Nam,Quảng Ninh,"509 Điện Biên Phủ, Lê Chân, Hải Phòng",958965911,16,Khoa Cap cuu
+Huỳnh Hoàng Tuấn,2/25/1999,27,Nam,Khánh Hòa,"99 Nguyễn Huệ, Ninh Hòa, Khánh Hòa",889675534,1,Khoa Tim mach
+Bùi Trọng Đức,10/31/1970,55,Nam,Hà Nội,"861 Hai Bà Trưng, Thuận Hóa, Huế",992408608,3,Khoa Than kinh
+Phan Xuân Hiếu,2/1/1980,46,Nam,Quảng Ninh,"683 Cách Mạng Tháng Tám, Thuận Hóa, Huế",25980231,17,Khoa Mat
+Dương Mỹ Giang,11/30/1998,27,Nữ,TP. Hồ Chí Minh,"672 Hoàng Văn Thụ, Gò Vấp, TP. Hồ Chí Minh",467908817,2,Khoa San
+Ngô Diệu Châu,8/3/2001,25,Nữ,Cần Thơ,"970 Phan Chu Trinh, Ninh Hòa, Khánh Hòa",572027806,2,Khoa Tim mach
+Hồ Văn Anh,4/22/1972,54,Nam,Hải Phòng,"943 Lý Thường Kiệt, Hạ Long, Quảng Ninh",197677457,3,Khoa Mat
+Nguyễn Minh Phong,1/19/1991,35,Nam,Quảng Ninh,"648 Hoàng Văn Thụ, Quận 1, TP. Hồ Chí Minh",636814520,6,Khoa Cap cuu
+Dương Thanh Nga,12/6/1980,45,Nữ,Đồng Nai,"460 Cách Mạng Tháng Tám, Quận 7, TP. Hồ Chí Minh",828738294,1,Khoa Cap cuu
+Huỳnh Quốc Phong,5/14/1986,40,Nam,Thanh Hóa,"26 Nguyễn Huệ, Biên Hòa, Đồng Nai",799224522,15,Khoa Da lieu
+Lý Khánh Hà,5/2/1966,60,Nữ,Hải Phòng,"724 Lý Thường Kiệt, Sơn Trà, Đà Nẵng",965258129,14,Khoa Da lieu
+Võ Thanh Giang,11/7/1975,50,Nữ,Huế,"592 Lý Thường Kiệt, Thủ Dầu Một, Bình Dương",390220153,22,Khoa Ngoai
+Dương Gia Tuấn,9/17/1984,42,Nam,Thanh Hóa,"206 Cách Mạng Tháng Tám, Lê Chân, Hải Phòng",768889807,19,Khoa Noi
+Huỳnh Phương My,8/8/1972,54,Nữ,Khánh Hòa,"187 Cách Mạng Tháng Tám, Uông Bí, Quảng Ninh",706729031,11,Khoa Da lieu
+Hồ Hữu Long,11/23/1992,33,Nam,Hà Nội,"91 Nguyễn Huệ, Đống Đa, Hà Nội",430593820,1,Khoa Da lieu
+Phạm Bảo Anh,4/2/1994,32,Nữ,Nghệ An,"557 Hoàng Văn Thụ, Ngô Quyền, Hải Phòng",142787120,1,Khoa Noi
+Trần Thanh Trang,9/15/1981,45,Nữ,Khánh Hòa,"275 Hai Bà Trưng, Quận 1, TP. Hồ Chí Minh",950432250,10,Khoa Mat
+Hồ Kim Yến,9/20/1999,27,Nữ,Khánh Hòa,"985 Lê Lợi, Phú Xuân, Huế",836477380,2,Khoa Tim mach
+Ngô Thu Hương,5/7/1975,51,Nữ,Nghệ An,"415 Điện Biên Phủ, Uông Bí, Quảng Ninh",89205556,21,Khoa Tai Mui Hong
+Vũ Thanh Ngân,5/26/1966,60,Nữ,Quảng Ninh,"619 Cách Mạng Tháng Tám, Ninh Kiều, Cần Thơ",615145597,26,Khoa Cap cuu
+Đỗ Thanh An,12/12/1975,50,Nam,Hà Nội,"700 Nguyễn Trãi, Hai Bà Trưng, Hà Nội",378631835,2,Khoa Mat
+Đặng Xuân Minh,5/23/1975,51,Nam,TP. Hồ Chí Minh,"575 Hai Bà Trưng, Biên Hòa, Đồng Nai",221319388,2,Khoa Nhi
+Võ Trọng Minh,8/29/1984,42,Nam,Hải Phòng,"319 Lê Lợi, Long Khánh, Đồng Nai",711735628,19,Khoa Mat
+Huỳnh Ngọc Giang,9/14/1965,61,Nữ,Quảng Ninh,"376 Điện Biên Phủ, Phú Xuân, Huế",964647348,19,Khoa Tai Mui Hong
+Lê Hoàng Nam,8/6/2001,25,Nam,Cần Thơ,"194 Cách Mạng Tháng Tám, Hoàng Mai, Hà Nội",567440723,2,Khoa Nhi
+Bùi Diệu Lan,2/28/1992,34,Nữ,Huế,"8 Phan Chu Trinh, Thủ Đức, TP. Hồ Chí Minh",467274508,11,Khoa Cap cuu
+Võ Hoàng An,11/13/1991,34,Nam,Hải Phòng,"293 Điện Biên Phủ, TP. Thanh Hóa, Thanh Hóa",334476079,3,Khoa Than kinh
+Nguyễn Minh Anh,9/4/1976,50,Nam,Cần Thơ,"164 Hai Bà Trưng, Thuận Hóa, Huế",587868503,14,Khoa Tim mach
+Lý Trọng Phong,4/25/1993,33,Nam,TP. Hồ Chí Minh,"394 Nguyễn Trãi, Trảng Bom, Đồng Nai",141719295,4,Khoa Da lieu
+Đặng Ngọc Yến,10/17/1961,64,Nữ,Đồng Nai,"912 Lý Thường Kiệt, Thuận An, Bình Dương",303049881,20,Khoa Noi
+Phạm Phương Ngân,8/25/1966,60,Nữ,Thanh Hóa,"546 Hoàng Văn Thụ, Nha Trang, Khánh Hòa",925880560,9,Khoa Cap cuu
+Phạm Gia Sơn,2/9/1975,51,Nam,Khánh Hòa,"158 Lê Lợi, Trảng Bom, Đồng Nai",313244403,3,Khoa Tim mach
+Hoàng Kim Nga,5/7/1967,59,Nữ,Quảng Ninh,"137 Điện Biên Phủ, Cầu Giấy, Hà Nội",877075919,8,Khoa Tim mach
+Bùi Xuân Việt,9/26/1961,64,Nam,Đồng Nai,"361 Lý Thường Kiệt, Thủ Đức, TP. Hồ Chí Minh",273986904,23,Khoa Noi
+Trần Hữu Long,12/13/1994,31,Nam,Cần Thơ,"418 Lê Lợi, Đống Đa, Hà Nội",999731491,3,Khoa Than kinh
+Hồ Quốc Tuấn,7/9/1991,35,Nam,Bình Dương,"136 Cách Mạng Tháng Tám, Thủ Dầu Một, Bình Dương",227947359,3,Khoa Ngoai
+Phan Diệu Lan,10/6/1973,52,Nữ,Hải Phòng,"276 Nguyễn Trãi, Hồng Bàng, Hải Phòng",249832752,14,Khoa Nhi
+Võ Văn Hiếu,6/1/1970,56,Nam,Đà Nẵng,"211 Hoàng Văn Thụ, Ngũ Hành Sơn, Đà Nẵng",287267421,16,Khoa Than kinh
+Phan Phương Trinh,10/7/1983,42,Nữ,TP. Hồ Chí Minh,"316 Cách Mạng Tháng Tám, Thanh Khê, Đà Nẵng",21021413,13,Khoa Cap cuu
+Phan Thanh Hà,11/3/1981,44,Nữ,Huế,"708 Trần Hưng Đạo, Bỉm Sơn, Thanh Hóa",722192812,12,Khoa Da lieu
+Đặng Hoàng Thành,8/16/1983,43,Nam,Nghệ An,"631 Lý Thường Kiệt, Vinh, Nghệ An",236876563,10,Khoa Tim mach
+Phan Minh Thành,1/6/1992,34,Nam,Khánh Hòa,"465 Trần Hưng Đạo, Lê Chân, Hải Phòng",133699138,5,Khoa Cap cuu
+Phạm Hoàng Phong,10/3/1974,51,Nam,Đồng Nai,"849 Trần Hưng Đạo, Thanh Khê, Đà Nẵng",848326513,10,Khoa Cap cuu
+Hồ Xuân Minh,1/25/1995,31,Nam,Đồng Nai,"982 Nguyễn Trãi, Cẩm Phả, Quảng Ninh",120499308,7,Khoa Noi
+Phan Minh Khang,8/4/1998,28,Nam,Đà Nẵng,"425 Hai Bà Trưng, Bỉm Sơn, Thanh Hóa",613983340,3,Khoa Tai Mui Hong
+Võ Ngọc Mai,5/21/1992,34,Nữ,Quảng Ninh,"629 Lê Lợi, Thủ Đức, TP. Hồ Chí Minh",715368760,4,Khoa Tim mach
+Phan Văn Đức,11/15/1963,62,Nam,Bình Dương,"50 Nguyễn Huệ, Bình Thạnh, TP. Hồ Chí Minh",215883356,38,Khoa Ngoai
+Lê Thanh Hà,10/31/1970,55,Nữ,Hà Nội,"148 Lý Thường Kiệt, Gò Vấp, TP. Hồ Chí Minh",41794480,26,Khoa Mat
+Huỳnh Thanh Mai,12/13/1991,34,Nữ,Hà Nội,"719 Phan Chu Trinh, Ngũ Hành Sơn, Đà Nẵng",590100782,7,Khoa Cap cuu
+Vũ Gia Tuấn,9/16/1984,42,Nam,Đà Nẵng,"704 Trần Hưng Đạo, Biên Hòa, Đồng Nai",379698970,11,Khoa Tai Mui Hong
+Võ Hoàng Hùng,6/16/1990,36,Nam,Bình Dương,"485 Cách Mạng Tháng Tám, Bỉm Sơn, Thanh Hóa",703649527,7,Khoa San
+Nguyễn Xuân Minh,7/4/1972,54,Nam,Hải Phòng,"400 Cách Mạng Tháng Tám, Long Khánh, Đồng Nai",976712788,20,Khoa Ngoai
+Hồ Phương My,8/5/1988,38,Nữ,Quảng Ninh,"199 Nguyễn Huệ, Quận 1, TP. Hồ Chí Minh",372750647,5,Khoa Noi
+Vũ Hoàng Bình,12/20/1961,64,Nam,Khánh Hòa,"474 Nguyễn Trãi, Dĩ An, Bình Dương",138256758,28,Khoa Ngoai
+Nguyễn Gia Bình,9/17/1971,55,Nam,Hải Phòng,"65 Hai Bà Trưng, Quỳnh Lưu, Nghệ An",459111451,12,Khoa Than kinh
+Nguyễn Xuân Nam,3/20/1996,30,Nam,Nghệ An,"586 Lê Lợi, Phú Xuân, Huế",583074776,4,Khoa Mat
+Lý Khánh Hương,4/20/1988,38,Nữ,Cần Thơ,"456 Hoàng Văn Thụ, Ngô Quyền, Hải Phòng",787985443,7,Khoa Than kinh
+Trần Diệu Thảo,10/10/1967,58,Nữ,Bình Dương,"601 Nguyễn Huệ, Ninh Kiều, Cần Thơ",559868747,16,Khoa Da lieu
+Ngô Thị Trinh,9/16/1988,38,Nữ,Huế,"898 Trần Hưng Đạo, Cẩm Phả, Quảng Ninh",290696143,1,Khoa San
+Dương Mỹ Quỳnh,5/2/1993,33,Nữ,Quảng Ninh,"145 Nguyễn Trãi, Hoàng Mai, Hà Nội",846071153,1,Khoa Ngoai
+Ngô Ngọc Thảo,3/20/1977,49,Nữ,Hà Nội,"927 Cách Mạng Tháng Tám, Phú Xuân, Huế",593797369,16,Khoa Tim mach
+Đỗ Thanh Hiếu,3/11/2000,26,Nam,Cần Thơ,"215 Nguyễn Trãi, Long Khánh, Đồng Nai",701157879,1,Khoa Ngoai
+Huỳnh Thanh Châu,3/17/1995,31,Nữ,Đà Nẵng,"478 Cách Mạng Tháng Tám, Ninh Hòa, Khánh Hòa",833793254,8,Khoa San
+Bùi Phương Ngân,4/14/1971,55,Nữ,Thanh Hóa,"590 Nguyễn Huệ, Bỉm Sơn, Thanh Hóa",921478690,27,Khoa Tai Mui Hong
+Hồ Thanh Dũng,7/8/1999,27,Nam,Cần Thơ,"523 Nguyễn Trãi, Uông Bí, Quảng Ninh",236213118,2,Khoa Noi
+Võ Thị Mai,10/30/1987,38,Nữ,Khánh Hòa,"96 Lê Lợi, Hoàng Mai, Hà Nội",374572342,11,Khoa Tim mach
+Hồ Gia Hùng,2/2/1987,39,Nam,Bình Dương,"734 Hai Bà Trưng, Thuận Hóa, Huế",897131665,12,Khoa Nhi
+Phan Gia Quân,2/12/1976,50,Nam,Khánh Hòa,"459 Nguyễn Trãi, Kiến An, Hải Phòng",118221756,9,Khoa Ngoai
+Ngô Phương Lan,2/3/2000,26,Nữ,Nghệ An,"257 Lê Lợi, Quỳnh Lưu, Nghệ An",479493481,3,Khoa Noi
+Hoàng Thị Thảo,4/16/1981,45,Nữ,Bình Dương,"764 Nguyễn Trãi, Nha Trang, Khánh Hòa",73590457,5,Khoa Nhi
+Trần Mỹ Vy,10/2/1986,39,Nữ,Bình Dương,"962 Lý Thường Kiệt, Hoàng Mai, Hà Nội",318084195,6,Khoa Nhi
+Dương Bảo Mai,2/24/2001,25,Nữ,Huế,"381 Lê Lợi, Cầu Giấy, Hà Nội",620991509,2,Khoa Cap cuu
+Võ Thanh Nam,1/15/1996,30,Nam,Hải Phòng,"135 Nguyễn Huệ, Cửa Lò, Nghệ An",208785953,4,Khoa Da lieu
+Lý Xuân Sơn,12/9/1985,40,Nam,Bình Dương,"85 Nguyễn Trãi, Thuận Hóa, Huế",556257842,10,Khoa Noi
+Hoàng Kim Nhung,8/8/1984,42,Nữ,Đồng Nai,"410 Lê Lợi, Uông Bí, Quảng Ninh",520910782,14,Khoa Than kinh
+Phạm Mỹ Trinh,6/11/1987,39,Nữ,Hải Phòng,"334 Lý Thường Kiệt, Bỉm Sơn, Thanh Hóa",350493272,12,Khoa Noi
+Bùi Bảo Quỳnh,9/9/1968,58,Nữ,TP. Hồ Chí Minh,"568 Cách Mạng Tháng Tám, Nha Trang, Khánh Hòa",778602460,18,Khoa Nhi
+Nguyễn Trọng Vinh,6/15/1969,57,Nam,Bình Dương,"383 Lý Thường Kiệt, Vinh, Nghệ An",761958562,17,Khoa Ngoai
+Lê Đức Thành,5/27/1985,41,Nam,Hà Nội,"315 Trần Hưng Đạo, Kiến An, Hải Phòng",762756531,12,Khoa Than kinh
+Phan Diệu Anh,10/19/1978,47,Nữ,Thanh Hóa,"55 Nguyễn Trãi, Hoàng Mai, Hà Nội",787173574,19,Khoa Than kinh
+Nguyễn Đức Dũng,5/6/1961,65,Nam,Bình Dương,"74 Nguyễn Huệ, Biên Hòa, Đồng Nai",96889901,7,Khoa Da lieu
+Lê Thanh Ngân,10/15/1985,40,Nữ,Bình Dương,"615 Lê Lợi, Ninh Kiều, Cần Thơ",494136586,1,Khoa Than kinh
+Huỳnh Hữu Việt,5/13/1986,40,Nam,Đồng Nai,"658 Hoàng Văn Thụ, Lê Chân, Hải Phòng",570823762,9,Khoa Tim mach
+Vũ Đức Thành,3/4/1988,38,Nam,Đà Nẵng,"45 Nguyễn Huệ, Biên Hòa, Đồng Nai",186827464,8,Khoa Cap cuu
+Huỳnh Phương Linh,6/12/1983,43,Nữ,Khánh Hòa,"138 Trần Hưng Đạo, Ba Đình, Hà Nội",543507123,6,Khoa Da lieu
+Võ Hoàng Anh,10/29/1990,35,Nam,Đồng Nai,"335 Hai Bà Trưng, Ngô Quyền, Hải Phòng",555180321,5,Khoa Ngoai
+Ngô Trọng Tuấn,5/21/1979,47,Nam,Huế,"677 Lê Lợi, Hạ Long, Quảng Ninh",989049355,22,Khoa Cap cuu
+Trần Đức An,11/14/1996,29,Nam,TP. Hồ Chí Minh,"503 Lê Lợi, Bỉm Sơn, Thanh Hóa",248105011,1,Khoa Mat
+Ngô Khánh Anh,6/14/1990,36,Nữ,Hải Phòng,"62 Phan Chu Trinh, Nha Trang, Khánh Hòa",60760497,6,Khoa San
+Hồ Mỹ Nhung,7/24/1978,48,Nữ,Nghệ An,"903 Lê Lợi, Cái Răng, Cần Thơ",757870948,8,Khoa Nhi
+Ngô Mỹ Giang,9/18/2001,25,Nữ,Cần Thơ,"325 Nguyễn Trãi, Hồng Bàng, Hải Phòng",326306809,1,Khoa Tai Mui Hong
+Phạm Gia Minh,2/7/1966,60,Nam,Hải Phòng,"813 Nguyễn Huệ, Dĩ An, Bình Dương",531934758,16,Khoa Cap cuu
+Vũ Ngọc Phương,1/17/1995,31,Nữ,Nghệ An,"317 Hoàng Văn Thụ, Nha Trang, Khánh Hòa",799465997,1,Khoa San
+Vũ Văn Sơn,5/14/1996,30,Nam,Đà Nẵng,"810 Nguyễn Trãi, Thuận An, Bình Dương",432371536,2,Khoa Nhi
+Huỳnh Mỹ Nga,7/15/1964,62,Nữ,Cần Thơ,"769 Hoàng Văn Thụ, Biên Hòa, Đồng Nai",878714030,20,Khoa Cap cuu
+Lê Đức Hiếu,8/5/1963,63,Nam,Đà Nẵng,"672 Hoàng Văn Thụ, Sầm Sơn, Thanh Hóa",851371885,14,Khoa Cap cuu
+Đỗ Kim Nga,5/21/1997,29,Nữ,Khánh Hòa,"802 Hoàng Văn Thụ, Hạ Long, Quảng Ninh",598220078,4,Khoa Mat
+Huỳnh Kim Trang,1/23/1973,53,Nữ,TP. Hồ Chí Minh,"346 Lý Thường Kiệt, Bỉm Sơn, Thanh Hóa",375206846,29,Khoa Tim mach
+Hồ Thanh Quỳnh,3/4/1964,62,Nữ,Đà Nẵng,"221 Hoàng Văn Thụ, Uông Bí, Quảng Ninh",245703538,15,Khoa Noi
+Ngô Quốc Hải,3/11/1974,52,Nam,Bình Dương,"780 Lý Thường Kiệt, Thủ Dầu Một, Bình Dương",327964157,9,Khoa Tim mach
+Vũ Trọng Khang,3/26/1964,62,Nam,Thanh Hóa,"180 Cách Mạng Tháng Tám, Hạ Long, Quảng Ninh",546500565,28,Khoa Nhi
+Phan Diệu Lan,1/26/1974,52,Nữ,Nghệ An,"87 Phan Chu Trinh, Sơn Trà, Đà Nẵng",518902310,19,Khoa Tim mach
+Bùi Đức Hiếu,2/16/1977,49,Nam,Khánh Hòa,"721 Cách Mạng Tháng Tám, Hai Bà Trưng, Hà Nội",823542395,8,Khoa Mat
+Phạm Khánh Hạnh,3/9/1968,58,Nữ,Bình Dương,"90 Phan Chu Trinh, Cẩm Phả, Quảng Ninh",671923608,26,Khoa Ngoai
+Lê Trọng Thành,8/3/1971,55,Nam,Hải Phòng,"981 Hoàng Văn Thụ, Thuận Hóa, Huế",555033647,6,Khoa Tai Mui Hong
+Đỗ Ngọc Thảo,3/9/1987,39,Nữ,Thanh Hóa,"923 Lý Thường Kiệt, Ninh Hòa, Khánh Hòa",838715354,3,Khoa Ngoai
+Nguyễn Thanh Hương,10/3/1973,52,Nữ,Thanh Hóa,"945 Lê Lợi, Ô Môn, Cần Thơ",944949216,27,Khoa Than kinh
+Lê Gia Hiếu,7/19/1985,41,Nam,Nghệ An,"327 Lê Lợi, Cam Ranh, Khánh Hòa",58600090,7,Khoa Noi
+Võ Gia Bình,5/23/1981,45,Nam,Khánh Hòa,"602 Phan Chu Trinh, Vinh, Nghệ An",459604608,1,Khoa Than kinh
+Võ Thu Anh,5/12/1980,46,Nữ,Đà Nẵng,"365 Hoàng Văn Thụ, Long Khánh, Đồng Nai",677612199,20,Khoa Ngoai
+Dương Hoàng Long,12/14/1985,40,Nam,Hà Nội,"220 Trần Hưng Đạo, Cam Ranh, Khánh Hòa",430272256,12,Khoa Than kinh
+Trần Trọng Vinh,4/27/1969,57,Nam,Nghệ An,"704 Phan Chu Trinh, Vinh, Nghệ An",935038801,1,Khoa Cap cuu
+Lý Thu Phương,5/31/1992,34,Nữ,Cần Thơ,"158 Điện Biên Phủ, Sơn Trà, Đà Nẵng",612997529,5,Khoa San
+Bùi Thanh Thành,6/27/1982,44,Nam,Đồng Nai,"715 Hoàng Văn Thụ, Quận 1, TP. Hồ Chí Minh",906147310,11,Khoa Nhi
+Đặng Ngọc Lan,6/17/1970,56,Nữ,Quảng Ninh,"771 Hai Bà Trưng, Gò Vấp, TP. Hồ Chí Minh",99526159,31,Khoa Noi
+Đỗ Thanh Phong,6/20/1988,38,Nam,Thanh Hóa,"558 Lý Thường Kiệt, Quỳnh Lưu, Nghệ An",871933848,1,Khoa Mat
+Vũ Minh Việt,7/23/1991,35,Nam,Đồng Nai,"826 Trần Hưng Đạo, Bình Thủy, Cần Thơ",310440375,12,Khoa Tai Mui Hong
+Lý Phương Linh,10/24/1971,54,Nữ,Hải Phòng,"818 Lý Thường Kiệt, Hạ Long, Quảng Ninh",646022172,20,Khoa Nhi
+Huỳnh Bảo Nga,11/4/1997,28,Nữ,Hà Nội,"368 Phan Chu Trinh, Quận 3, TP. Hồ Chí Minh",654941798,2,Khoa Ngoai
+Phan Minh Long,5/21/1966,60,Nam,Hà Nội,"124 Cách Mạng Tháng Tám, Quỳnh Lưu, Nghệ An",614091403,30,Khoa Cap cuu
+Lê Quốc Hiếu,4/21/1985,41,Nam,Quảng Ninh,"150 Nguyễn Trãi, Bình Thạnh, TP. Hồ Chí Minh",167457914,18,Khoa Nhi
+Bùi Quốc Sơn,6/11/1979,47,Nam,Đồng Nai,"162 Nguyễn Huệ, Cái Răng, Cần Thơ",120485665,21,Khoa Mat
+Nguyễn Hoàng Vinh,12/2/1972,53,Nam,Hà Nội,"659 Cách Mạng Tháng Tám, Ba Đình, Hà Nội",940767084,9,Khoa Cap cuu
+Huỳnh Bảo Hạnh,2/26/1996,30,Nữ,Thanh Hóa,"720 Lý Thường Kiệt, Bỉm Sơn, Thanh Hóa",625189129,7,Khoa Ngoai
+Ngô Đức Đức,6/14/1981,45,Nam,Hải Phòng,"126 Lê Lợi, Bình Thủy, Cần Thơ",402280187,18,Khoa Da lieu
+Huỳnh Khánh Linh,10/30/1993,32,Nữ,Khánh Hòa,"489 Hoàng Văn Thụ, Cửa Lò, Nghệ An",995544249,5,Khoa San
+Lê Diệu Nhung,5/14/1979,47,Nữ,Đà Nẵng,"127 Hoàng Văn Thụ, Cầu Giấy, Hà Nội",466671343,15,Khoa San
+Vũ Mỹ Trang,1/29/1961,65,Nữ,TP. Hồ Chí Minh,"628 Nguyễn Trãi, Cái Răng, Cần Thơ",399709151,4,Khoa Nhi
+Bùi Khánh Châu,5/17/1969,57,Nữ,Hà Nội,"500 Lý Thường Kiệt, TP. Thanh Hóa, Thanh Hóa",706760973,1,Khoa Cap cuu
+Huỳnh Hoàng Phong,3/13/1981,45,Nam,Huế,"361 Nguyễn Trãi, Cầu Giấy, Hà Nội",662800261,13,Khoa Tim mach
+Đỗ Diệu Phương,6/3/1965,61,Nữ,Hà Nội,"186 Hai Bà Trưng, Nha Trang, Khánh Hòa",458313720,8,Khoa Tim mach
+Lê Hữu Khang,4/22/1999,27,Nam,Khánh Hòa,"507 Lê Lợi, Hạ Long, Quảng Ninh",198847008,3,Khoa Nhi
+Võ Ngọc Thảo,3/27/2000,26,Nữ,Hà Nội,"573 Hoàng Văn Thụ, Phú Xuân, Huế",199350949,2,Khoa Da lieu
+Võ Hữu Đức,9/9/1974,52,Nam,Cần Thơ,"363 Hai Bà Trưng, Cẩm Phả, Quảng Ninh",33825344,24,Khoa Than kinh
+Đặng Khánh Linh,12/30/1965,60,Nữ,Cần Thơ,"714 Nguyễn Trãi, Phú Xuân, Huế",580380493,35,Khoa Nhi
+Bùi Đức Thành,9/19/1986,40,Nam,Thanh Hóa,"152 Nguyễn Trãi, Uông Bí, Quảng Ninh",140224324,13,Khoa Tai Mui Hong
+Phan Đức Sơn,12/17/1969,56,Nam,Quảng Ninh,"368 Trần Hưng Đạo, Cái Răng, Cần Thơ",209623207,4,Khoa San
+Phạm Văn Đạt,5/31/1973,53,Nam,Cần Thơ,"4 Hai Bà Trưng, Hồng Bàng, Hải Phòng",454660014,29,Khoa Tai Mui Hong
+Đặng Gia Khang,1/24/1974,52,Nam,TP. Hồ Chí Minh,"751 Phan Chu Trinh, Thuận An, Bình Dương",935391810,29,Khoa Tim mach
+Huỳnh Thị Mai,5/31/1983,43,Nữ,Khánh Hòa,"300 Nguyễn Trãi, Quận 7, TP. Hồ Chí Minh",281019318,14,Khoa Ngoai
+Ngô Gia Khang,10/31/1983,42,Nam,Thanh Hóa,"969 Nguyễn Trãi, Thuận Hóa, Huế",187621903,19,Khoa Da lieu
+Lý Quốc Thành,5/11/1969,57,Nam,Hà Nội,"433 Lý Thường Kiệt, Cửa Lò, Nghệ An",384497948,10,Khoa Noi
+Nguyễn Khánh Yến,10/3/1998,27,Nữ,Hà Nội,"608 Trần Hưng Đạo, Phú Xuân, Huế",668829052,3,Khoa Da lieu
+Đỗ Xuân Bình,5/1/1983,43,Nam,Đà Nẵng,"851 Cách Mạng Tháng Tám, Long Khánh, Đồng Nai",273422077,13,Khoa Noi
+Lê Thu Nhung,5/4/1985,41,Nữ,Hà Nội,"231 Điện Biên Phủ, Nha Trang, Khánh Hòa",606804627,6,Khoa Cap cuu
+Bùi Phương Trinh,2/24/1964,62,Nữ,Hải Phòng,"452 Hoàng Văn Thụ, Vinh, Nghệ An",343273269,8,Khoa Nhi
+Lê Diệu Mai,6/4/1965,61,Nữ,TP. Hồ Chí Minh,"423 Lý Thường Kiệt, Biên Hòa, Đồng Nai",288614217,13,Khoa Da lieu
+Hoàng Thanh Hiếu,1/16/1967,59,Nam,Quảng Ninh,"24 Hai Bà Trưng, Kiến An, Hải Phòng",736122701,17,Khoa Cap cuu
+Hồ Thanh Ngân,7/20/1977,49,Nữ,Quảng Ninh,"736 Lê Lợi, Ba Đình, Hà Nội",400448324,9,Khoa Cap cuu
+Phạm Thanh My,4/1/1981,45,Nữ,Quảng Ninh,"405 Lý Thường Kiệt, Thanh Khê, Đà Nẵng",877176559,6,Khoa Than kinh
+Lý Thanh Trang,3/30/1996,30,Nữ,Đà Nẵng,"301 Cách Mạng Tháng Tám, Phú Xuân, Huế",342993146,5,Khoa Noi
+Bùi Thị Phương,2/19/1996,30,Nữ,TP. Hồ Chí Minh,"912 Lý Thường Kiệt, Ninh Kiều, Cần Thơ",82791754,3,Khoa Mat
+Lý Xuân Hùng,2/9/1992,34,Nam,Thanh Hóa,"244 Hai Bà Trưng, Sầm Sơn, Thanh Hóa",79826234,10,Khoa Cap cuu
+Huỳnh Thanh Vinh,7/5/1967,59,Nam,Đồng Nai,"183 Nguyễn Huệ, Thuận Hóa, Huế",977022957,8,Khoa Tai Mui Hong
+Võ Quốc Tuấn,4/23/1982,44,Nam,Đồng Nai,"155 Trần Hưng Đạo, Cái Răng, Cần Thơ",180763622,7,Khoa Ngoai
+Lý Thị Linh,11/26/1987,38,Nữ,Đồng Nai,"317 Hai Bà Trưng, Ngô Quyền, Hải Phòng",175532697,2,Khoa Da lieu
+Nguyễn Hoàng An,10/19/1960,65,Nam,Khánh Hòa,"954 Phan Chu Trinh, Vinh, Nghệ An",47972796,41,Khoa San
+Bùi Hoàng Minh,1/27/1996,30,Nam,TP. Hồ Chí Minh,"108 Trần Hưng Đạo, TP. Thanh Hóa, Thanh Hóa",288617315,7,Khoa Cap cuu
+Vũ Đức Hiếu,8/20/1961,65,Nam,Bình Dương,"639 Hai Bà Trưng, Dĩ An, Bình Dương",346844926,6,Khoa Noi
+Phan Quốc Sơn,7/13/2001,25,Nam,TP. Hồ Chí Minh,"628 Cách Mạng Tháng Tám, Thuận An, Bình Dương",615547755,2,Khoa Than kinh
+Huỳnh Phương Ngân,11/7/1979,46,Nữ,TP. Hồ Chí Minh,"620 Trần Hưng Đạo, Phú Xuân, Huế",710978322,8,Khoa Ngoai
+Đặng Hoàng Nam,10/30/1965,60,Nam,Hà Nội,"875 Nguyễn Huệ, Bình Thủy, Cần Thơ",161132336,20,Khoa Mat
+Võ Bảo Mai,12/17/1977,48,Nữ,Hà Nội,"968 Cách Mạng Tháng Tám, Cam Ranh, Khánh Hòa",679867292,11,Khoa Nhi
+Đặng Minh Việt,3/15/1995,31,Nam,Huế,"360 Phan Chu Trinh, Sầm Sơn, Thanh Hóa",298353952,7,Khoa San
+Vũ Hoàng Dũng,2/11/1985,41,Nam,TP. Hồ Chí Minh,"418 Lý Thường Kiệt, TP. Thanh Hóa, Thanh Hóa",307786979,3,Khoa Tai Mui Hong
+Hoàng Bảo Hương,6/22/1967,59,Nữ,Nghệ An,"106 Hai Bà Trưng, Đống Đa, Hà Nội",227930196,33,Khoa Cap cuu
+Huỳnh Thanh Thành,3/1/1982,44,Nam,TP. Hồ Chí Minh,"119 Điện Biên Phủ, Cầu Giấy, Hà Nội",801367187,5,Khoa Than kinh
+Nguyễn Gia Việt,9/11/1982,44,Nam,Cần Thơ,"459 Cách Mạng Tháng Tám, Thủ Dầu Một, Bình Dương",735595549,13,Khoa Ngoai
+Trần Quốc Bình,11/17/1980,45,Nam,TP. Hồ Chí Minh,"643 Cách Mạng Tháng Tám, Cam Ranh, Khánh Hòa",228094788,8,Khoa Tim mach
+Lý Đức Tuấn,3/7/1982,44,Nam,Khánh Hòa,"926 Phan Chu Trinh, Cửa Lò, Nghệ An",708455476,2,Khoa Tim mach
+Hồ Phương Nhung,2/20/1992,34,Nữ,Thanh Hóa,"763 Trần Hưng Đạo, TP. Thanh Hóa, Thanh Hóa",434542819,8,Khoa Mat
+Võ Quốc Hải,10/26/1979,46,Nam,Thanh Hóa,"635 Hai Bà Trưng, Sầm Sơn, Thanh Hóa",958314636,22,Khoa Mat
+Bùi Văn Minh,1/6/1983,43,Nam,Hà Nội,"867 Cách Mạng Tháng Tám, Trảng Bom, Đồng Nai",806642854,15,Khoa Tim mach
+Nguyễn Hoàng Dũng,12/10/1997,28,Nam,TP. Hồ Chí Minh,"701 Cách Mạng Tháng Tám, Quận 3, TP. Hồ Chí Minh",581707330,2,Khoa Mat
+Vũ Văn Đạt,9/18/1972,54,Nam,Hải Phòng,"156 Trần Hưng Đạo, Biên Hòa, Đồng Nai",918001124,10,Khoa Than kinh
+Nguyễn Xuân Tuấn,12/21/1980,45,Nam,Đà Nẵng,"47 Trần Hưng Đạo, Hải Châu, Đà Nẵng",485730190,5,Khoa Mat
+Hồ Ngọc Nga,4/15/2000,26,Nữ,Bình Dương,"264 Hai Bà Trưng, Thuận An, Bình Dương",711517990,1,Khoa Tai Mui Hong
+Ngô Hữu Tuấn,5/4/1965,61,Nam,Hà Nội,"364 Nguyễn Trãi, Thanh Khê, Đà Nẵng",741351866,16,Khoa Noi
+Vũ Ngọc Hạnh,6/3/1981,45,Nữ,Đà Nẵng,"225 Điện Biên Phủ, Thủ Dầu Một, Bình Dương",750273887,15,Khoa Mat
+Huỳnh Văn Thành,11/14/1994,31,Nam,Cần Thơ,"331 Phan Chu Trinh, Hải Châu, Đà Nẵng",29568100,4,Khoa Cap cuu
+Hồ Kim Nga,6/2/1974,52,Nữ,Hà Nội,"86 Điện Biên Phủ, Bình Thủy, Cần Thơ",449325140,11,Khoa Nhi
+Đặng Trọng Anh,3/4/1995,31,Nam,Cần Thơ,"382 Phan Chu Trinh, Nha Trang, Khánh Hòa",181239852,2,Khoa Noi
+Hồ Xuân Đức,1/5/1992,34,Nam,Đồng Nai,"783 Nguyễn Trãi, Phú Xuân, Huế",44139030,7,Khoa Da lieu
+Vũ Quốc Phong,5/6/1982,44,Nam,Cần Thơ,"646 Nguyễn Trãi, Cái Răng, Cần Thơ",290174390,5,Khoa Cap cuu
+Lê Quốc Đức,10/2/1999,26,Nam,Nghệ An,"665 Điện Biên Phủ, Quận 3, TP. Hồ Chí Minh",999936127,1,Khoa Cap cuu
+Phan Thanh Vinh,9/9/1968,58,Nam,TP. Hồ Chí Minh,"308 Phan Chu Trinh, Quận 7, TP. Hồ Chí Minh",974108286,6,Khoa Ngoai
+Nguyễn Quốc Đạt,3/2/1966,60,Nam,Bình Dương,"214 Hai Bà Trưng, Cửa Lò, Nghệ An",377565315,13,Khoa Da lieu
+Lý Khánh Hạnh,11/9/1969,56,Nữ,Hải Phòng,"578 Hoàng Văn Thụ, Quận 7, TP. Hồ Chí Minh",77542913,28,Khoa Than kinh
+Nguyễn Trọng Minh,7/19/1998,28,Nam,Khánh Hòa,"209 Lê Lợi, Đống Đa, Hà Nội",314015061,2,Khoa Da lieu
+Phạm Thanh Ngân,10/1/1969,56,Nữ,Hải Phòng,"36 Trần Hưng Đạo, Ninh Hòa, Khánh Hòa",809831106,29,Khoa Da lieu
+Võ Mỹ Linh,11/27/1998,27,Nữ,Thanh Hóa,"465 Phan Chu Trinh, Phú Xuân, Huế",367752803,2,Khoa Nhi
+Đặng Thu Linh,12/31/1980,45,Nữ,Quảng Ninh,"339 Điện Biên Phủ, Hoàng Mai, Hà Nội",620916738,1,Khoa San
+Đỗ Hữu An,12/8/1982,43,Nam,Thanh Hóa,"531 Hai Bà Trưng, Bỉm Sơn, Thanh Hóa",256930475,16,Khoa Mat
+Phạm Phương Nhung,5/19/1987,39,Nữ,Cần Thơ,"276 Điện Biên Phủ, Thuận Hóa, Huế",84662901,13,Khoa San
+Hồ Văn Phong,6/24/1979,47,Nam,Khánh Hòa,"535 Điện Biên Phủ, Cam Ranh, Khánh Hòa",540958365,15,Khoa Noi
+Hồ Mỹ My,4/14/1996,30,Nữ,Đà Nẵng,"917 Nguyễn Trãi, Cẩm Phả, Quảng Ninh",497392586,6,Khoa Mat
+Dương Quốc Dũng,4/3/1992,34,Nam,Huế,"748 Hai Bà Trưng, Long Khánh, Đồng Nai",208114868,11,Khoa Mat
+Võ Mỹ Lan,5/27/1977,49,Nữ,Cần Thơ,"49 Nguyễn Trãi, Cái Răng, Cần Thơ",794034188,25,Khoa Tim mach
+Nguyễn Thanh Lan,8/8/1971,55,Nữ,Nghệ An,"512 Nguyễn Trãi, Cẩm Phả, Quảng Ninh",445215497,20,Khoa Mat
+Đỗ Ngọc Trinh,7/18/1968,58,Nữ,Quảng Ninh,"104 Cách Mạng Tháng Tám, Thuận Hóa, Huế",749495378,7,Khoa Tai Mui Hong
+Bùi Khánh Thảo,1/5/1962,64,Nữ,Đồng Nai,"590 Trần Hưng Đạo, Hoàng Mai, Hà Nội",773294387,34,Khoa Tim mach
+Phạm Khánh Phương,5/30/1968,58,Nữ,Khánh Hòa,"964 Hoàng Văn Thụ, Gò Vấp, TP. Hồ Chí Minh",196756384,28,Khoa Than kinh
+Phan Thanh Ngân,1/11/1991,35,Nữ,Quảng Ninh,"418 Cách Mạng Tháng Tám, Gò Vấp, TP. Hồ Chí Minh",501729536,11,Khoa Tai Mui Hong
+Phan Kim Trang,8/13/1987,39,Nữ,Thanh Hóa,"480 Hai Bà Trưng, Bình Thạnh, TP. Hồ Chí Minh",62319669,3,Khoa Ngoai
+Võ Hoàng Vinh,2/11/2000,26,Nam,TP. Hồ Chí Minh,"453 Cách Mạng Tháng Tám, Cam Ranh, Khánh Hòa",463234634,1,Khoa Tai Mui Hong
+Nguyễn Khánh Thảo,11/28/1989,36,Nữ,Quảng Ninh,"731 Hoàng Văn Thụ, TP. Thanh Hóa, Thanh Hóa",848003666,2,Khoa Nhi
+Phạm Mỹ Yến,11/28/1969,56,Nữ,Huế,"514 Phan Chu Trinh, Quỳnh Lưu, Nghệ An",415445942,21,Khoa Tai Mui Hong
+Ngô Hữu Nam,8/3/1961,65,Nam,Thanh Hóa,"571 Nguyễn Trãi, Thuận An, Bình Dương",434105655,40,Khoa Ngoai
+Bùi Thị Hạnh,12/31/1961,64,Nữ,Cần Thơ,"870 Trần Hưng Đạo, Bình Thạnh, TP. Hồ Chí Minh",913963743,27,Khoa Tai Mui Hong
+Vũ Thu Anh,10/14/1976,49,Nữ,Hà Nội,"610 Lê Lợi, Ngũ Hành Sơn, Đà Nẵng",130734202,18,Khoa Cap cuu
+Nguyễn Thanh Hùng,10/15/1992,33,Nam,Huế,"215 Lê Lợi, Bình Thủy, Cần Thơ",991968586,4,Khoa Than kinh
+Dương Văn Đạt,2/25/1966,60,Nam,Huế,"59 Nguyễn Trãi, Bình Thủy, Cần Thơ",558940496,3,Khoa Mat
+Ngô Hữu Nam,5/23/1963,63,Nam,Nghệ An,"617 Nguyễn Trãi, Thuận Hóa, Huế",665637274,11,Khoa Than kinh
+Vũ Hoàng Long,1/11/1975,51,Nam,Hải Phòng,"705 Nguyễn Trãi, Thuận An, Bình Dương",526657249,13,Khoa Ngoai
+Đỗ Văn Hiếu,9/10/1999,27,Nam,Đà Nẵng,"825 Lê Lợi, Phú Xuân, Huế",19690314,2,Khoa Than kinh
+Nguyễn Kim Phương,7/23/1983,43,Nữ,Đà Nẵng,"47 Điện Biên Phủ, Thuận Hóa, Huế",448405872,18,Khoa Tai Mui Hong
+Lý Gia Tuấn,12/15/1992,33,Nam,Thanh Hóa,"803 Phan Chu Trinh, Ninh Hòa, Khánh Hòa",69868791,4,Khoa Cap cuu
+Phan Trọng Vinh,7/1/1963,63,Nam,Hà Nội,"511 Điện Biên Phủ, Kiến An, Hải Phòng",673413516,13,Khoa Noi
+Bùi Ngọc Trinh,9/29/1994,31,Nữ,Bình Dương,"847 Hai Bà Trưng, Cái Răng, Cần Thơ",806957953,5,Khoa Ngoai
+Trần Thị Phương,8/25/1972,54,Nữ,Đà Nẵng,"902 Trần Hưng Đạo, Bình Thạnh, TP. Hồ Chí Minh",858527598,17,Khoa Than kinh
+Võ Đức Đức,8/31/1969,57,Nam,TP. Hồ Chí Minh,"317 Lê Lợi, Thanh Khê, Đà Nẵng",996183246,17,Khoa Tai Mui Hong
+Bùi Mỹ My,6/22/1980,46,Nữ,Huế,"290 Phan Chu Trinh, Long Khánh, Đồng Nai",925979338,6,Khoa San
+Lý Bảo Vy,2/18/1969,57,Nữ,Bình Dương,"547 Lê Lợi, Sơn Trà, Đà Nẵng",545466582,11,Khoa Cap cuu
+Lê Quốc Khang,7/23/1986,40,Nam,TP. Hồ Chí Minh,"687 Hoàng Văn Thụ, Ninh Kiều, Cần Thơ",374171317,13,Khoa Noi
+Bùi Minh Hùng,3/3/1987,39,Nam,Thanh Hóa,"941 Lý Thường Kiệt, Ninh Kiều, Cần Thơ",8564308,12,Khoa Than kinh
+Bùi Thanh My,3/19/1993,33,Nữ,Bình Dương,"433 Lê Lợi, Uông Bí, Quảng Ninh",560373664,7,Khoa Noi
+Lý Diệu Trang,4/24/1969,57,Nữ,Quảng Ninh,"656 Nguyễn Huệ, Thủ Dầu Một, Bình Dương",613938071,16,Khoa Noi
+Lý Bảo Vy,2/17/1988,38,Nữ,Hải Phòng,"846 Trần Hưng Đạo, Đống Đa, Hà Nội",618610575,2,Khoa Noi
+Lê Thị Nga,7/30/2000,26,Nữ,Quảng Ninh,"400 Trần Hưng Đạo, Ô Môn, Cần Thơ",63456109,2,Khoa Cap cuu
+Nguyễn Gia Quân,3/2/1981,45,Nam,Hải Phòng,"783 Cách Mạng Tháng Tám, Ngô Quyền, Hải Phòng",634044265,14,Khoa San
+Nguyễn Gia Đức,7/15/1982,44,Nam,Đà Nẵng,"379 Lê Lợi, Quận 1, TP. Hồ Chí Minh",971248119,11,Khoa Tai Mui Hong
+Huỳnh Ngọc Mai,12/26/1999,26,Nữ,Bình Dương,"146 Lý Thường Kiệt, Hoàng Mai, Hà Nội",766981757,3,Khoa Tim mach
+Lê Gia Quân,6/18/1998,28,Nam,Thanh Hóa,"223 Hoàng Văn Thụ, Cẩm Phả, Quảng Ninh",226704317,5,Khoa Tim mach
+Huỳnh Ngọc Thảo,11/20/1980,45,Nữ,Quảng Ninh,"260 Cách Mạng Tháng Tám, Bình Thạnh, TP. Hồ Chí Minh",990538345,11,Khoa Noi
+Huỳnh Ngọc Nhung,12/6/1985,40,Nữ,Hải Phòng,"977 Lý Thường Kiệt, Bình Thủy, Cần Thơ",846713888,12,Khoa San
+Đỗ Thị Linh,1/28/1992,34,Nữ,Đà Nẵng,"457 Hai Bà Trưng, Thuận Hóa, Huế",285227769,5,Khoa Cap cuu
+Võ Diệu Hạnh,2/11/1984,42,Nữ,Khánh Hòa,"729 Hai Bà Trưng, Bình Thạnh, TP. Hồ Chí Minh",271033383,6,Khoa Cap cuu
+Bùi Thanh Trang,10/5/1963,62,Nữ,Bình Dương,"224 Nguyễn Huệ, Phú Xuân, Huế",899795219,27,Khoa San
+Hồ Hữu Minh,6/1/1991,35,Nam,Hà Nội,"299 Điện Biên Phủ, Hồng Bàng, Hải Phòng",993027476,12,Khoa San
+Đặng Hoàng Đức,5/28/1995,31,Nam,TP. Hồ Chí Minh,"291 Trần Hưng Đạo, Cam Ranh, Khánh Hòa",731091668,2,Khoa Tai Mui Hong
+Hoàng Kim Anh,1/25/1994,32,Nữ,Đồng Nai,"460 Lê Lợi, Thủ Đức, TP. Hồ Chí Minh",63143644,5,Khoa Nhi
+Võ Trọng Sơn,2/4/1974,52,Nam,Nghệ An,"649 Điện Biên Phủ, Quỳnh Lưu, Nghệ An",989203775,28,Khoa Than kinh
+Hoàng Thu Châu,3/10/1991,35,Nữ,Huế,"190 Trần Hưng Đạo, Bình Thủy, Cần Thơ",518470577,7,Khoa Mat
+Phan Thanh Minh,6/23/1992,34,Nam,Nghệ An,"361 Hai Bà Trưng, Hai Bà Trưng, Hà Nội",521815708,4,Khoa Noi
+Lý Kim Trang,3/19/1964,62,Nữ,Thanh Hóa,"94 Lê Lợi, Dĩ An, Bình Dương",903094095,14,Khoa Cap cuu
+Huỳnh Mỹ Phương,7/1/1975,51,Nữ,Quảng Ninh,"888 Hai Bà Trưng, Ninh Kiều, Cần Thơ",520797921,20,Khoa Tim mach
+Vũ Đức Dũng,8/29/1990,36,Nam,Nghệ An,"958 Điện Biên Phủ, Diễn Châu, Nghệ An",931455761,10,Khoa Tim mach
+Đặng Minh Dũng,4/1/1994,32,Nam,Cần Thơ,"773 Lý Thường Kiệt, Phú Xuân, Huế",624922171,3,Khoa Da lieu
+Ngô Thanh Hùng,5/21/1970,56,Nam,Hà Nội,"368 Hai Bà Trưng, Bình Thủy, Cần Thơ",881281967,24,Khoa Tai Mui Hong
+Phạm Thu Nga,3/28/1981,45,Nữ,Đồng Nai,"485 Phan Chu Trinh, Hải Châu, Đà Nẵng",622643472,10,Khoa Noi
+Lý Thanh Thảo,10/20/1992,33,Nữ,Thanh Hóa,"973 Điện Biên Phủ, Cái Răng, Cần Thơ",530199187,4,Khoa San
+Dương Mỹ Hạnh,4/21/1980,46,Nữ,Hải Phòng,"147 Cách Mạng Tháng Tám, Long Khánh, Đồng Nai",732394039,6,Khoa Noi
+Hồ Hữu Sơn,12/11/1964,61,Nam,Đà Nẵng,"771 Trần Hưng Đạo, Hải Châu, Đà Nẵng",42342310,24,Khoa Noi
+Hồ Diệu Linh,11/14/1982,43,Nữ,Hải Phòng,"810 Lý Thường Kiệt, Quận 7, TP. Hồ Chí Minh",62250490,16,Khoa Tim mach
+Võ Đức Việt,1/6/1986,40,Nam,Khánh Hòa,"54 Lê Lợi, Đống Đa, Hà Nội",345706155,17,Khoa Nhi
+Hồ Hoàng Hải,2/6/1964,62,Nam,Đà Nẵng,"930 Lê Lợi, Lê Chân, Hải Phòng",276112045,16,Khoa Ngoai
+Võ Trọng Việt,9/24/1979,46,Nam,Hải Phòng,"388 Hai Bà Trưng, Hải Châu, Đà Nẵng",778054126,13,Khoa Tai Mui Hong
+Phạm Văn Tuấn,9/30/1974,51,Nam,Cần Thơ,"467 Cách Mạng Tháng Tám, Quận 1, TP. Hồ Chí Minh",344353318,9,Khoa Mat
+Hoàng Mỹ Anh,2/11/1982,44,Nữ,Nghệ An,"230 Trần Hưng Đạo, Kiến An, Hải Phòng",422465696,1,Khoa Cap cuu
+Ngô Gia Dũng,9/16/1972,54,Nam,Đà Nẵng,"107 Điện Biên Phủ, TP. Thanh Hóa, Thanh Hóa",700744065,29,Khoa Mat
+Phan Thanh Bình,5/29/1995,31,Nam,TP. Hồ Chí Minh,"271 Lê Lợi, Bình Thạnh, TP. Hồ Chí Minh",332490451,2,Khoa Cap cuu
+Bùi Văn An,4/4/1989,37,Nam,Quảng Ninh,"403 Nguyễn Huệ, Vinh, Nghệ An",996556212,9,Khoa Mat
+Đặng Mỹ Yến,8/2/1992,34,Nữ,Huế,"438 Hoàng Văn Thụ, Đống Đa, Hà Nội",244624967,10,Khoa San
+Đỗ Văn Đạt,6/8/1965,61,Nam,Quảng Ninh,"898 Hoàng Văn Thụ, Ngô Quyền, Hải Phòng",559174875,12,Khoa Than kinh
+Phạm Xuân Hiếu,6/9/1999,27,Nam,Cần Thơ,"171 Trần Hưng Đạo, Biên Hòa, Đồng Nai",566348338,3,Khoa Nhi
+Trần Phương My,3/16/1985,41,Nữ,Đồng Nai,"495 Phan Chu Trinh, Bình Thủy, Cần Thơ",365302073,4,Khoa Da lieu
+Trần Xuân An,10/12/1969,56,Nam,Đồng Nai,"728 Nguyễn Huệ, TP. Thanh Hóa, Thanh Hóa",905471140,23,Khoa Cap cuu
+Vũ Văn Anh,6/30/1970,56,Nam,Cần Thơ,"552 Trần Hưng Đạo, Thanh Khê, Đà Nẵng",177761810,17,Khoa Nhi
+Võ Thị Yến,9/17/1976,50,Nữ,TP. Hồ Chí Minh,"515 Cách Mạng Tháng Tám, Biên Hòa, Đồng Nai",586889187,6,Khoa San
+Huỳnh Đức Vinh,8/19/1985,41,Nam,Hải Phòng,"711 Điện Biên Phủ, Biên Hòa, Đồng Nai",56650416,1,Khoa Noi
+Võ Gia Phong,8/25/1999,27,Nam,Bình Dương,"778 Nguyễn Huệ, Quỳnh Lưu, Nghệ An",570758163,2,Khoa San
+Lý Khánh Trinh,11/5/1999,26,Nữ,Bình Dương,"738 Hoàng Văn Thụ, Diễn Châu, Nghệ An",742252326,2,Khoa Tai Mui Hong
+Huỳnh Minh Khang,10/4/1994,31,Nam,TP. Hồ Chí Minh,"18 Cách Mạng Tháng Tám, Uông Bí, Quảng Ninh",508213744,2,Khoa Ngoai
+Đặng Gia Hải,6/3/1993,33,Nam,Đà Nẵng,"820 Lê Lợi, Quận 3, TP. Hồ Chí Minh",395808266,5,Khoa Da lieu
+Lê Đức An,12/19/1982,43,Nam,Thanh Hóa,"191 Lê Lợi, Gò Vấp, TP. Hồ Chí Minh",869033233,15,Khoa Tai Mui Hong
+Đặng Minh Hải,8/28/1992,34,Nam,Nghệ An,"67 Hoàng Văn Thụ, Hoàng Mai, Hà Nội",860605825,6,Khoa Tim mach
+Võ Hoàng Anh,8/22/1974,52,Nam,Đồng Nai,"645 Hoàng Văn Thụ, Biên Hòa, Đồng Nai",174490374,1,Khoa Ngoai
+Võ Minh Việt,1/5/1992,34,Nam,Thanh Hóa,"738 Lê Lợi, Phú Xuân, Huế",677842409,4,Khoa Noi
+Hồ Minh Sơn,10/28/1990,35,Nam,Cần Thơ,"712 Nguyễn Trãi, Hai Bà Trưng, Hà Nội",795672622,5,Khoa Cap cuu
+Lý Xuân Thành,2/27/1993,33,Nam,Thanh Hóa,"253 Hai Bà Trưng, Thủ Dầu Một, Bình Dương",186124638,6,Khoa Than kinh
+Bùi Trọng Hải,7/6/1962,64,Nam,Nghệ An,"980 Nguyễn Huệ, Uông Bí, Quảng Ninh",553025852,8,Khoa Cap cuu
+Nguyễn Quốc Anh,3/22/1963,63,Nam,Nghệ An,"763 Trần Hưng Đạo, Quỳnh Lưu, Nghệ An",703784788,23,Khoa Ngoai
+Lê Phương Thảo,6/23/1995,31,Nữ,Khánh Hòa,"234 Lý Thường Kiệt, Thủ Dầu Một, Bình Dương",687514476,8,Khoa Da lieu
+Hồ Bảo Anh,6/29/1979,47,Nữ,Cần Thơ,"831 Nguyễn Trãi, Trảng Bom, Đồng Nai",947129604,16,Khoa Cap cuu
+Lê Hữu Đạt,7/25/1999,27,Nam,Đồng Nai,"860 Hai Bà Trưng, Ninh Hòa, Khánh Hòa",854873500,4,Khoa Noi
+Lý Trọng Khang,2/17/1967,59,Nam,Đà Nẵng,"490 Trần Hưng Đạo, TP. Thanh Hóa, Thanh Hóa",303891562,12,Khoa Ngoai
+Huỳnh Kim Vy,7/2/1981,45,Nữ,Huế,"784 Lý Thường Kiệt, Ba Đình, Hà Nội",84488967,18,Khoa Da lieu
+Phan Phương Phương,5/25/1971,55,Nữ,Hà Nội,"548 Hoàng Văn Thụ, Cái Răng, Cần Thơ",81332368,22,Khoa Cap cuu
+Lê Hữu Dũng,4/12/1969,57,Nam,Cần Thơ,"451 Hoàng Văn Thụ, Quận 3, TP. Hồ Chí Minh",78553353,26,Khoa Cap cuu
+Huỳnh Phương Quỳnh,6/6/1977,49,Nữ,Khánh Hòa,"417 Nguyễn Huệ, Ba Đình, Hà Nội",904329213,3,Khoa Cap cuu
+Nguyễn Bảo Ngân,10/25/1991,34,Nữ,Hải Phòng,"62 Lý Thường Kiệt, Trảng Bom, Đồng Nai",265778781,6,Khoa Noi
+Trần Quốc An,8/1/1998,28,Nam,Huế,"528 Điện Biên Phủ, Hải Châu, Đà Nẵng",740662928,3,Khoa Noi
+Phạm Kim Nhung,6/7/1976,50,Nữ,Bình Dương,"157 Phan Chu Trinh, Cẩm Phả, Quảng Ninh",347480944,15,Khoa Cap cuu
+Vũ Hoàng Anh,9/17/1973,53,Nam,Quảng Ninh,"473 Nguyễn Huệ, Đống Đa, Hà Nội",435132121,11,Khoa Nhi
+Phạm Mỹ My,1/17/1977,49,Nữ,Thanh Hóa,"49 Lê Lợi, Ninh Hòa, Khánh Hòa",889827051,23,Khoa Mat
+Phan Bảo Quỳnh,5/22/1969,57,Nữ,Đồng Nai,"730 Lý Thường Kiệt, Vinh, Nghệ An",933314943,21,Khoa Tim mach
+Phạm Gia An,3/19/1991,35,Nam,Khánh Hòa,"189 Hoàng Văn Thụ, Ô Môn, Cần Thơ",267026486,6,Khoa Ngoai
+Vũ Hoàng Khang,9/14/1988,38,Nam,Khánh Hòa,"493 Nguyễn Trãi, Ba Đình, Hà Nội",294791206,2,Khoa San
+Đỗ Thanh An,4/25/1992,34,Nam,Cần Thơ,"184 Trần Hưng Đạo, Kiến An, Hải Phòng",210212887,9,Khoa Noi
+Phan Minh Hiếu,8/31/1997,29,Nam,Đồng Nai,"486 Trần Hưng Đạo, Sơn Trà, Đà Nẵng",376719937,4,Khoa Tai Mui Hong
+Lý Trọng Minh,9/7/1991,35,Nam,TP. Hồ Chí Minh,"740 Nguyễn Trãi, Cái Răng, Cần Thơ",362030290,1,Khoa Tai Mui Hong
+Đỗ Hữu An,4/26/1986,40,Nam,Hà Nội,"905 Trần Hưng Đạo, Thuận An, Bình Dương",985402794,12,Khoa Tai Mui Hong
+Ngô Gia Khang,2/23/1979,47,Nam,Khánh Hòa,"674 Điện Biên Phủ, Thanh Khê, Đà Nẵng",424020344,13,Khoa San
+Lê Quốc Minh,4/23/1969,57,Nam,Đồng Nai,"868 Lý Thường Kiệt, TP. Thanh Hóa, Thanh Hóa",892775719,4,Khoa San
+Ngô Đức Anh,6/6/1974,52,Nam,Cần Thơ,"800 Nguyễn Huệ, Sầm Sơn, Thanh Hóa",406692624,11,Khoa Nhi
+Võ Khánh Hương,4/14/1995,31,Nữ,Thanh Hóa,"444 Lê Lợi, Diễn Châu, Nghệ An",519482983,8,Khoa Tai Mui Hong
+Hoàng Hoàng Hải,7/8/1975,51,Nam,Cần Thơ,"596 Trần Hưng Đạo, TP. Thanh Hóa, Thanh Hóa",548808220,1,Khoa Da lieu
+Dương Xuân An,10/30/1965,60,Nam,Khánh Hòa,"476 Phan Chu Trinh, Hạ Long, Quảng Ninh",766175527,32,Khoa Than kinh
+Huỳnh Phương Lan,5/4/1982,44,Nữ,Đồng Nai,"161 Cách Mạng Tháng Tám, Quỳnh Lưu, Nghệ An",309287436,10,Khoa Da lieu
+Dương Văn Việt,3/21/1994,32,Nam,Thanh Hóa,"989 Cách Mạng Tháng Tám, Nha Trang, Khánh Hòa",299743513,6,Khoa Da lieu
+Huỳnh Bảo Nga,10/26/1980,45,Nữ,Đồng Nai,"46 Hoàng Văn Thụ, Kiến An, Hải Phòng",791385067,15,Khoa Mat
+Hồ Gia Vinh,7/29/1985,41,Nam,Khánh Hòa,"3 Lý Thường Kiệt, Quận 7, TP. Hồ Chí Minh",807209838,13,Khoa Tai Mui Hong
+Đặng Diệu Nga,1/30/1998,28,Nữ,Khánh Hòa,"177 Hoàng Văn Thụ, Trảng Bom, Đồng Nai",657559787,4,Khoa Cap cuu
+Võ Gia Đạt,3/12/1986,40,Nam,Đồng Nai,"358 Phan Chu Trinh, Cẩm Phả, Quảng Ninh",915086752,11,Khoa Tim mach
+Phan Quốc Long,9/10/2000,26,Nam,Cần Thơ,"598 Lê Lợi, Sầm Sơn, Thanh Hóa",198268910,1,Khoa Noi
+Lê Đức Hùng,10/9/1992,33,Nam,TP. Hồ Chí Minh,"182 Lý Thường Kiệt, Kiến An, Hải Phòng",344313357,1,Khoa Cap cuu
+Vũ Thanh Hiếu,6/10/1981,45,Nam,Quảng Ninh,"854 Trần Hưng Đạo, Vinh, Nghệ An",590631874,10,Khoa San
+Võ Văn Anh,5/22/1980,46,Nam,Huế,"474 Hai Bà Trưng, Sơn Trà, Đà Nẵng",929699160,6,Khoa Tai Mui Hong
+Bùi Ngọc Hà,3/16/1962,64,Nữ,Nghệ An,"468 Cách Mạng Tháng Tám, Sơn Trà, Đà Nẵng",660131059,40,Khoa Nhi
+Bùi Đức Quân,10/28/1989,36,Nam,Nghệ An,"468 Lý Thường Kiệt, Kiến An, Hải Phòng",319745224,1,Khoa Nhi
+Võ Diệu Ngân,3/1/1976,50,Nữ,Thanh Hóa,"744 Lý Thường Kiệt, Trảng Bom, Đồng Nai",490710303,16,Khoa Nhi
+Trần Kim Hạnh,3/29/1984,42,Nữ,Cần Thơ,"430 Phan Chu Trinh, Trảng Bom, Đồng Nai",470741470,17,Khoa Mat
+Ngô Trọng Đức,3/21/1966,60,Nam,Thanh Hóa,"640 Lý Thường Kiệt, Uông Bí, Quảng Ninh",949475278,12,Khoa Than kinh
+Lê Phương Mai,4/25/1992,34,Nữ,Thanh Hóa,"86 Lý Thường Kiệt, Trảng Bom, Đồng Nai",596196342,9,Khoa Noi
+Hoàng Mỹ Linh,8/15/1965,61,Nữ,Quảng Ninh,"26 Phan Chu Trinh, Ninh Kiều, Cần Thơ",444650630,37,Khoa Da lieu
+Ngô Khánh Yến,4/22/1978,48,Nữ,Hà Nội,"444 Hai Bà Trưng, Long Khánh, Đồng Nai",769284786,5,Khoa Nhi
+Phan Khánh Mai,5/30/1963,63,Nữ,Đồng Nai,"93 Điện Biên Phủ, Thuận An, Bình Dương",257286670,5,Khoa Mat
+Phan Phương Trang,10/11/1999,26,Nữ,Cần Thơ,"802 Nguyễn Huệ, Lê Chân, Hải Phòng",53679202,3,Khoa Cap cuu
+Hoàng Diệu Lan,8/9/1991,35,Nữ,Quảng Ninh,"603 Hai Bà Trưng, Ba Đình, Hà Nội",139478904,2,Khoa Cap cuu
+Trần Quốc Đạt,9/24/1988,37,Nam,Hà Nội,"242 Điện Biên Phủ, Bình Thủy, Cần Thơ",545766086,9,Khoa Tai Mui Hong
+Ngô Phương Vy,11/27/1972,53,Nữ,Cần Thơ,"217 Phan Chu Trinh, Dĩ An, Bình Dương",331414294,1,Khoa Nhi
+Huỳnh Thanh Long,3/4/1971,55,Nam,Khánh Hòa,"610 Cách Mạng Tháng Tám, Hai Bà Trưng, Hà Nội",629912094,12,Khoa Tim mach
+Dương Thu Trang,11/15/1987,38,Nữ,Cần Thơ,"15 Nguyễn Trãi, Trảng Bom, Đồng Nai",687690333,11,Khoa Cap cuu
+Võ Xuân Khang,8/5/1987,39,Nam,Hà Nội,"161 Trần Hưng Đạo, Cẩm Phả, Quảng Ninh",986466224,10,Khoa Tai Mui Hong
+Bùi Hoàng Đức,11/12/1991,34,Nam,Hà Nội,"127 Lý Thường Kiệt, Thuận An, Bình Dương",125201959,4,Khoa Tim mach
+Huỳnh Thanh Nam,9/26/1983,42,Nam,Huế,"655 Nguyễn Huệ, Sầm Sơn, Thanh Hóa",179060851,16,Khoa Ngoai
+Vũ Hữu Bình,2/14/1969,57,Nam,Bình Dương,"966 Cách Mạng Tháng Tám, Ngũ Hành Sơn, Đà Nẵng",401125802,34,Khoa Da lieu
+Trần Trọng An,6/25/1979,47,Nam,Khánh Hòa,"127 Nguyễn Huệ, Dĩ An, Bình Dương",396241160,13,Khoa San
+Đỗ Thu Nhung,12/25/1993,32,Nữ,Hà Nội,"246 Hai Bà Trưng, Gò Vấp, TP. Hồ Chí Minh",642825970,5,Khoa Ngoai
+Dương Quốc Đức,9/29/1971,54,Nam,Hà Nội,"617 Nguyễn Trãi, Hồng Bàng, Hải Phòng",576036530,29,Khoa Nhi
+Đặng Diệu My,5/7/1983,43,Nữ,Bình Dương,"537 Hai Bà Trưng, Quận 7, TP. Hồ Chí Minh",561227919,20,Khoa Than kinh
+Dương Bảo Giang,3/5/1973,53,Nữ,Nghệ An,"378 Phan Chu Trinh, Phú Xuân, Huế",316965797,17,Khoa Than kinh
+Vũ Trọng Hải,8/1/1990,36,Nam,Bình Dương,"543 Hoàng Văn Thụ, Thuận Hóa, Huế",478304912,3,Khoa Cap cuu
+Lý Diệu My,6/26/1963,63,Nữ,Bình Dương,"489 Phan Chu Trinh, Trảng Bom, Đồng Nai",39939586,9,Khoa Ngoai
+Hoàng Khánh Hương,3/21/1974,52,Nữ,TP. Hồ Chí Minh,"738 Phan Chu Trinh, Thuận An, Bình Dương",110208057,17,Khoa Da lieu
+Lý Thị Trinh,8/12/1965,61,Nữ,Quảng Ninh,"225 Lê Lợi, Bỉm Sơn, Thanh Hóa",538181362,14,Khoa Than kinh
+Hồ Ngọc Linh,7/4/1991,35,Nữ,Đà Nẵng,"729 Lý Thường Kiệt, Cam Ranh, Khánh Hòa",549163502,9,Khoa San
+Dương Xuân Việt,12/25/1968,57,Nam,Hà Nội,"494 Lê Lợi, Sơn Trà, Đà Nẵng",784000353,5,Khoa Nhi
+Trần Phương Anh,10/28/1980,45,Nữ,Thanh Hóa,"213 Phan Chu Trinh, Ngô Quyền, Hải Phòng",846101317,18,Khoa San
+Nguyễn Minh Anh,9/29/2000,25,Nam,TP. Hồ Chí Minh,"772 Nguyễn Trãi, Sơn Trà, Đà Nẵng",397498518,1,Khoa Ngoai
+Phạm Xuân Phong,12/22/1970,55,Nam,Khánh Hòa,"344 Trần Hưng Đạo, Trảng Bom, Đồng Nai",766274954,28,Khoa Tim mach
+Ngô Phương Thảo,11/2/1968,57,Nữ,Hà Nội,"279 Hoàng Văn Thụ, Nha Trang, Khánh Hòa",290571072,19,Khoa Nhi
+Lê Gia Đức,1/21/1993,33,Nam,TP. Hồ Chí Minh,"285 Hai Bà Trưng, Dĩ An, Bình Dương",970449891,2,Khoa Than kinh
+Phạm Phương Hạnh,3/10/1976,50,Nữ,TP. Hồ Chí Minh,"476 Cách Mạng Tháng Tám, Ô Môn, Cần Thơ",420458637,19,Khoa Than kinh
+Huỳnh Thu Trinh,3/18/1967,59,Nữ,Đồng Nai,"934 Lê Lợi, Hai Bà Trưng, Hà Nội",254381885,25,Khoa Ngoai
+Trần Mỹ Hà,6/26/1974,52,Nữ,Nghệ An,"251 Hoàng Văn Thụ, Uông Bí, Quảng Ninh",518021910,5,Khoa Nhi
+Trần Hữu Vinh,9/2/1991,35,Nam,Quảng Ninh,"860 Nguyễn Huệ, Bình Thạnh, TP. Hồ Chí Minh",669324463,6,Khoa Mat
+Trần Khánh Nhung,12/29/1981,44,Nữ,Đồng Nai,"416 Nguyễn Trãi, Kiến An, Hải Phòng",597116458,10,Khoa San
+Bùi Gia Khang,1/1/1999,27,Nam,TP. Hồ Chí Minh,"182 Lê Lợi, Quận 1, TP. Hồ Chí Minh",173173851,1,Khoa Da lieu
+Phạm Phương Trinh,7/16/1984,42,Nữ,Quảng Ninh,"573 Hoàng Văn Thụ, Ninh Hòa, Khánh Hòa",812036162,14,Khoa San
+Phan Quốc Dũng,3/26/1994,32,Nam,TP. Hồ Chí Minh,"501 Phan Chu Trinh, Cầu Giấy, Hà Nội",892655199,3,Khoa San
+Dương Phương Nhung,3/6/1982,44,Nữ,Hải Phòng,"889 Lý Thường Kiệt, Cái Răng, Cần Thơ",807715839,3,Khoa Tim mach
+Lê Xuân Anh,3/22/1979,47,Nam,Bình Dương,"539 Điện Biên Phủ, Cẩm Phả, Quảng Ninh",3925650,1,Khoa Ngoai
+Trần Thu Lan,4/13/1994,32,Nữ,Cần Thơ,"976 Trần Hưng Đạo, Thanh Khê, Đà Nẵng",917912064,2,Khoa Than kinh
+Phan Phương Linh,6/28/1962,64,Nữ,Cần Thơ,"28 Phan Chu Trinh, Quận 7, TP. Hồ Chí Minh",616359067,27,Khoa Noi
+Nguyễn Bảo Châu,1/11/1996,30,Nữ,Cần Thơ,"746 Điện Biên Phủ, Thanh Khê, Đà Nẵng",461306853,3,Khoa Noi
+Trần Bảo Phương,12/22/1980,45,Nữ,Bình Dương,"202 Hai Bà Trưng, Biên Hòa, Đồng Nai",442390439,2,Khoa Tim mach
+Huỳnh Thanh Trang,8/21/1977,49,Nữ,Bình Dương,"260 Cách Mạng Tháng Tám, Phú Xuân, Huế",674740027,4,Khoa Cap cuu
+Đỗ Diệu Châu,5/2/1994,32,Nữ,Đà Nẵng,"681 Nguyễn Trãi, Hạ Long, Quảng Ninh",971593392,7,Khoa Cap cuu
+Bùi Ngọc Vy,11/20/1992,33,Nữ,Khánh Hòa,"744 Nguyễn Trãi, Quận 7, TP. Hồ Chí Minh",927939177,6,Khoa Nhi
+Vũ Xuân Sơn,1/9/1962,64,Nam,Thanh Hóa,"136 Trần Hưng Đạo, Thanh Khê, Đà Nẵng",282306461,4,Khoa Mat
+Hoàng Văn Hiếu,5/13/1987,39,Nam,Hải Phòng,"528 Cách Mạng Tháng Tám, Hồng Bàng, Hải Phòng",439893348,9,Khoa Than kinh
+Vũ Ngọc Hương,9/22/1997,28,Nữ,Đà Nẵng,"424 Hoàng Văn Thụ, Quận 7, TP. Hồ Chí Minh",173290019,5,Khoa Tim mach
+Võ Hoàng Sơn,10/16/1974,51,Nam,Hải Phòng,"671 Trần Hưng Đạo, Vinh, Nghệ An",625642396,13,Khoa Mat
+Đỗ Phương Quỳnh,7/8/1993,33,Nữ,Khánh Hòa,"552 Trần Hưng Đạo, Hồng Bàng, Hải Phòng",762725374,3,Khoa Da lieu
+Vũ Hoàng Tuấn,12/9/1990,35,Nam,Đà Nẵng,"699 Hoàng Văn Thụ, Dĩ An, Bình Dương",688063770,12,Khoa Cap cuu
+Hồ Hoàng Đạt,12/21/1977,48,Nam,Thanh Hóa,"626 Điện Biên Phủ, Thuận Hóa, Huế",597501832,14,Khoa Tai Mui Hong
+Nguyễn Minh Thành,1/17/1967,59,Nam,Bình Dương,"926 Phan Chu Trinh, Trảng Bom, Đồng Nai",903246725,6,Khoa Da lieu
+Phan Phương Mai,1/11/1968,58,Nữ,Cần Thơ,"345 Hoàng Văn Thụ, Thuận Hóa, Huế",886172728,16,Khoa Tai Mui Hong
+Phạm Minh Việt,3/13/1989,37,Nam,Thanh Hóa,"296 Hai Bà Trưng, Cửa Lò, Nghệ An",977648535,14,Khoa Cap cuu
+Phạm Minh Việt,3/8/1968,58,Nam,Bình Dương,"141 Cách Mạng Tháng Tám, Uông Bí, Quảng Ninh",378102747,8,Khoa Tai Mui Hong
+Hoàng Hoàng Đức,4/11/1970,56,Nam,Quảng Ninh,"765 Trần Hưng Đạo, Vinh, Nghệ An",912463385,29,Khoa Tim mach
+Dương Ngọc Linh,1/16/1994,32,Nữ,Huế,"568 Hai Bà Trưng, Sơn Trà, Đà Nẵng",28961121,1,Khoa Nhi
+Huỳnh Mỹ Yến,4/5/1972,54,Nữ,Quảng Ninh,"833 Phan Chu Trinh, Quỳnh Lưu, Nghệ An",886317162,30,Khoa Nhi
+Dương Trọng Hiếu,1/9/1979,47,Nam,Khánh Hòa,"114 Cách Mạng Tháng Tám, Diễn Châu, Nghệ An",799532103,3,Khoa Noi
+Vũ Văn Phong,2/13/1964,62,Nam,Hải Phòng,"750 Hai Bà Trưng, Cam Ranh, Khánh Hòa",936700139,39,Khoa Mat
+Võ Phương Linh,1/1/1988,38,Nữ,Thanh Hóa,"889 Hoàng Văn Thụ, Long Khánh, Đồng Nai",813707975,15,Khoa San
+Vũ Văn Phong,2/7/1978,48,Nam,Đà Nẵng,"192 Điện Biên Phủ, Trảng Bom, Đồng Nai",248914419,15,Khoa Tim mach
+Phạm Thanh Bình,9/11/1963,63,Nam,Hà Nội,"253 Lý Thường Kiệt, Thuận Hóa, Huế",643787308,2,Khoa Cap cuu
+Đỗ Phương Ngân,6/22/1981,45,Nữ,Quảng Ninh,"179 Lý Thường Kiệt, Bình Thủy, Cần Thơ",398698918,21,Khoa Da lieu
+Huỳnh Quốc Thành,2/29/2000,26,Nam,Hải Phòng,"922 Nguyễn Trãi, Trảng Bom, Đồng Nai",51331123,3,Khoa Da lieu
+Hoàng Hoàng Khang,6/17/1995,31,Nam,Hải Phòng,"717 Nguyễn Trãi, Biên Hòa, Đồng Nai",837086648,5,Khoa Da lieu
+Hoàng Văn Minh,11/21/1992,33,Nam,Hải Phòng,"73 Trần Hưng Đạo, Quận 1, TP. Hồ Chí Minh",284324760,3,Khoa Nhi
+Bùi Quốc Quân,12/10/1976,49,Nam,Bình Dương,"508 Điện Biên Phủ, Cửa Lò, Nghệ An",336250698,19,Khoa Tim mach
+Phạm Xuân Hùng,7/5/1984,42,Nam,Bình Dương,"731 Lý Thường Kiệt, Quận 3, TP. Hồ Chí Minh",745990410,5,Khoa Ngoai
+Bùi Mỹ Quỳnh,6/19/1970,56,Nữ,Bình Dương,"44 Lê Lợi, Ninh Kiều, Cần Thơ",375187281,23,Khoa Than kinh
