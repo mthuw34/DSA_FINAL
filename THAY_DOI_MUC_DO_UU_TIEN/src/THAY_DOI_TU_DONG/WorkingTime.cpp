@@ -1,188 +1,140 @@
 #include "WorkingTime.h"
-
-#include <algorithm>
-
 using namespace std;
 
+
 // 07:30
-const int SANG_BAT_DAU =
-    7 * 60 + 30;
+const int SANG_BAT_DAU = 7 * 60 + 30;
 
 // 11:30
-const int SANG_KET_THUC =
-    11 * 60 + 30;
+const int SANG_KET_THUC = 11 * 60 + 30;
 
 // 13:00
-const int CHIEU_BAT_DAU =
-    13 * 60;
+const int CHIEU_BAT_DAU = 13 * 60;
 
 // 16:30
-const int CHIEU_KET_THUC =
-    16 * 60 + 30;
+const int CHIEU_KET_THUC = 16 * 60 + 30;
 
-// ========================================
-// KIEM TRA CO DANG TRONG GIO LAM KHONG
-// ========================================
-bool isWorkingTime(
-    time_t timestamp
-)
+
+bool isWorkingTime(time_t timestamp)
 {
-    tm timeInfo =
-        *localtime(&timestamp);
-
-
-    int minutes =
-        timeInfo.tm_hour * 60 + timeInfo.tm_min;
-
+    tm info = *localtime(&timestamp);
+    int minutes = info.tm_hour * 60 + info.tm_min;
 
     bool morning =
-        minutes >= SANG_BAT_DAU && minutes < SANG_KET_THUC;
+        minutes >= SANG_BAT_DAU &&
+        minutes <= SANG_KET_THUC;
 
-    bool afternoon = minutes >= CHIEU_BAT_DAU && minutes < CHIEU_KET_THUC;
+    bool afternoon =
+        minutes >= CHIEU_BAT_DAU &&
+        minutes <= CHIEU_KET_THUC;
 
     return morning || afternoon;
 }
 
-// ========================================
-// TINH TONG THOI GIAN CHO HOP LE
-// ========================================
-long long calculateWorkingSeconds(
-    time_t checkinTime,
-    time_t currentTime
-)
+
+time_t calculateNextBoostTime(time_t startTime)
 {
-    if (currentTime <= checkinTime)
+    const int BOOST_SECONDS = 90 * 60;
+
+    int remaining = BOOST_SECONDS;
+    time_t current = startTime;
+
+    while (remaining > 0)
     {
-        return 0;
-    }
+        tm info = *localtime(&current);
 
-    long long totalSeconds = 0;
+        int minutes = info.tm_hour * 60 + info.tm_min;
 
-    tm date =
-        *localtime(&checkinTime);
-
-    date.tm_hour = 0;
-    date.tm_min = 0;
-    date.tm_sec = 0;
-    date.tm_isdst = -1;
-
-    time_t dayStart =
-        mktime(&date);
-
-    while (dayStart < currentTime)
-    {
-        tm day =
-            *localtime(&dayStart);
-
-        // -----------------------------
-        // 07:30
-        // -----------------------------
-
-        tm morningStartTm = day;
-
-        morningStartTm.tm_hour = 7;
-        morningStartTm.tm_min = 30;
-        morningStartTm.tm_sec = 0;
-        morningStartTm.tm_isdst = -1;
-
-        time_t morningStart =
-            mktime(&morningStartTm);
-        // -----------------------------
-        // 11:30
-        // -----------------------------
-
-        tm morningEndTm = day;
-
-        morningEndTm.tm_hour = 11;
-        morningEndTm.tm_min = 30;
-        morningEndTm.tm_sec = 0;
-        morningEndTm.tm_isdst = -1;
-
-        time_t morningEnd =
-            mktime(&morningEndTm);
-
-        // -----------------------------
-        // 13:00
-        // -----------------------------
-        tm afternoonStartTm = day;
-
-        afternoonStartTm.tm_hour = 13;
-        afternoonStartTm.tm_min = 0;
-        afternoonStartTm.tm_sec = 0;
-        afternoonStartTm.tm_isdst = -1;
-
-
-        time_t afternoonStart =
-            mktime(&afternoonStartTm);
-
-        // -----------------------------
-        // 16:30
-        // -----------------------------
-        tm afternoonEndTm = day;
-
-        afternoonEndTm.tm_hour = 16;
-        afternoonEndTm.tm_min = 30;
-        afternoonEndTm.tm_sec = 0;
-        afternoonEndTm.tm_isdst = -1;
-
-        time_t afternoonEnd =
-            mktime(&afternoonEndTm);
-
-        // =============================
-        // CA SANG
-        // =============================
-
-        time_t start =
-            max(
-                checkinTime,
-                morningStart
-            );
-
-        time_t end =
-            min(
-                currentTime,
-                morningEnd
-            );
-
-        if (end > start)
+        // Ca sáng
+        if (
+            minutes >= SANG_BAT_DAU &&
+            minutes < SANG_KET_THUC
+        )
         {
-            totalSeconds +=
-                end - start;
+            tm endMorning = info;
+
+            endMorning.tm_hour = 11;
+            endMorning.tm_min = 30;
+            endMorning.tm_sec = 0;
+
+            time_t endTime = mktime(&endMorning);
+
+            int available = static_cast<int>(
+                    endTime - current
+                );
+
+            if (remaining <= available)
+            {
+                return current + remaining;
+            }
+
+            remaining -= available;
+            current = endTime;
         }
 
-        // =============================
-        // CA CHIEU
-        // =============================
-        start =
-            max(
-                checkinTime,
-                afternoonStart
-            );
-
-        end =
-            min(
-                currentTime,
-                afternoonEnd
-            );
-
-        if (end > start)
+        // Nghỉ trưa
+        else if (
+            minutes >= SANG_KET_THUC &&
+            minutes < CHIEU_BAT_DAU
+        )
         {
-            totalSeconds +=
-                end - start;
+            tm afternoon = info;
+
+            afternoon.tm_hour = 13;
+            afternoon.tm_min = 0;
+            afternoon.tm_sec = 0;
+
+            current = mktime(&afternoon);
         }
 
-        // Sang ngay tiep theo
-        day.tm_mday++;
+        // Ca chiều
+        else if (
+            minutes >= CHIEU_BAT_DAU &&
+            minutes < CHIEU_KET_THUC
+        )
+        {
+            tm endAfternoon = info;
 
-        day.tm_hour = 0;
-        day.tm_min = 0;
-        day.tm_sec = 0;
-        day.tm_isdst = -1;
+            endAfternoon.tm_hour = 16;
+            endAfternoon.tm_min = 30;
+            endAfternoon.tm_sec = 0;
 
-        dayStart =
-            mktime(&day);
+            time_t endTime = mktime(&endAfternoon);
+
+            int available = static_cast<int>(endTime - current);
+
+            if (remaining <= available)
+            {
+                return current + remaining;
+            }
+
+            remaining -= available;
+            current = endTime;
+        }
+
+
+        // Ngoài giờ làm việc
+        else
+        {
+            tm next = info;
+
+            if (minutes < SANG_BAT_DAU)
+            {
+                next.tm_hour = 7;
+                next.tm_min = 30;
+                next.tm_sec = 0;
+            }
+            else
+            {
+                next.tm_mday++;
+
+                next.tm_hour = 7;
+                next.tm_min = 30;
+                next.tm_sec = 0;
+            }
+            current = mktime(&next);
+        }
     }
 
-
-    return totalSeconds;
+    return current;
 }

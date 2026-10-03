@@ -30,10 +30,7 @@ int main()
         return 1;
     }
 
-    PrioritySync sync(
-        hospitalDb,
-        priorityDb
-    );
+    PrioritySync sync(hospitalDb, priorityDb);
 
     sync.syncAll();
 

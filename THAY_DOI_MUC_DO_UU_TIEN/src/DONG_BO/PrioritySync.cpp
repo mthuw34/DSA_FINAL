@@ -7,10 +7,7 @@
 
 using namespace std;
 
-PrioritySync::PrioritySync(
-    sqlite3* hospital,
-    sqlite3* priority
-)
+PrioritySync::PrioritySync(sqlite3* hospital, sqlite3* priority )
 {
     hospitalDb = hospital;
     priorityDb = priority;
@@ -18,7 +15,7 @@ PrioritySync::PrioritySync(
 
 bool PrioritySync::syncAll()
 {
-    // 1. Đọc dữ liệu từ hospital.db
+    // Đọc dữ liệu từ hospital.db
     const char* selectSql = R"(
 
         SELECT
@@ -49,7 +46,6 @@ bool PrioritySync::syncAll()
     // Thêm/ cập nhật vào priority.db
     const char* upsertSql = R"(
 
-        //Thêm cột vào bảng 
         INSERT INTO priority_checkins
         (
             checkin_id,
@@ -57,12 +53,12 @@ bool PrioritySync::syncAll()
             department,
             checkin_time,
             base_priority,
-            current_priority
+            current_priority,
+            last_update
         )
 
-        VALUES (?, ?, ?, ?, ?, ?)
+        VALUES (?, ?, ?, ?, ?, ?, ?)
 
-        //check id từ hospital.db
         ON CONFLICT(checkin_id)
 
         DO UPDATE SET
@@ -91,87 +87,45 @@ bool PrioritySync::syncAll()
 
     unordered_set<int> validIds;
 
-    //duyệt từng dòng, mỗi lần gọi tiến đến 1 dòng kết quả tiếp theo
+    // Duyệt từng dòng, mỗi lần gọi tên tiến đến 1 dòng kết quả tiếp theo
     while (sqlite3_step(selectStmt) == SQLITE_ROW)
     {
-        int checkinId =
-            sqlite3_column_int(selectStmt, 0);
+        int checkinId = sqlite3_column_int(selectStmt, 0);
+        int patientId = sqlite3_column_int(selectStmt, 1);
 
-        int patientId =
-            sqlite3_column_int(selectStmt, 1);
+        const unsigned char* departmentText = sqlite3_column_text(selectStmt, 2);
 
-        const unsigned char* departmentText =
-            sqlite3_column_text(selectStmt, 2);
+        string department = departmentText
+            ? reinterpret_cast<const char*>(departmentText): "";
 
-        string department =
-            departmentText
-            ? reinterpret_cast<const char*>(departmentText)
-            : "";
+        const unsigned char* timeText = sqlite3_column_text(selectStmt, 3);
 
-        const unsigned char* timeText =
-            sqlite3_column_text(selectStmt, 3);
+        string checkinTime = timeText
+            ? reinterpret_cast<const char*>(timeText): "";
 
-        string checkinTime =
-            timeText
-            ? reinterpret_cast<const char*>(timeText)
-            : "";
-
-        int basePriority =
-            sqlite3_column_int(selectStmt, 4);
+        int basePriority = sqlite3_column_int(selectStmt, 4);
 
         validIds.insert(checkinId);
 
         sqlite3_reset(upsertStmt);
         sqlite3_clear_bindings(upsertStmt);
-
-        sqlite3_bind_int(
-            upsertStmt,
-            1,
-            checkinId
-        );
-
-        sqlite3_bind_int(
-            upsertStmt,
-            2,
-            patientId
-        );
-
-        sqlite3_bind_text(
-            upsertStmt,
-            3,
-            department.c_str(),
-            -1,
-            SQLITE_TRANSIENT
-        );
-
-        sqlite3_bind_text(
-            upsertStmt,
-            4,
-            checkinTime.c_str(),
-            -1,
-            SQLITE_TRANSIENT
-        );
-
-        sqlite3_bind_int(
-            upsertStmt,
-            5,
-            basePriority
-        );
+    // gán dữ liệu
+        sqlite3_bind_int(upsertStmt, 1, checkinId);
+        sqlite3_bind_int(upsertStmt, 2, patientId);
+        sqlite3_bind_text(upsertStmt, 3, department.c_str(), -1, SQLITE_TRANSIENT );
+        sqlite3_bind_text(upsertStmt, 4, checkinTime.c_str(), -1, SQLITE_TRANSIENT);
+        sqlite3_bind_int(upsertStmt, 5, basePriority);
 
         // checkin mới: current_priority ban đầu = base_priority
-        sqlite3_bind_int(
-            upsertStmt,
-            6,
-            basePriority
-        );
+        sqlite3_bind_int(upsertStmt, 6, basePriority);
+
+        sqlite3_bind_text( upsertStmt, 7, checkinTime.c_str(), -1, SQLITE_TRANSIENT);
 
         if (sqlite3_step(upsertStmt) != SQLITE_DONE)
         {
             cerr << "Loi dong bo checkin_id = "
-                 << checkinId
-                 << ": "
-                 << sqlite3_errmsg(priorityDb)
-                 << '\n';
+                 << checkinId << ": "
+                 << sqlite3_errmsg(priorityDb) << '\n';
 
             sqlite3_finalize(selectStmt);
             sqlite3_finalize(upsertStmt);
@@ -184,7 +138,6 @@ bool PrioritySync::syncAll()
     sqlite3_finalize(upsertStmt);
 
     // Xóa các checkin ko còn ở database gốc
-
     const char* readSql =
         "SELECT checkin_id FROM priority_checkins;";
 
@@ -205,8 +158,7 @@ bool PrioritySync::syncAll()
 
     while (sqlite3_step(readStmt) == SQLITE_ROW)
     {
-        int id =
-            sqlite3_column_int(readStmt, 0);
+        int id = sqlite3_column_int(readStmt, 0);
 
         if (validIds.find(id) == validIds.end())
         {
@@ -236,18 +188,11 @@ bool PrioritySync::syncAll()
     {
         sqlite3_reset(deleteStmt);
         sqlite3_clear_bindings(deleteStmt);
-
-        sqlite3_bind_int(
-            deleteStmt,
-            1,
-            id
-        );
-
+        sqlite3_bind_int(deleteStmt, 1, id );
         sqlite3_step(deleteStmt);
     }
 
     sqlite3_finalize(deleteStmt);
-
     cout << "Dong bo thanh cong.\n";
 
     return true;
