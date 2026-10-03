@@ -193,7 +193,5 @@ bool PrioritySync::syncAll()
     }
 
     sqlite3_finalize(deleteStmt);
-    cout << "Dong bo thanh cong.\n";
-
     return true;
 }
