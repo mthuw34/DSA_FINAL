@@ -6,29 +6,13 @@
 class PriorityManager
 {
 private:
-
     sqlite3* db;
-
 public:
+    PriorityManager(sqlite3* database);
 
-    PriorityManager(
-        sqlite3* database
-    );
-
-    bool checkinExists(
-        int checkinId
-    );
-
-    bool getPriority(
-        int checkinId,
-        int& basePriority,
-        int& currentPriority
-    );
-
-    bool updatePriority(
-        int checkinId,
-        int newPriority
-    );
+    bool checkinExists(int checkinId);
+    bool getPriority(int checkinId, int& basePriority, int& currentPriority );
+    bool updatePriority(int checkinId, int newPriority);
 };
 
 #endif

@@ -1,9 +1,6 @@
 #include "AutoPriority.h"
 
-//Khởi tạo
-AutoPriorityHeap::AutoPriorityHeap(
-    int initialCapacity
-)
+AutoPriorityHeap::AutoPriorityHeap(int initialCapacity)
 {
     if (initialCapacity <= 0)
     {
@@ -13,17 +10,14 @@ AutoPriorityHeap::AutoPriorityHeap(
     size = 0;
     capacity = initialCapacity;
 
-    heap =
-        new AutoPriorityItem[capacity];
+    heap = new AutoPriorityItem[capacity];
 }
 
-//Giải phóng bộ nhớ
 AutoPriorityHeap::~AutoPriorityHeap()
 {
     delete[] heap;
 }
 
-// VI TRI CHA VA CON
 int AutoPriorityHeap::parent(int i)
 {
     return (i - 1) / 2;
@@ -39,168 +33,85 @@ int AutoPriorityHeap::rightChild(int i)
     return 2 * i + 2;
 }
 
-// SO SANH HAI PHAN TU
-bool AutoPriorityHeap::higherPriority(
-    const AutoPriorityItem& a,
-    const AutoPriorityItem& b
-)
+// Moc tang som hon se co do uu tien cao hon
+bool AutoPriorityHeap::higherPriority(const AutoPriorityItem& a,const AutoPriorityItem& b)
 {
-    //Còn ít thời gian thì đến hạn khám sớm hơn 
-    if (
-        a.remainingSeconds
-        !=
-        b.remainingSeconds
-    )
+    if (a.nextBoostTime != b.nextBoostTime)
     {
-        return
-            a.remainingSeconds
-            <
-            b.remainingSeconds;
+        return a.nextBoostTime < b.nextBoostTime;
     }
 
-    //Bằng nhau -> checkin_id nhỏ hơn đứng trước
-    return
-        a.checkinId
-        <
-        b.checkinId;
+    return a.checkinId < b.checkinId;
 }
 
-//Đổi chỗ 
-void AutoPriorityHeap::swapItem(
-    AutoPriorityItem& a,
-    AutoPriorityItem& b
-)
+
+void AutoPriorityHeap::swapItem(AutoPriorityItem& a, AutoPriorityItem& b)
 {
     AutoPriorityItem temp = a;
-
     a = b;
-
     b = temp;
 }
 
-//Mở rộng mảng động
 
 void AutoPriorityHeap::resize()
 {
-    int newCapacity =
-        capacity * 2;
+    int newCapacity = capacity * 2;
+    AutoPriorityItem* newHeap = new AutoPriorityItem[newCapacity];
 
-    AutoPriorityItem* newHeap =
-        new AutoPriorityItem[newCapacity];
-
-
-    for (
-        int i = 0;
-        i < size;
-        i++
-    )
+    for (int i = 0; i < size; i++)
     {
         newHeap[i] = heap[i];
     }
 
-
     delete[] heap;
-
-
     heap = newHeap;
-
     capacity = newCapacity;
 }
 
-//Sift up
-void AutoPriorityHeap::siftUp(
-    int index
-)
+void AutoPriorityHeap::siftUp(int index)
 {
     while (index > 0)
     {
-        int p =
-            parent(index);
-
-
-        if (
-            higherPriority(
-                heap[index],
-                heap[p]
-            )
-        )
+        int p = parent(index);
+        if (higherPriority(heap[index], heap[p]))
         {
-            swapItem(
-                heap[index],
-                heap[p]
-            );
-
+            swapItem(heap[index], heap[p]);
             index = p;
         }
-
-        else
-        {
-            break;
-        }
+        else break;
     }
 }
 
-//Sift down
-void AutoPriorityHeap::siftDown(
-    int index
-)
+void AutoPriorityHeap::siftDown(int index)
 {
     while (true)
     {
-        int left =
-            leftChild(index);
-
-        int right =
-            rightChild(index);
-
-        int smallest =
-            index;
-
+        int left = leftChild(index);
+        int right = rightChild(index);
+        int smallest = index;
 
         if (
-            left < size
-            &&
-            higherPriority(
-                heap[left],
-                heap[smallest]
-            )
+            left < size &&
+            higherPriority(heap[left], heap[smallest])
         )
         {
             smallest = left;
         }
 
-
-        if (
-            right < size
-            &&
-            higherPriority(
-                heap[right],
-                heap[smallest]
-            )
-        )
+        if (right < size &&
+            higherPriority(heap[right], heap[smallest]))
         {
             smallest = right;
         }
 
-        if (smallest == index)
-        {
-            break;
-        }
+        if (smallest == index) break;
 
-        swapItem(
-            heap[index],
-            heap[smallest]
-        );
-
-
+        swapItem(heap[index], heap[smallest]);
         index = smallest;
     }
 }
 
-// INSERT
-void AutoPriorityHeap::insert(
-    const AutoPriorityItem& item
-)
+void AutoPriorityHeap::insert(const AutoPriorityItem& item)
 {
     if (size == capacity)
     {
@@ -208,17 +119,11 @@ void AutoPriorityHeap::insert(
     }
 
     heap[size] = item;
-    int index = size;
-
+    siftUp(size);
     size++;
-
-    siftUp(index);
 }
 
-//Peek
-bool AutoPriorityHeap::peek(
-    AutoPriorityItem& item
-) const
+bool AutoPriorityHeap::peek(AutoPriorityItem& item) const
 {
     if (size == 0)
     {
@@ -226,15 +131,10 @@ bool AutoPriorityHeap::peek(
     }
 
     item = heap[0];
-
-
     return true;
 }
 
-//Extract min
-bool AutoPriorityHeap::extractMin(
-    AutoPriorityItem& item
-)
+bool AutoPriorityHeap::extractMin(AutoPriorityItem& item)
 {
     if (size == 0)
     {
@@ -242,12 +142,8 @@ bool AutoPriorityHeap::extractMin(
     }
 
     item = heap[0];
-
-    heap[0] =
-        heap[size - 1];
-
+    heap[0] = heap[size - 1];
     size--;
-
 
     if (size > 0)
     {
@@ -257,14 +153,11 @@ bool AutoPriorityHeap::extractMin(
     return true;
 }
 
-
-//Kiểm tra rộng
 bool AutoPriorityHeap::isEmpty() const
 {
     return size == 0;
 }
 
-//Số lượng phần tử 
 int AutoPriorityHeap::getSize() const
 {
     return size;
