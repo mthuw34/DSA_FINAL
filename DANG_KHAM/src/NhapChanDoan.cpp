@@ -5,7 +5,8 @@
 void NhapChanDoan(
     const std::string& idBenhNhan,
     std::string& chanDoan,
-    std::string& donThuoc
+    std::string& donThuoc,
+    std::string& loiNhacBacSi
 )
 {
     std::cout
@@ -27,5 +28,13 @@ void NhapChanDoan(
     std::getline(
         std::cin,
         donThuoc
+    );
+
+    std::cout
+        << "Loi nhac cua bac si: ";
+
+    std::getline(
+        std::cin,
+        loiNhacBacSi
     );
 }
