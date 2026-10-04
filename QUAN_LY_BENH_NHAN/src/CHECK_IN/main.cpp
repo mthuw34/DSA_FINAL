@@ -13,6 +13,7 @@
 
 using namespace std;
 
+// Chuc nang: Lay duong dan file chuong trinh dang chay.
 static filesystem::path getExecutablePath(const char* argv0)
 {
 #ifdef _WIN32
@@ -42,6 +43,7 @@ static filesystem::path getExecutablePath(const char* argv0)
     return {};
 }
 
+// Chuc nang: Tim duong dan hospital.db phu hop khi chay chuong trinh.
 static string resolveDatabasePath(const char* argv0)
 {
     vector<filesystem::path> candidates;
@@ -73,6 +75,7 @@ static string resolveDatabasePath(const char* argv0)
     return "QUAN_LY_BENH_NHAN/db/hospital.db";
 }
 
+// Chuc nang: Mo database va dieu khien menu quan ly check-in.
 int main(int argc, char* argv[])
 {
     sqlite3* db = nullptr;
