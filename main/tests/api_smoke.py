@@ -87,7 +87,14 @@ def main():
                     assert marker in response.read().decode('utf-8')
             assert request('/api/patients') == []
             assert len(request('/api/departments')) == 10
-            assert len(request('/api/doctors')) == 500
+            doctors=request('/api/doctors')
+            assert len(doctors) == 500
+            for doctor in doctors:
+                assert doctor['shift_rule'] in ('24h_on_24h_off','weekday_split')
+                assert len(doctor['shift_period_start']) == 10
+                assert all(s['start_time'] < s['end_time'] and s['date'] == s['start_time'][:10] for s in doctor['shifts'])
+                assert sum(s['is_current'] for s in doctor['shifts']) <= 1
+                assert doctor['on_duty'] == any(s['is_current'] for s in doctor['shifts'])
             request('/api/patients', 'POST', raw=b'{', expected=400)
             request('/api/patients', 'POST', [], expected=400)
             request('/api/patients', 'POST', {'name':'Test', 'birth_date':'2025-02-30'}, expected=400)

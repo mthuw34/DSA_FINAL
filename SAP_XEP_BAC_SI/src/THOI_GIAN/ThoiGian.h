@@ -1,9 +1,12 @@
 #pragma once
 #include <ctime>
 #include <string>
+#include <vector>
 using namespace std;
 
 namespace ThoiGian {
+    struct CaTruc { string ngay; time_t batDau; time_t ketThuc; };
+    vector<CaTruc> LichTruc(time_t tuNgay, bool capCuu, int pha, int soNgay = 7);
     time_t HienTai();
 
     string DinhDang(time_t t);

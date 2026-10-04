@@ -34,6 +34,25 @@ namespace {
 }
 
 namespace ThoiGian {
+    vector<CaTruc> LichTruc(time_t tuNgay, bool capCuu, int pha, int soNgay) {
+        vector<CaTruc> result;
+        auto date = layLocalTm(tuNgay);
+        date.tm_hour = 0; date.tm_min = 0; date.tm_sec = 0;
+        for (int i = 0; i < soNgay; ++i) {
+            date.tm_isdst = -1;
+            const auto midnight = mktime(&date);
+            const auto day = DinhDangNgay(midnight);
+            if (capCuu && DangTrucCapCuu(midnight, pha)) {
+                auto next = date; ++next.tm_mday; next.tm_isdst = -1;
+                result.push_back({day, midnight, mktime(&next)});
+            } else if (!capCuu && !LaCuoiTuan(midnight)) {
+                result.push_back({day, taoThoiGianCungNgay(midnight, 7, 0), taoThoiGianCungNgay(midnight, 11, 30)});
+                result.push_back({day, taoThoiGianCungNgay(midnight, 13, 0), taoThoiGianCungNgay(midnight, 17, 0)});
+            }
+            ++date.tm_mday;
+        }
+        return result;
+    }
     time_t HienTai() {
         return time(nullptr);
     }

@@ -28,9 +28,15 @@ Nếu server cũ đang chạy, bấm Ctrl+C trong terminal đó, build lại r�
 Sau check-in, bệnh nhân tự xuất hiện ở **Hàng đợi** và rời danh sách **Hồ sơ chờ check-in**.
 Hồ sơ gốc vẫn được lưu để tra cứu trong lượt khám. Server tự đồng bộ mỗi 5 giây,
 kể cả khi đóng trình duyệt; giao diện tự tải dữ liệu mỗi 5 giây khi không mở biểu mẫu.
+Tải nền không làm mờ/khóa giao diện, không dựng lại bảng hoặc menu nếu nội dung không đổi.
 Trong **Lịch khám → Phân bác sĩ**, chọn **Phân một khoa** hoặc **Phân theo bác sĩ**.
 Ca tới giờ được tự nhận khi bác sĩ trống; bác sĩ chỉ khám một ca cùng lúc.
 Trong **Bác sĩ**, trạng thái gồm Đang khám, Đang trong ca trực, Ngoài ca/nghỉ và Bận đột xuất.
+**Xem ca trực** hiển thị 7 ngày từ ngày hiện tại của server, kèm giờ bắt đầu/kết thúc và ngày nghỉ.
+Khoa thường làm Thứ Hai–Thứ Sáu, 07:00–11:30 và 13:00–17:00;
+cấp cứu trực 24 giờ (00:00 đến 00:00 hôm sau), nghỉ 24 giờ theo pha lịch web.
+Lịch hiển thị dùng cùng quy tắc với bộ phân bác sĩ. Trực/nghỉ thủ công và bận đột xuất
+được ghi riêng trong hộp xem lịch để phân biệt với lịch tự động.
 **Ca trực** cho chọn tự động theo lịch, đang trực thủ công hoặc nghỉ ca.
 **Bận đột xuất** nhận số phút (1–1440) và lý do; tự hết khi tới hạn hoặc bấm **Hết bận**.
 Báo bận/nghỉ trả các lịch chưa bắt đầu về hàng đợi để phân lại, giữ ca đang khám.

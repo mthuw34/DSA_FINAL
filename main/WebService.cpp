@@ -322,8 +322,15 @@ Json WebService::listDoctors() {
             (d.khoaChuyenMon == "Khoa Cap cuu" ? ThoiGian::DangTrucCapCuu(now, index % 2) : ThoiGian::DangTrongCaThuong(now)));
         bool examining = false;
         for (const auto& e : active) if (e["doctor_id"] == d.id) examining = true;
+        Json shifts = Json::array();
+        for (const auto& shift : ThoiGian::LichTruc(now, d.khoaChuyenMon == "Khoa Cap cuu", index % 2))
+            shifts.push_back({{"date",shift.ngay},{"start_time",ThoiGian::DinhDang(shift.batDau)},
+                {"end_time",ThoiGian::DinhDang(shift.ketThuc)},
+                {"is_current",now >= shift.batDau && now < shift.ketThuc}});
         result.push_back({{"id",d.id},{"name",d.name},{"department",d.khoaChuyenMon},
-            {"experience_years",d.ExpYears},{"duty_mode",mode},{"on_duty",duty},
+            {"experience_years",d.ExpYears},{"duty_mode",mode},{"on_duty",duty},{"shifts",shifts},
+            {"shift_period_start",ThoiGian::DinhDangNgay(now)},
+            {"shift_rule",d.khoaChuyenMon == "Khoa Cap cuu" ? "24h_on_24h_off" : "weekday_split"},
             {"busy",busy},{"busy_until",busy ? Json(until) : Json(nullptr)},
             {"busy_reason",busy ? settings.value("busy_reason", "") : ""},
             {"status",examining ? "examining" : busy ? "busy" : duty ? "on_duty" : "off_duty"}});
