@@ -3,6 +3,7 @@
 #include <limits>
 #include <sqlite3.h>
 #include "../patient_validation.h"
+#include "../HospitalPersistence.h"
 
 using namespace std;
 
@@ -36,60 +37,21 @@ int main() {
     // 1. Tìm bệnh nhân
     // =============================
 
-    const char* selectSql =
-        "SELECT id, name, age, phone, birth_date, "
-        "gender, hometown, address "
-        "FROM patients WHERE id = ?;";
-
-    sqlite3_stmt* selectStmt = nullptr;
-
-    if (sqlite3_prepare_v2(
-            db,
-            selectSql,
-            -1,
-            &selectStmt,
-            nullptr
-        ) != SQLITE_OK) {
-
-        cout << "Loi SQL: "
-             << sqlite3_errmsg(db) << endl;
-
-        sqlite3_close(db);
-        return 1;
+    vector<Patient> patients;
+    if (!HospitalPersistence::loadPatients(db, patients)) {
+        sqlite3_close(db); return 1;
     }
-
-    sqlite3_bind_int(selectStmt, 1, id);
-
-    const int selectResult = sqlite3_step(selectStmt);
-    if (selectResult != SQLITE_ROW) {
-        if (selectResult != SQLITE_DONE)
-            cerr << "Loi doc benh nhan: " << sqlite3_errmsg(db) << '\n';
-        else
-            cout << "Khong tim thay benh nhan co ID = "
-                 << id << endl;
-
-        sqlite3_finalize(selectStmt);
-        sqlite3_close(db);
-        return selectResult == SQLITE_DONE ? 0 : 1;
+    const auto ids = PatientCore::indexPatients(patients);
+    size_t position;
+    if (!ids.find(to_string(id), position)) {
+        cout << "Khong tim thay benh nhan co ID = " << id << '\n';
+        sqlite3_close(db); return 0;
     }
-
-    auto getText = [&](int column) -> string {
-        const unsigned char* text =
-            sqlite3_column_text(selectStmt, column);
-
-        if (text == nullptr)
-            return "";
-
-        return reinterpret_cast<const char*>(text);
-    };
-
-    string oldName = getText(1);
-    int oldAge = sqlite3_column_int(selectStmt, 2);
-    string oldPhone = getText(3);
-    string oldBirthDate = getText(4);
-    string oldGender = getText(5);
-    string oldHometown = getText(6);
-    string oldAddress = getText(7);
+    const Patient& selected = patients[position];
+    string oldName = selected.name;
+    int oldAge = selected.age;
+    string oldPhone = selected.phone, oldBirthDate = selected.birthDate;
+    string oldGender = selected.gender, oldHometown = selected.hometown, oldAddress = selected.address;
 
     cout << "\n===== THONG TIN HIEN TAI =====\n";
 
@@ -106,7 +68,6 @@ int main() {
     cout << "Que quan: " << oldHometown << endl;
     cout << "Dia chi: " << oldAddress << endl;
 
-    sqlite3_finalize(selectStmt);
 
     // =============================
     // 2. Nhập thông tin mới

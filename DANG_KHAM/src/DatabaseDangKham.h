@@ -2,6 +2,7 @@
 
 #include <string>
 #include <sqlite3.h>
+#include "ExamCore.h"
 class DatabaseDangKham
 {
 private:
@@ -41,6 +42,11 @@ public:
     bool taoCauTruc();
 
     bool dongBoTuXepBacSi();
+
+    bool docDanhSach(std::vector<ExamSession>& records);
+    bool luuChanDoan(int checkinId, const std::string& diagnosis,
+                    const std::string& prescription, const std::string& reminder);
+    bool ketThucPhien(int checkinId);
 
     void dong();
 

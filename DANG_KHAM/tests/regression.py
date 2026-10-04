@@ -2,6 +2,7 @@
 from contextlib import closing
 from pathlib import Path
 import sqlite3
+import re
 import subprocess
 import tempfile
 
@@ -17,9 +18,14 @@ def run(exe, source, destination, text="0\n", ok=True):
 
 with tempfile.TemporaryDirectory() as directory:
     root = Path(directory)
+    subprocess.run(["g++", "-std=c++17", "-Wall", "-Wextra", "-Wpedantic",
+                    "-I", str(MODULE / "src"), str(MODULE / "tests/core_tests.cpp"),
+                    "-o", str(root / "core.exe")], check=True)
+    subprocess.run([str(root / "core.exe")], check=True, timeout=15)
     exe = root / "DangKham.exe"
     subprocess.run(["g++", "-std=c++17", "-Wall", "-Wextra", "-Wpedantic",
                     *map(str, MODULE.joinpath("src").glob("*.cpp")),
+                    str(MODULE / "tests/read_sql_guard.cpp"), "-Wl,--wrap=sqlite3_prepare_v2",
                     "-lsqlite3", "-o", str(exe)], check=True)
     source = root / "source.db"
     with closing(sqlite3.connect(source)) as db, db:
@@ -112,4 +118,27 @@ with tempfile.TemporaryDirectory() as directory:
         for pipe in (process.stdin, process.stdout, process.stderr):
             pipe.close()
 
-print("DANG_KHAM: compile and schema/sync/diagnosis/completion regressions passed")
+    # Stable start-time/check-in ordering, implemented by the C++ core.
+    with closing(sqlite3.connect(source)) as db, db:
+        for identity, start in [(8, "-40 minutes"), (9, "-50 minutes"), (10, "-40 minutes")]:
+            db.execute("""INSERT INTO ket_qua_kham VALUES (?, ?, 'Khoa Noi', 'BS1', 'Bac si',
+                       datetime('now','localtime',?), datetime('now','localtime','+1 hour'), 'DA_XEP_BAC_SI')""",
+                       (identity, identity + 100, start))
+    output = run(exe, source, root / "order.db", "1\n0\n")
+    assert [int(x) for x in re.findall(r"Check-in: (\d+)", output)] == [9, 8, 10, 3], output
+    run(exe, source, root / "order.db", "3\n9\n0\n")
+    output = run(exe, source, root / "order.db", "1\n0\n")
+    assert "Check-in: 9 " not in output, output
+
+    # A failure on the second new row must undo the first insert in the same sync.
+    destination = root / "atomic.db"
+    with closing(sqlite3.connect(destination)) as db, db:
+        db.execute("""CREATE TABLE dang_kham (checkin_id INTEGER PRIMARY KEY, patient_id INTEGER NOT NULL,
+                   department TEXT NOT NULL, checkin_time TEXT NOT NULL)""")
+        db.execute("""CREATE TRIGGER reject_eight BEFORE INSERT ON dang_kham
+                   WHEN NEW.checkin_id=8 BEGIN SELECT RAISE(ABORT,'blocked'); END""")
+    run(exe, source, destination, ok=False)
+    with closing(sqlite3.connect(destination)) as db:
+        assert db.execute("SELECT count(*) FROM dang_kham").fetchone() == (0,)
+
+print("DANG_KHAM: compile, DSA core, SQL read guard, ordering, schema, atomic sync, diagnosis, and completion passed")

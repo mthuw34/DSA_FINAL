@@ -5,6 +5,7 @@
 
 #include "patient_lookup.h"
 #include "../patient_validation.h"
+#include "../HospitalPersistence.h"
 
 using namespace std;
 
@@ -12,211 +13,22 @@ using namespace std;
 // =========================================
 // LAY TEXT TU SQLITE
 // =========================================
-// Lấy dữ liệu TEXT từ SQLite.
-static string getText(
-    sqlite3_stmt* stmt,
-    int column
-)
+// Nạp bảng bệnh nhân và tìm ID bằng bảng băm trong bộ nhớ.
+bool timBenhNhan(sqlite3* db, int patientId, Patient& patient)
 {
-    const unsigned char* text =
-        sqlite3_column_text(
-            stmt,
-            column
-        );
-
-    if (text == nullptr)
-        return "";
-
-    return reinterpret_cast<const char*>(text);
-}
-
-
-// =========================================
-// TIM BENH NHAN THEO ID
-// =========================================
-// Tìm bệnh nhân theo ID và nạp thông tin vào cấu trúc Patient.
-bool timBenhNhan(
-    sqlite3* db,
-    int patientId,
-    Patient& patient
-)
-{
-    const char* sql = R"(
-
-        SELECT
-            id,
-            name,
-            age,
-            phone,
-            birth_date,
-            gender,
-            hometown,
-            address,
-            height,
-            weight,
-            bmi
-
-        FROM patients
-
-        WHERE id = ?;
-
-    )";
-
-    sqlite3_stmt* stmt = nullptr;
-
-
-    // CHUAN BI SQL
-    if (sqlite3_prepare_v2(
-            db,
-            sql,
-            -1,
-            &stmt,
-            nullptr
-        ) != SQLITE_OK)
-    {
-        cerr
-            << "Loi SQL tim benh nhan: "
-            << sqlite3_errmsg(db)
-            << '\n';
-
-        return false;
-    }
-
-
-    // GAN ID VAO ?
-    sqlite3_bind_int(
-        stmt,
-        1,
-        patientId
-    );
-
-
-    // KHONG TIM THAY
-    if (sqlite3_step(stmt) != SQLITE_ROW)
-    {
-        sqlite3_finalize(stmt);
-
-        return false;
-    }
-
-
-    // =========================================
-    // LAY DU LIEU
-    // =========================================
-
-    patient.id =
-        sqlite3_column_int(
-            stmt,
-            0
-        );
-
-    patient.name =
-        getText(
-            stmt,
-            1
-        );
-
-    patient.age =
-        sqlite3_column_int(
-            stmt,
-            2
-        );
-
-    patient.phone =
-        getText(
-            stmt,
-            3
-        );
-
-    patient.birthDate =
-        getText(
-            stmt,
-            4
-        );
-
-    try {
-        patient.age = ageFromBirthDate(patient.birthDate);
-    } catch (const std::exception& error) {
+    std::vector<Patient> records;
+    if (!HospitalPersistence::loadPatients(db, records)) return false;
+    const auto ids = PatientCore::indexPatients(records);
+    std::size_t position;
+    if (!ids.find(std::to_string(patientId), position)) return false;
+    patient = records[position];
+    try { patient.age = ageFromBirthDate(patient.birthDate); }
+    catch (const std::exception& error) {
         cerr << "Ngay sinh khong hop le: " << error.what() << '\n';
-        sqlite3_finalize(stmt);
         return false;
     }
-
-    patient.gender =
-        getText(
-            stmt,
-            5
-        );
-
-    patient.hometown =
-        getText(
-            stmt,
-            6
-        );
-
-    patient.address =
-        getText(
-            stmt,
-            7
-        );
-
-
-    // =========================================
-    // CHIEU CAO
-    // =========================================
-    if (sqlite3_column_type(stmt, 8) == SQLITE_NULL)
-    {
-        patient.height = 0;
-    }
-    else
-    {
-        patient.height =
-            sqlite3_column_double(
-                stmt,
-                8
-            );
-    }
-
-
-    // =========================================
-    // CAN NANG
-    // =========================================
-    if (sqlite3_column_type(stmt, 9) == SQLITE_NULL)
-    {
-        patient.weight = 0;
-    }
-    else
-    {
-        patient.weight =
-            sqlite3_column_double(
-                stmt,
-                9
-            );
-    }
-
-
-    // =========================================
-    // BMI
-    // =========================================
-    if (sqlite3_column_type(stmt, 10) == SQLITE_NULL)
-    {
-        patient.bmi = 0;
-    }
-    else
-    {
-        patient.bmi =
-            sqlite3_column_double(
-                stmt,
-                10
-            );
-    }
-
-
-    sqlite3_finalize(stmt);
-
     return true;
 }
-
 
 // =========================================
 // HIEN THI THONG TIN BENH NHAN

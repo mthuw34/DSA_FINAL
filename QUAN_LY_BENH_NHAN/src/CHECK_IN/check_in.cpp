@@ -6,24 +6,9 @@
 #include "check_in.h"
 #include "patient_lookup.h"
 #include "khoa.h"
+#include "../HospitalPersistence.h"
 
 using namespace std;
-
-
-// Lấy dữ liệu TEXT từ SQLite.
-static string getText(
-    sqlite3_stmt* stmt,
-    int column
-)
-{
-    const unsigned char* text =
-        sqlite3_column_text(stmt, column);
-
-    if (text == nullptr)
-        return "";
-
-    return reinterpret_cast<const char*>(text);
-}
 
 
 // Đổi mức ưu tiên từ số sang tên hiển thị.
@@ -112,113 +97,26 @@ bool checkInMotBenhNhan(sqlite3* db)
 
     hienThiBenhNhan(patient);
 
-// =====================================
-// KIEM TRA BENH NHAN DA CHECK-IN CHUA
-// =====================================
+    // =====================================
+    // KIEM TRA BENH NHAN DA CHECK-IN CHUA
+    // =====================================
 
-const char* checkSql = R"(
-
-    SELECT
-        checkin_id,
-        department,
-        checkin_time,
-        priority
-
-    FROM checkins
-
-    WHERE patient_id = ?
-
-    ORDER BY checkin_id DESC
-
-    LIMIT 1;
-
-)";
-
-sqlite3_stmt* checkStmt = nullptr;
-
-if (sqlite3_prepare_v2(
-        db,
-        checkSql,
-        -1,
-        &checkStmt,
-        nullptr
-    ) != SQLITE_OK)
-{
-    cerr << "Loi kiem tra check-in: "
-         << sqlite3_errmsg(db)
-         << '\n';
-
-    return true;
-}
-
-sqlite3_bind_int(
-    checkStmt,
-    1,
-    patientId
-);
-
-int checkResult = sqlite3_step(checkStmt);
-if (checkResult == SQLITE_ROW)
-{
-    int oldCheckinId =
-        sqlite3_column_int(checkStmt, 0);
-
-    string oldDepartment =
-        getText(checkStmt, 1);
-
-    string oldCheckinTime =
-        getText(checkStmt, 2);
-
-    int oldPriority =
-        sqlite3_column_int(checkStmt, 3);
-
-    cout << "\n";
-    cout << "========================================\n";
-    cout << "       BENH NHAN DA CHECK-IN\n";
-    cout << "========================================\n";
-
-    cout << "Ma check-in : "
-         << oldCheckinId
-         << '\n';
-
-    cout << "ID benh nhan: "
-         << patientId
-         << '\n';
-
-    cout << "Ho ten      : "
-         << patient.name
-         << '\n';
-
-    cout << "Khoa        : "
-         << oldDepartment
-         << '\n';
-
-    cout << "Thoi gian   : "
-         << oldCheckinTime
-         << '\n';
-
-    cout << "Uu tien     : "
-         << oldPriority
-         << " - "
-         << getPriorityName(oldPriority)
-         << '\n';
-
-    cout << "========================================\n";
-    cout << "Khong the check-in lan thu hai!\n";
-
-    sqlite3_finalize(checkStmt);
-
-    return true;
-}
-
-if (checkResult != SQLITE_DONE)
-{
-    cerr << "Loi kiem tra check-in: " << sqlite3_errmsg(db) << '\n';
-    sqlite3_finalize(checkStmt);
-    return true;
-}
-
-sqlite3_finalize(checkStmt);
+    vector<CheckInRecord> checkIns;
+    if (!HospitalPersistence::loadCheckIns(db, checkIns)) return true;
+    const auto* existing = PatientCore::latestCheckIn(checkIns, patientId);
+    if (existing)
+    {
+        cout << "\nBENH NHAN DA CHECK-IN\n"
+             << "Ma check-in : " << existing->id << '\n'
+             << "ID benh nhan: " << patientId << '\n'
+             << "Ho ten      : " << patient.name << '\n'
+             << "Khoa        : " << existing->department << '\n'
+             << "Thoi gian   : " << existing->time << '\n'
+             << "Uu tien     : " << existing->priority << " - "
+             << getPriorityName(existing->priority) << '\n'
+             << "Khong the check-in lan thu hai!\n";
+        return true;
+    }
     // =====================================
     // CHON KHOA
     // =====================================
@@ -349,6 +247,17 @@ sqlite3_finalize(checkStmt);
     // INSERT CHECK-IN
     // =====================================
 
+    // Khóa ghi ngắn, nạp lại dữ liệu rồi kiểm tra trùng bằng C++ để hai phiên không nhận trùng.
+    if (sqlite3_exec(db, "BEGIN IMMEDIATE;", nullptr, nullptr, nullptr) != SQLITE_OK) {
+        cerr << sqlite3_errmsg(db) << '\n'; return true;
+    }
+    if (!HospitalPersistence::loadCheckIns(db, checkIns) ||
+        PatientCore::latestCheckIn(checkIns, patientId)) {
+        sqlite3_exec(db, "ROLLBACK;", nullptr, nullptr, nullptr);
+        cerr << "Khong the check-in; du lieu da thay doi hoac benh nhan da check-in.\n";
+        return true;
+    }
+
     const char* insertSql = R"(
 
         INSERT INTO checkins
@@ -372,6 +281,7 @@ sqlite3_finalize(checkStmt);
             nullptr
         ) != SQLITE_OK)
     {
+        sqlite3_exec(db, "ROLLBACK;", nullptr, nullptr, nullptr);
         cerr << "Loi SQL check-in: "
              << sqlite3_errmsg(db)
              << '\n';
@@ -407,6 +317,7 @@ sqlite3_finalize(checkStmt);
             cerr << "Check-in that bai: " << sqlite3_errmsg(db) << '\n';
 
         sqlite3_finalize(insertStmt);
+        sqlite3_exec(db, "ROLLBACK;", nullptr, nullptr, nullptr);
 
         return true;
     }
@@ -418,62 +329,19 @@ sqlite3_finalize(checkStmt);
         sqlite3_last_insert_rowid(db);
 
 
-    // =====================================
-    // LAY THOI GIAN CHECK-IN TU DATABASE
-    // =====================================
-
-    const char* showSql = R"(
-
-        SELECT
-            checkin_time,
-            department,
-            priority
-
-        FROM checkins
-
-        WHERE checkin_id = ?;
-
-    )";
-
-    sqlite3_stmt* showStmt = nullptr;
-
-    if (sqlite3_prepare_v2(
-            db,
-            showSql,
-            -1,
-            &showStmt,
-            nullptr
-        ) != SQLITE_OK)
-    {
-        cerr << "Loi doc phieu check-in: "
-             << sqlite3_errmsg(db)
-             << '\n';
-
+    if (sqlite3_exec(db, "COMMIT;", nullptr, nullptr, nullptr) != SQLITE_OK) {
+        cerr << sqlite3_errmsg(db) << '\n';
+        sqlite3_exec(db, "ROLLBACK;", nullptr, nullptr, nullptr);
         return true;
     }
-
-    sqlite3_bind_int64(
-        showStmt,
-        1,
-        checkinId
-    );
-
-
-    // =====================================
-    // IN PHIEU
-    // =====================================
-
-    if (sqlite3_step(showStmt) == SQLITE_ROW)
+    // Nạp bảng rồi tìm phiếu mới trong bộ nhớ, không truy vấn chọn ID bằng SQL.
+    if (!HospitalPersistence::loadCheckIns(db, checkIns)) return true;
+    const auto* saved = PatientCore::findCheckIn(checkIns, static_cast<int>(checkinId));
+    if (saved)
     {
-        string checkinTime =
-            getText(showStmt, 0);
-
-        string savedDepartment =
-            getText(showStmt, 1);
-
-        int savedPriority =
-            sqlite3_column_int(showStmt, 2);
-
+        const string& checkinTime = saved->time;
+        const string& savedDepartment = saved->department;
+        const int savedPriority = saved->priority;
 
         cout << "\n\n";
         cout << "========================================\n";
@@ -533,7 +401,6 @@ sqlite3_finalize(checkStmt);
         cout << "========================================\n";
     }
 
-    sqlite3_finalize(showStmt);
 
     cout << "\nCheck-in hoan tat.";
     cout << "\nSan sang cho benh nhan tiep theo.\n";

@@ -4,19 +4,9 @@
 #include <sqlite3.h>
 
 #include "bang_check_in.h"
+#include "../HospitalPersistence.h"
 
 using namespace std;
-
-// Lấy dữ liệu TEXT từ SQLite.
-static string getText(sqlite3_stmt* stmt, int column)
-{
-    const unsigned char* text = sqlite3_column_text(stmt, column);
-
-    if (text == nullptr)
-        return "";
-
-    return reinterpret_cast<const char*>(text);
-}
 
 // Chuyển mã mức độ ưu tiên thành tên để hiển thị.
 static string tenUuTien(int priority)
@@ -35,61 +25,25 @@ static string tenUuTien(int priority)
 // Hiển thị danh sách bệnh nhân đã check-in theo khoa và mức ưu tiên.
 void hienThiBangCheckIn(sqlite3* db)
 {
-    const char* sql = R"(
-        SELECT
-            c.department,
-            c.checkin_id,
-            p.id,
-            p.name,
-            c.priority,
-            c.checkin_time
-        FROM checkins c
-        JOIN patients p
-            ON c.patient_id = p.id
-        ORDER BY
-            CASE c.department
-                WHEN 'Khoa Cap cuu' THEN 1
-                WHEN 'Khoa Noi' THEN 2
-                WHEN 'Khoa Ngoai' THEN 3
-                WHEN 'Khoa Tim mach' THEN 4
-                WHEN 'Khoa Nhi' THEN 5
-                WHEN 'Khoa San' THEN 6
-                WHEN 'Khoa Tai Mui Hong' THEN 7
-                WHEN 'Khoa Mat' THEN 8
-                WHEN 'Khoa Da lieu' THEN 9
-                WHEN 'Khoa Than kinh' THEN 10
-                ELSE 99
-            END ASC,
-            c.priority ASC,
-            c.checkin_time ASC,
-            p.id ASC,
-            c.checkin_id ASC;
-    )";
-
-    sqlite3_stmt* stmt = nullptr;
-
-    if (sqlite3_prepare_v2(db, sql, -1, &stmt, nullptr) != SQLITE_OK)
-    {
-        cerr << "Loi doc bang check-in: "
-             << sqlite3_errmsg(db)
-             << '\n';
-        return;
-    }
+    vector<Patient> patients;
+    vector<CheckInRecord> checkIns;
+    if (!HospitalPersistence::loadPatients(db, patients) ||
+        !HospitalPersistence::loadCheckIns(db, checkIns)) return;
+    const auto patientIds = PatientCore::indexPatients(patients);
+    PatientCore::sortCheckIns(checkIns);
 
     string khoaHienTai;
     int stt = 0;
     int tongBenhNhan = 0;
 
-    int stepResult = SQLITE_ROW;
-
-    while ((stepResult = sqlite3_step(stmt)) == SQLITE_ROW)
+    for (const auto& record : checkIns)
     {
-        string department = getText(stmt, 0);
-        int checkinId = sqlite3_column_int(stmt, 1);
-        int patientId = sqlite3_column_int(stmt, 2);
-        string name = getText(stmt, 3);
-        int priority = sqlite3_column_int(stmt, 4);
-        string checkinTime = getText(stmt, 5);
+        size_t position;
+        if (!patientIds.find(to_string(record.patientId), position)) continue;
+        const string& department = record.department;
+        int checkinId = record.id, patientId = record.patientId, priority = record.priority;
+        const string& name = patients[position].name;
+        const string& checkinTime = record.time;
 
         if (department != khoaHienTai)
         {
@@ -127,15 +81,6 @@ void hienThiBangCheckIn(sqlite3* db)
             << setw(22) << checkinTime
             << '\n';
     }
-
-    if (stepResult != SQLITE_DONE)
-    {
-        cerr << "Loi khi duyet bang check-in: "
-             << sqlite3_errmsg(db)
-             << '\n';
-    }
-
-    sqlite3_finalize(stmt);
 
     if (tongBenhNhan == 0)
     {
@@ -196,6 +141,13 @@ bool xoaMotCheckIn(sqlite3* db, int checkinId)
         return false;
     }
 
+    vector<CheckInRecord> checkIns;
+    if (!HospitalPersistence::loadCheckIns(db, checkIns)) return false;
+    if (!PatientCore::findCheckIn(checkIns, checkinId)) {
+        cout << "Khong tim thay check-in co ma = " << checkinId << '\n';
+        return false;
+    }
+    // Chỉ lưu thao tác xóa bản ghi đã tìm được trong bộ nhớ.
     const char* sql =
         "DELETE FROM checkins WHERE checkin_id = ?;";
 

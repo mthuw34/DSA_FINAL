@@ -3,6 +3,7 @@ from contextlib import closing
 from datetime import date, timedelta
 from pathlib import Path
 import sqlite3
+import re
 import subprocess
 import tempfile
 
@@ -13,6 +14,10 @@ with tempfile.TemporaryDirectory() as directory:
     root = Path(directory)
     data = root / "QUAN_LY_BENH_NHAN" / "db"
     data.mkdir(parents=True)
+    subprocess.run(["g++", "-std=c++17", "-Wall", "-Wextra", "-Wpedantic",
+                    "-I", str(MODULE / "src"), str(MODULE / "tests/core_tests.cpp"),
+                    "-o", str(root / "core.exe")], check=True)
+    subprocess.run([str(root / "core.exe")], check=True, timeout=15)
     programs = {
         "schema": list(MODULE.joinpath("src/TAO_BANG_DB").glob("*.cpp")),
         "import": list(MODULE.joinpath("src/NHAP_BENH_NHAN").glob("*.cpp")),
@@ -22,7 +27,8 @@ with tempfile.TemporaryDirectory() as directory:
     }
     for name, files in programs.items():
         subprocess.run(["g++", "-std=c++17", "-Wall", "-Wextra", "-Wpedantic",
-                        *map(str, files), "-lsqlite3", "-o", str(root / (name + ".exe"))], check=True)
+                        *map(str, files), str(MODULE / "tests/read_sql_guard.cpp"),
+                        "-Wl,--wrap=sqlite3_prepare_v2", "-lsqlite3", "-o", str(root / (name + ".exe"))], check=True)
 
     def run(name, text="", ok=True):
         result = subprocess.run([str(root / (name + ".exe"))], cwd=root,
@@ -120,4 +126,31 @@ int main(int argc, char** argv) {
     with closing(sqlite3.connect(hospital)) as db:
         assert db.execute("SELECT count(*) FROM patients WHERE name='Rollback Patient'").fetchone() == (0,)
 
-print("QUAN_LY_BENH_NHAN: all builds, admission boundaries, CRUD, import, and ID regressions passed")
+    # The displayed order must be computed in C++, with SQL reads guarded above.
+    with closing(sqlite3.connect(hospital)) as db, db:
+        current_id = db.execute("SELECT checkin_id FROM checkins").fetchone()[0]
+        for identity in range(30, 34):
+            db.execute("INSERT INTO patients(id,name,birth_date,age) VALUES (?,?,'2000-01-01',26)",
+                       (identity, f"SortPatient {identity}"))
+        for identity, patient, department, priority, at in [
+            (900, 30, "Khoa Noi", 4, "2026-10-04 09:00:00"),
+            (901, 31, "Khoa Cap cuu", 1, "2026-10-04 09:00:00"),
+            (902, 32, "Khoa Noi", 1, "2026-10-04 10:00:00"),
+            (903, 33, "Khoa Noi", 4, "2026-10-04 08:00:00"),
+        ]:
+            db.execute("INSERT INTO checkins VALUES (?,?,?,?,?)", (identity, patient, department, at, priority))
+    output = run("checkin", "2\n0\n")
+    displayed = [int(x) for x in re.findall(r"^\s*\d+\s+(\d+)\s+\d+\s+", output, re.MULTILINE)]
+    assert displayed == [901, current_id, 902, 903, 900], output
+
+    # Probe the linked read guard, so a passing test cannot silently omit interception.
+    probe = root / "probe.cpp"
+    probe.write_text('#include <sqlite3.h>\nint main(){sqlite3* db=nullptr; sqlite3_open(":memory:",&db); '
+                     'sqlite3_stmt* s=nullptr; return sqlite3_prepare_v2(db,"SELECT 1 WHERE 1;",-1,&s,nullptr);}',
+                     encoding="utf-8")
+    subprocess.run(["g++", str(probe), str(MODULE / "tests/read_sql_guard.cpp"),
+                    "-Wl,--wrap=sqlite3_prepare_v2", "-lsqlite3", "-o", str(root / "probe.exe")], check=True)
+    result = subprocess.run([str(root / "probe.exe")], capture_output=True, text=True, timeout=15)
+    assert result.returncode != 0 and "SQL read must only load records" in result.stderr, result
+
+print("QUAN_LY_BENH_NHAN: all builds, DSA core, SQL read guard, ordering, admission, CRUD, import, and IDs passed")
