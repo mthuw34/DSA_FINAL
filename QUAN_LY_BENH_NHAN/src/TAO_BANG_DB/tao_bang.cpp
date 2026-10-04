@@ -4,7 +4,7 @@
 
 using namespace std;
 
-// Chuc nang: Thuc thi cau lenh SQL va thong bao loi neu co.
+// Thực thi câu lệnh SQL và thông báo lỗi nếu có.
 static bool executeSql(sqlite3* db, const string& sql, const char* message)
 {
     char* error = nullptr;
@@ -21,7 +21,7 @@ static bool executeSql(sqlite3* db, const string& sql, const char* message)
     return false;
 }
 
-// Chuc nang: Kiem tra mot cot co ton tai trong bang hay khong.
+// Kiểm tra một cột có tồn tại trong bảng hay không.
 static bool columnExists(sqlite3* db, const char* table, const char* column)
 {
     const string sql = "PRAGMA table_info(" + string(table) + ");";
@@ -48,7 +48,7 @@ static bool columnExists(sqlite3* db, const char* table, const char* column)
     return found;
 }
 
-// Chuc nang: Them cot con thieu de tuong thich voi database cu.
+// Thêm cột còn thiếu để tương thích với database cũ.
 static bool addColumnIfMissing(
     sqlite3* db,
     const char* table,
@@ -66,7 +66,7 @@ static bool addColumnIfMissing(
     return executeSql(db, sql, "Loi bo sung cot");
 }
 
-// Chuc nang: Tao va cap nhat cau truc cac bang patients va checkins.
+// Tạo và cập nhật cấu trúc các bảng patients và checkins.
 int main()
 {
     sqlite3* db = nullptr;
