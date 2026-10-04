@@ -6,6 +6,7 @@
 #include <string>
 #include <vector>
 #include <ctime>
+using namespace std;
 
 class QuanLyKhamBenh {
 private:
@@ -14,47 +15,40 @@ private:
     QuanLyBacSi QuanLyBacSiManager;
     XuLyDatabase Database;
 
-    // Hang doi cua tung khoa da duoc nap vao RAM ngay luc khoi dong.
     HangDoiTuCaiDat<BenhNhanKham> HangDoiTheoKhoa[SO_KHOA];
 
-    std::vector<BenhNhanKham> KetQuaTrongLanChay;
+    vector<BenhNhanKham> KetQuaTrongLanChay;
     bool DaMoPhongBanDotXuat = false;
-    std::vector<int> DaPhanCong;
 
-    int TimChiSoKhoa(const std::string& khoa) const;
-    bool NapHangDoiTuDatabase();
+    int TimChiSoKhoa(const string& khoa) const;
+    void NapHangDoiTuDatabase();
     int RandomThoiGianKham() const;
 
     bool XuLyMotBenhNhan(
         BenhNhanKham& benhNhan,
-        const std::string& khoaThucTe,
-        std::time_t HienTai
+        const string& khoaThucTe,
+        time_t HienTai
     );
 
     bool TimBacSiTotNhat(
-        const std::string& khoa,
-        std::time_t HienTai,
+        const string& khoa,
+        time_t HienTai,
         int thoiLuong,
         int& bacSiIndex,
-        std::time_t& batDau
+        time_t& batDau
     );
 
 public:
     bool KhoiDong(
-        const std::string& duongDanDatabase,
-        const std::string& duongDanCSV
+        const string& duongDanDatabase,
+        const string& duongDanCSV
     );
 
-    void InDanhSachBacSiTheoKhoa(const std::string& khoa) const;
+    void InDanhSachBacSiTheoKhoa(const string& khoa) const;
 
-    // Web khôi phục lịch đã lưu để không phân lại bệnh nhân hoặc trùng lịch bác sĩ.
-    bool KhoiDongWeb(const std::string& database, const std::string& csv,
-                    const std::vector<BenhNhanKham>& daPhanCong);
-    const std::vector<BenhNhanKham>& LayKetQua() const { return KetQuaTrongLanChay; }
+    void XuLyKhoa(const string& khoa);
 
-    bool XuLyKhoa(const std::string& khoa);
-
-    bool XuLyTatCaKhoa();
+    void XuLyTatCaKhoa();
 
     void HienThiKetQua() const;
 };

@@ -11,8 +11,7 @@ public:
     bool MoDatabase(const std::string& duongDan);
     void DongDatabase();
 
-    // Nap TOAN BO benh nhan cua 10 queue vao RAM bang mot cau SQL.
-    // Khong dung WHERE va khong dung ORDER BY.
+    // Nạp bệnh nhân của 10 khoa
     bool LayTatCaBenhNhan(std::vector<BenhNhanKham>& danhSach);
 
     bool GhiKetQua(const BenhNhanKham& benhNhan);

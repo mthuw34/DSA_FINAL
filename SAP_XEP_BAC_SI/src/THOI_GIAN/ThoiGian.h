@@ -1,34 +1,34 @@
 #pragma once
 #include <ctime>
 #include <string>
+using namespace std;
 
 namespace ThoiGian {
-    std::time_t HienTai();
+    time_t HienTai();
 
-    std::string DinhDang(std::time_t t);
-    std::string DinhDangNgay(std::time_t t);
+    string DinhDang(time_t t);
+    string DinhDangNgay(time_t t);
 
-    bool LaCuoiTuan(std::time_t t);
+    bool LaCuoiTuan(time_t t);
 
     // Khoa thường:
-    // - sáng: 07:00 -> 11:30
-    // - chiều: 13:00 -> 17:00
-    bool DangTrongCaThuong(std::time_t t);
+    // Sáng: 07:00 -> 11:30
+    // Chiều: 13:00 -> 17:00
+    bool DangTrongCaThuong(time_t t);
 
-    // Trả về thời điểm bắt đầu ca tiếp theo mà khoa thường có thể làm.
-    std::time_t CaThuongTiepTheo(std::time_t t);
+    // Trả về thời điểm bắt đầu ca tiếp theo mà khoa thường có thể làm
+    time_t CaThuongTiepTheo(time_t t);
 
-    // Điều chỉnh thời điểm bắt đầu sao cho nằm trong ca làm việc và không rơi vào cuối tuần.
-    std::time_t DieuChinhThoiGianKhoaThuong(std::time_t t);
+    // Điều chỉnh thời điểm bắt đầu để nằm trong ca làm việc và ko rơi vào cuối tuần
+    time_t DieuChinhThoiGianKhoaThuong(time_t t);
 
-    // Kiểm tra một ca khám có kết thúc trước khi ca hiện tại kết thúc hay không.
-    bool DuThoiGianKhamKhoaThuong(std::time_t batDau, int soPhut);
+    // Kiểm tra 1 ca khám có kết thúc trước khi ca hiện tại kết thúc hay ko
+    bool DuThoiGianKhamKhoaThuong(time_t batDau, int soPhut);
 
-    // Khoa cấp cứu: một bác sĩ làm 24h rồi nghỉ 24h.
-    // ngayBatDauTruc: 0 = ngày hiện tại là ngày trực,
-    //                 1 = ngày hiện tại là ngày nghỉ.
-    bool DangTrucCapCuu(std::time_t t, int ngayBatDauTruc);
+    // Khoa cấp cứu: một bác sĩ làm 24h rồi nghỉ 24h
+    // ngayBatDauTruc: 0 là ngày trực, 1 là ngày nghỉ
+    bool DangTrucCapCuu(time_t t, int ngayBatDauTruc);
 
-    // Tìm thời điểm trực cấp cứu tiếp theo của bác sĩ.
-    std::time_t TrucCapCuuTiepTheo(std::time_t t, int ngayBatDauTruc);
+    // Tìm thời điểm trực cấp cứu tiếp theo của bác sĩ
+    time_t TrucCapCuuTiepTheo(time_t t, int ngayBatDauTruc);
 }

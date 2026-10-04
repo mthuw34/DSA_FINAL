@@ -3,39 +3,40 @@
 #include <string>
 #include <vector>
 #include <ctime>
+using namespace std;
 
 struct BacSiLich {
     int index = -1;
-    std::time_t thoiDiemNhan = 0;
+    time_t thoiDiemNhan = 0;
 };
 
 class QuanLyBacSi {
 private:
-    std::vector<BacSi> DanhSach;
-    std::vector<int> NgayBatDauTrucCapCuu;
+    vector<BacSi> DanhSach;
+    vector<int> NgayBatDauTrucCapCuu;
 
 public:
-    bool DocCSV(const std::string& duongDan);
+    bool DocCSV(const string& duongDan);
 
-    const std::vector<BacSi>& LayDanhSach() const;
+    const vector<BacSi>& LayDanhSach() const;
 
-    std::vector<int> LayBacSiTheoKhoa(const std::string& khoa) const;
+    vector<int> LayBacSiTheoKhoa(const string& khoa) const;
 
-    void KhoiTaoLich(std::time_t HienTai);
+    void KhoiTaoLich(time_t HienTai);
 
-    bool CoBacSiDangTruc(const std::string& khoa, std::time_t thoiDiem) const;
+    bool CoBacSiDangTruc(const string& khoa, time_t thoiDiem) const;
 
     bool TinhThoiDiemNhanBenhNhan(
         int index,
-        const std::string& khoa,
-        std::time_t HienTai,
+        const string& khoa,
+        time_t HienTai,
         int thoiLuong,
-        std::time_t& batDau
+        time_t& batDau
     ) const;
 
-    void CapNhatSauKhiKham(int index, std::time_t ketThuc);
+    void CapNhatSauKhiKham(int index, time_t ketThuc);
 
-    void MoPhongBanDotXuat(std::time_t HienTai);
+    void MoPhongBanDotXuat(time_t HienTai);
 
     const BacSi& LayBacSi(int index) const;
     BacSi& LayBacSi(int index);

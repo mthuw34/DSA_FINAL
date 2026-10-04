@@ -1,25 +1,25 @@
 #pragma once
 #include <string>
 #include <ctime>
+using namespace std;
 
 struct BacSi {
-    std::string id;
-    std::string name;
-    std::string BirthDay;
+    string id;
+    string name;
+    string BirthDay;
     int age = 0;
-    std::string gender;
-    std::string hometown;
-    std::string address;
-    std::string phone;
+    string gender;
+    string hometown;
+    string address;
+    string phone;
     int ExpYears = 0;
-    std::string khoaChuyenMon;
+    string khoaChuyenMon;
 
-    // Thời điểm bác sĩ có thể nhận bệnh nhân tiếp theo trong mô phỏng.
-    std::time_t ThoiGianRanh = 0;
+    // Thời điểm bác sĩ có thể nhận bệnh nhân tiếp theo trong mô phỏng
+    time_t ThoiGianRanh = 0;
 
-    // Nếu bác sĩ bận đột xuất, bác sĩ sẽ không nhận bệnh nhân
-    // cho tới thời điểm này.
-    std::time_t TamNghiDen = 0;
+    // Nếu bác sĩ bận đột xuất, bác sĩ sẽ không nhận bệnh nhân cho tới thời điểm này
+    time_t TamNghiDen = 0;
 
     bool DangLamViec = false;
 };
