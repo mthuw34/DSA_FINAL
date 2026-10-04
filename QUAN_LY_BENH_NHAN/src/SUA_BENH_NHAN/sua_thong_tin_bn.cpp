@@ -6,7 +6,7 @@
 
 using namespace std;
 
-// Chuc nang: Tim va cap nhat thong tin benh nhan theo ID.
+// Tìm và cập nhật thông tin bệnh nhân theo ID.
 int main() {
     sqlite3* db = nullptr;
 
