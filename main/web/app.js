@@ -66,15 +66,18 @@ function setBusy(value) {
   $('#modal-submit').disabled = value;
   $('#content').setAttribute('aria-busy', String(value));
 }
-async function loadData() {
+async function loadData(background = false) {
+  const version = state.loadVersion = (state.loadVersion || 0) + 1;
   const endpoints = {patients:'/api/patients', departments:'/api/departments', checkins:'/api/checkins', queue:'/api/queue', assignments:'/api/assignments', exams:'/api/exams?active=false', doctors:'/api/doctors'};
   // Server đồng bộ nền; giao diện định kỳ tải dữ liệu mới.
   const entries = await Promise.all(Object.entries(endpoints).map(async ([name,url]) => [name,await api(url)]));
+  if (version !== state.loadVersion || (background && (state.busy || state.modal))) return;
   state.data = Object.fromEntries(entries);
   state.patientMap = new Map(state.data.patients.map(p => [p.id,p]));
   state.loaded = true;
   $('#connection').className = 'connection';
-  $('#connection').innerHTML = '<span class="online-dot"></span> Tự cập nhật mỗi 5 giây';
+  const connected = '<span class="online-dot"></span> Tự cập nhật mỗi 5 giây';
+  if ($('#connection').innerHTML !== connected) $('#connection').innerHTML = connected;
   $('#last-updated').textContent = `Cập nhật lúc ${new Date().toLocaleTimeString('vi-VN', {hour:'2-digit',minute:'2-digit'})}`;
   render();
 }
@@ -90,7 +93,11 @@ async function refresh() {
   } finally { setBusy(false); }
 }
 function navigation() {
-  $('#navigation').innerHTML = Object.entries(views).map(([key,[label,,symbol]]) => `<a class="nav-item ${key === state.view ? 'active' : ''}" href="#${key}"${key === state.view ? ' aria-current="page"' : ''}>${icon(symbol)}<span>${label}</span>${key === 'queue' && state.loaded ? `<span class="nav-count">${number(state.data.queue.length)}</span>` : ''}</a>`).join('');
+  const html = Object.entries(views).map(([key,[label,,symbol]]) => `<a class="nav-item ${key === state.view ? 'active' : ''}" href="#${key}"${key === state.view ? ' aria-current="page"' : ''}>${icon(symbol)}<span>${label}</span>${key === 'queue' && state.loaded ? `<span class="nav-count">${number(state.data.queue.length)}</span>` : ''}</a>`).join('');
+  if (state.navigationHtml !== html) {
+    $('#navigation').innerHTML = html;
+    state.navigationHtml = html;
+  }
 }
 function changeView() {
   const next = location.hash.slice(1) || 'overview';
@@ -162,7 +169,7 @@ function renderList() {
     return toolbar('Tìm bệnh nhân, bác sĩ, mã phiếu…',true,mode) + `<section class="panel"><div class="panel-header"><div><h2>Theo dõi lượt khám</h2><p>Ca tới giờ tự động xuất hiện khi bác sĩ trống</p></div></div>${pager(records,r => [person(patientName(r.patient_id),`Mã phiếu #${r.checkin_id}`),escapeHtml(departmentLabel(r.department)),person(r.doctor_name,r.doctor_id),escapeHtml(timeLabel(r.start_time)),badge(r.end_time ? 'Đã hoàn tất' : 'Đang khám',r.end_time ? 'gray' : 'blue'),`<div class="row-actions">${button('exam-detail','Chi tiết',r.checkin_id)}${r.end_time ? '' : button('diagnosis','Chẩn đoán',r.checkin_id,'primary small')}${r.end_time ? '' : button('finish','Kết thúc',r.checkin_id)}</div>`],['BỆNH NHÂN','KHOA','BÁC SĨ','BẮT ĐẦU','TRẠNG THÁI','THAO TÁC'],'Chưa có lượt khám phù hợp','Các ca tới giờ tự cập nhật. Chọn trạng thái khác để xem lịch sử.')}</section>`;
   }
   const records = filter(d.doctors,r => [r.name,r.id,r.department]);
-  return toolbar('Tìm tên hoặc mã bác sĩ…') + `<section class="panel"><div class="panel-header"><h2>Đội ngũ bác sĩ</h2><span class="result-count">${number(records.length)} bác sĩ</span></div>${pager(records,r => [person(r.name,r.id),escapeHtml(departmentLabel(r.department)),`${r.experience_years} năm`,doctorStatus(r),r.busy ? escapeHtml(`${r.busy_reason} · Đến ${timeLabel(r.busy_until)}`) : '—',`<div class="row-actions">${button('doctor-status','Ca trực',r.id)}${button(r.busy ? 'doctor-resume' : 'doctor-busy',r.busy ? 'Hết bận' : 'Bận đột xuất',r.id)}</div>`],['BÁC SĨ','CHUYÊN KHOA','KINH NGHIỆM','TRẠNG THÁI','BẬN ĐỘT XUẤT','THAO TÁC'],'Không tìm thấy bác sĩ','Thử thay đổi khoa hoặc từ khóa tìm kiếm.')}</section>`;
+  return toolbar('Tìm tên hoặc mã bác sĩ…') + `<section class="panel"><div class="panel-header"><h2>Đội ngũ bác sĩ</h2><span class="result-count">${number(records.length)} bác sĩ</span></div>${pager(records,r => [person(r.name,r.id),escapeHtml(departmentLabel(r.department)),`${r.experience_years} năm`,doctorStatus(r),r.busy ? escapeHtml(`${r.busy_reason} · Đến ${timeLabel(r.busy_until)}`) : '—',`<div class="row-actions">${button('doctor-shifts','Xem ca trực',r.id)}${button('doctor-status','Cập nhật ca',r.id)}${button(r.busy ? 'doctor-resume' : 'doctor-busy',r.busy ? 'Hết bận' : 'Bận đột xuất',r.id)}</div>`],['BÁC SĨ','CHUYÊN KHOA','KINH NGHIỆM','TRẠNG THÁI','BẬN ĐỘT XUẤT','THAO TÁC'],'Không tìm thấy bác sĩ','Thử thay đổi khoa hoặc từ khóa tìm kiếm.')}</section>`;
 }
 function doctorStatus(d) {
   return badge(({examining:'Đang khám',busy:'Bận đột xuất',on_duty:'Đang trong ca trực',off_duty:'Ngoài ca / nghỉ'})[d.status] || 'Chưa cập nhật', ({examining:'blue',busy:'orange',on_duty:'green',off_duty:'gray'})[d.status] || 'gray');
@@ -177,7 +184,10 @@ function render() {
   const focused = document.activeElement?.id;
   const selection = focused === 'search' ? $('#search').selectionStart : null;
   navigation();
-  $('#content').innerHTML = state.view === 'overview' ? dashboard() : renderList();
+  const html = state.view === 'overview' ? dashboard() : renderList();
+  if (state.contentHtml === html) return;
+  $('#content').innerHTML = html;
+  state.contentHtml = html;
   if (focused === 'search') { $('#search')?.focus(); try { $('#search')?.setSelectionRange(selection,selection); } catch {} }
 }
 
@@ -216,6 +226,25 @@ function openModal(type, id) {
     title = 'Phân bác sĩ cho hàng đợi';
     html = `<p class="form-info">Phân theo thứ tự ưu tiên và lịch trống.</p><label class="field">Cách phân lịch<select name="schedule_mode" id="schedule-mode"><option value="department">Phân một khoa</option><option value="doctor">Phân theo bác sĩ</option></select></label><label class="field" id="schedule-department-field">Khoa khám<select name="department">${departmentOptions(state.department || state.data.departments[0]?.name,false)}</select></label><label class="field" id="schedule-doctor-field" hidden>Bác sĩ<select name="doctor_id">${state.data.doctors.filter(d => !d.busy && d.status !== 'examining' && d.duty_mode !== 'off_duty').map(d => `<option value="${escapeHtml(d.id)}">${escapeHtml(d.name)} · ${escapeHtml(d.id)} · ${escapeHtml(departmentLabel(d.department))}</option>`).join('')}</select></label><p class="form-note">Thời lượng dự kiến 10–30 phút. Bác sĩ ngoài giờ nhận lịch trong ca tiếp theo. Bác sĩ bận, nghỉ hoặc đang khám không nhận lịch mới.</p>`;
     $('#modal-submit').textContent = 'Phân bác sĩ';
+  } else if (type === 'doctor-shifts') {
+    const d = state.data.doctors.find(d => d.id === id);
+    if (!d) return;
+    title = 'Ca trực bác sĩ · 7 ngày';
+    const rule = d.shift_rule === 'three_8h_rotating_days_off' ? 'Khoa 24/7 chia 3 ca: 00:00–08:00, 08:00–16:00, 16:00–00:00 hôm sau. Mỗi bác sĩ trực một ca 8 giờ, nghỉ cách ngày theo nhóm luân phiên.' : 'Thứ Hai–Thứ Sáu: 07:00–11:30 và 13:00–17:00. Nghỉ cuối tuần.';
+    html = `<p class="form-info">${escapeHtml(d.name)} · ${escapeHtml(departmentLabel(d.department))}</p><p class="form-note">${rule}</p>`;
+    if (d.duty_mode !== 'auto') html += `<p class="form-note">${d.duty_mode === 'on_duty' ? 'Bác sĩ đang được bật trực thủ công, có thể nhận ca ngoài lịch dưới đây cho đến khi cập nhật lại.' : 'Bác sĩ đang được đặt nghỉ thủ công, tạm ngừng nhận ca dù có lịch bên dưới.'} Bảng dưới đây là lịch ca tự động.</p>`;
+    if (d.busy) html += `<p class="form-note">Bận đột xuất đến ${escapeHtml(timeLabel(d.busy_until))}: ${escapeHtml(d.busy_reason)}</p>`;
+    if (d.shift_period_start && Array.isArray(d.shifts)) {
+      const first = new Date(`${d.shift_period_start}T00:00:00Z`);
+      const rows = Array.from({length:7}, (_,i) => {
+        const day = new Date(first.getTime() + i * 86400000);
+        const date = day.toISOString().slice(0,10);
+        const shifts = d.shifts.filter(s => s.date === date);
+        return [escapeHtml(day.toLocaleDateString('vi-VN',{weekday:'short',day:'2-digit',month:'2-digit',timeZone:'UTC'})), shifts.length ? shifts.map(s => `${escapeHtml(timeLabel(s.start_time))} → ${escapeHtml(timeLabel(s.end_time))}`).join('<br>') : 'Nghỉ', shifts.some(s => s.is_current) ? badge('Trong ca theo lịch','green') : shifts.length ? badge('Có ca trực','blue') : badge('Không có ca','gray')];
+      });
+      html += table(['NGÀY','BẮT ĐẦU → KẾT THÚC','LỊCH CA'], rows);
+    } else html += `<p class="form-note">Chưa có dữ liệu ca trực. Khởi động lại server bằng bản mới để xem lịch.</p>`;
+    $('#modal-submit').hidden = true;
   } else if (['doctor-status','doctor-busy','doctor-resume'].includes(type)) {
     const d = state.data.doctors.find(d => d.id === id);
     if (!d) return;
@@ -258,6 +287,7 @@ function closeModal() { if (!state.busy) { $('#modal').close(); state.modal = nu
 async function mutate(action, successMessage, close = true) {
   if (state.busy) return;
   setBusy(true);
+  state.loadVersion = (state.loadVersion || 0) + 1;
   let committed = false;
   try {
     const result = await action();
@@ -346,13 +376,16 @@ refresh();
 
 // Giữ biểu mẫu đang nhập và tránh tải nền chồng thao tác lưu.
 async function autoRefresh() {
-  if (state.busy || state.modal || document.hidden) return;
-  setBusy(true);
-  try { await loadData(); }
+  if (state.busy || state.refreshing || state.modal || document.hidden) return;
+  state.refreshing = true;
+  try { await loadData(true); }
   catch {
-    $('#connection').className = 'connection offline';
-    $('#connection').innerHTML = '<span class="online-dot"></span> Mất kết nối · đang tự thử lại';
-  } finally { setBusy(false); }
+    if (!state.busy) {
+      $('#connection').className = 'connection offline';
+      const disconnected = '<span class="online-dot"></span> Mất kết nối · đang tự thử lại';
+      if ($('#connection').innerHTML !== disconnected) $('#connection').innerHTML = disconnected;
+    }
+  } finally { state.refreshing = false; }
 }
 setInterval(autoRefresh, 5000);
 document.addEventListener('visibilitychange', () => { if (!document.hidden) autoRefresh(); });

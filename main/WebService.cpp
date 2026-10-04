@@ -315,23 +315,30 @@ Json WebService::listDoctors() {
     const auto now = time(nullptr);
     auto active = listExams(true);
     Json result = Json::array();
-    int index = 0;
+    int capCuuIndex = 0;
     for (const auto& d : manager.LayDanhSach()) {
+        const int phase = d.khoaChuyenMon == "Khoa Cap cuu" ? capCuuIndex++ % 6 : 0;
         const auto settings = saved.value(d.id, Json::object());
         const auto mode = settings.value("duty_mode", "auto");
         const auto until = settings.value("busy_until", "");
         time_t busyEnd = 0;
         const bool busy = ExamCore::parseTime(until, busyEnd) && busyEnd > now;
         const bool duty = mode == "on_duty" || (mode == "auto" &&
-            (d.khoaChuyenMon == "Khoa Cap cuu" ? ThoiGian::DangTrucCapCuu(now, index % 2) : ThoiGian::DangTrongCaThuong(now)));
+            (d.khoaChuyenMon == "Khoa Cap cuu" ? ThoiGian::DangTrucCapCuu(now, phase) : ThoiGian::DangTrongCaThuong(now)));
         bool examining = false;
         for (const auto& e : active) if (e["doctor_id"] == d.id) examining = true;
+        Json shifts = Json::array();
+        for (const auto& shift : ThoiGian::LichTruc(now, d.khoaChuyenMon == "Khoa Cap cuu", phase))
+            shifts.push_back({{"date",shift.ngay},{"start_time",ThoiGian::DinhDang(shift.batDau)},
+                {"end_time",ThoiGian::DinhDang(shift.ketThuc)},
+                {"is_current",now >= shift.batDau && now < shift.ketThuc}});
         result.push_back({{"id",d.id},{"name",d.name},{"department",d.khoaChuyenMon},
-            {"experience_years",d.ExpYears},{"duty_mode",mode},{"on_duty",duty},
+            {"experience_years",d.ExpYears},{"duty_mode",mode},{"on_duty",duty},{"shifts",shifts},
+            {"shift_period_start",ThoiGian::DinhDangNgay(now)},
+            {"shift_rule",d.khoaChuyenMon == "Khoa Cap cuu" ? "three_8h_rotating_days_off" : "weekday_split"},
             {"busy",busy},{"busy_until",busy ? Json(until) : Json(nullptr)},
             {"busy_reason",busy ? settings.value("busy_reason", "") : ""},
             {"status",examining ? "examining" : busy ? "busy" : duty ? "on_duty" : "off_duty"}});
-        ++index;
     }
     return result;
 }

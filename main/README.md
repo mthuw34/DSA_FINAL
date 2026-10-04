@@ -28,12 +28,20 @@ Nếu server cũ đang chạy, bấm Ctrl+C trong terminal đó, build lại r�
 Sau check-in, bệnh nhân tự xuất hiện ở **Hàng đợi** và rời danh sách **Hồ sơ chờ check-in**.
 Hồ sơ gốc vẫn được lưu để tra cứu trong lượt khám. Server tự đồng bộ mỗi 5 giây,
 kể cả khi đóng trình duyệt; giao diện tự tải dữ liệu mỗi 5 giây khi không mở biểu mẫu.
-Trong mỗi lần đồng bộ, server cũng tự tăng mức ưu tiên sau mỗi 90 phút làm việc
-(07:30–11:30 và 13:00–16:30), tính bù các mốc đã qua và dừng ở mức 1.
-Mức ưu tiên hiện tại trên web sẽ tự thay đổi khi chu kỳ nền kế tiếp chạy.
 Trong **Lịch khám → Phân bác sĩ**, chọn **Phân một khoa** hoặc **Phân theo bác sĩ**.
 Ca tới giờ được tự nhận khi bác sĩ trống; bác sĩ chỉ khám một ca cùng lúc.
 Trong **Bác sĩ**, trạng thái gồm Đang khám, Đang trong ca trực, Ngoài ca/nghỉ và Bận đột xuất.
+**Xem ca trực** hiển thị 7 ngày từ ngày hiện tại của server, kèm giờ bắt đầu/kết thúc và ngày nghỉ.
+Khoa thường làm Thứ Hai–Thứ Sáu, 07:00–11:30 và 13:00–17:00;
+Khoa Cấp cứu (24/7) chia 3 ca 8 giờ: 00:00–08:00, 08:00–16:00 và
+16:00–00:00 hôm sau. Bác sĩ chia 6 nhóm (3 ca × 2 nhóm ngày), trực một ca
+và nghỉ cách ngày luân phiên; chu kỳ liên tục khi chuyển năm.
+Ca phải bắt đầu trước khi kết thúc, tối đa 12 giờ, không chồng lấn với ca khác
+của cùng bác sĩ (kể cả qua nửa đêm). Ca liền kề được phép.
+Lịch mẫu sinh tự động theo quy tắc, không ghi đè các cuộc hẹn đã lưu.
+Lượt khám tự động chỉ được xếp nếu kết thúc trong ca trực.
+Lịch hiển thị dùng cùng quy tắc với bộ phân bác sĩ. Trực/nghỉ thủ công và bận đột xuất
+được ghi riêng trong hộp xem lịch để phân biệt với lịch tự động.
 **Ca trực** cho chọn tự động theo lịch, đang trực thủ công hoặc nghỉ ca.
 **Bận đột xuất** nhận số phút (1–1440) và lý do; tự hết khi tới hạn hoặc bấm **Hết bận**.
 Báo bận/nghỉ trả các lịch chưa bắt đầu về hàng đợi để phân lại, giữ ca đang khám.
