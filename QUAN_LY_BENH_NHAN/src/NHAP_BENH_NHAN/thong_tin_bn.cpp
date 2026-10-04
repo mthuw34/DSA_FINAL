@@ -5,11 +5,13 @@
 #include <sqlite3.h>
 #include "../patient_validation.h"
 
+using namespace std;
+
 // Doc 1 dong CSV, co xu ly truong hop dia chi co dau phay
-std::vector<std::string> parseCSV(const std::string& line)
+vector<string> parseCSV(const string& line)
 {
-    std::vector<std::string> fields;
-    std::string field;
+    vector<string> fields;
+    string field;
     bool inQuotes = false;
 
     for (size_t i = 0; i < line.size(); ++i)
@@ -52,18 +54,18 @@ int main()
 
     if (sqlite3_open("QUAN_LY_BENH_NHAN/db/hospital.db", &db) != SQLITE_OK)
     {
-        std::cerr << "Loi mo database: "
+        cerr << "Loi mo database: "
                   << sqlite3_errmsg(db) << '\n';
 
         sqlite3_close(db);
         return 1;
     }
 
-    std::ifstream file("QUAN_LY_BENH_NHAN/db/benh_nhan_20000.csv");
+    ifstream file("QUAN_LY_BENH_NHAN/db/benh_nhan_20000.csv");
 
     if (!file.is_open())
     {
-        std::cerr << "Khong mo duoc patients.csv\n";
+        cerr << "Khong mo duoc patients.csv\n";
         sqlite3_close(db);
         return 1;
     }
@@ -85,7 +87,7 @@ int main()
             nullptr
         ) != SQLITE_OK)
     {
-        std::cerr << "Loi SQL: "
+        cerr << "Loi SQL: "
                   << sqlite3_errmsg(db) << '\n';
 
         file.close();
@@ -95,28 +97,28 @@ int main()
 
     // Serialize imports so repeated/concurrent imports cannot duplicate records.
     if (sqlite3_exec(db, "BEGIN IMMEDIATE;", nullptr, nullptr, nullptr) != SQLITE_OK) {
-        std::cerr << sqlite3_errmsg(db) << '\n';
+        cerr << sqlite3_errmsg(db) << '\n';
         sqlite3_finalize(stmt);
         sqlite3_close(db);
         return 1;
     }
     if (sqlite3_exec(db, "CREATE INDEX IF NOT EXISTS ix_patients_import ON patients(name, birth_date, phone);",
                      nullptr, nullptr, nullptr) != SQLITE_OK) {
-        std::cerr << sqlite3_errmsg(db) << '\n';
+        cerr << sqlite3_errmsg(db) << '\n';
         sqlite3_exec(db, "ROLLBACK;", nullptr, nullptr, nullptr);
         sqlite3_finalize(stmt);
         sqlite3_close(db);
         return 1;
     }
 
-    std::string line;
+    string line;
 
     // Bo qua dong tieu de Excel
-    std::getline(file, line);
+    getline(file, line);
     if (line.compare(0, 3, "\xEF\xBB\xBF") == 0) line.erase(0, 3);
     if (!line.empty() && line.back() == '\r') line.pop_back();
     if (line != "name,birth_date,age,gender,hometown,address,phone") {
-        std::cerr << "Tieu de CSV khong hop le\n";
+        cerr << "Tieu de CSV khong hop le\n";
         sqlite3_exec(db, "ROLLBACK;", nullptr, nullptr, nullptr);
         sqlite3_finalize(stmt);
         sqlite3_close(db);
@@ -128,7 +130,7 @@ int main()
     int skipped = 0;
     int row = 1;
 
-    while (std::getline(file, line))
+    while (getline(file, line))
     {
         ++row;
 
@@ -139,11 +141,11 @@ int main()
         if (!line.empty() && line.back() == '\r')
             line.pop_back();
 
-        std::vector<std::string> data = parseCSV(line);
+        vector<string> data = parseCSV(line);
 
         if (data.size() != 7)
         {
-            std::cerr
+            cerr
                 << "Dong " << row
                 << " khong du 7 cot\n";
 
@@ -153,14 +155,14 @@ int main()
 
         try
         {
-            std::string name      = data[0];
-            std::string birthDate = data[1];
+            string name      = data[0];
+            string birthDate = data[1];
             int age               = ageFromBirthDate(birthDate);
             parseNonNegativeInt(data[2]);
-            std::string gender    = data[3];
-            std::string hometown  = data[4];
-            std::string address   = data[5];
-            std::string phone     = data[6];
+            string gender    = data[3];
+            string hometown  = data[4];
+            string address   = data[5];
+            string phone     = data[6];
 
             sqlite3_bind_text(
                 stmt, 1,
@@ -216,7 +218,7 @@ int main()
             }
             else
             {
-                std::cerr
+                cerr
                     << "Loi dong "
                     << row
                     << ": "
@@ -231,7 +233,7 @@ int main()
         }
         catch (...)
         {
-            std::cerr
+            cerr
                 << "Du lieu sai tai dong "
                 << row << '\n';
 
@@ -246,7 +248,7 @@ int main()
     const bool committed = failed == 0 &&
         sqlite3_exec(db, "COMMIT;", nullptr, nullptr, nullptr) == SQLITE_OK;
     if (!committed) {
-        std::cerr << "Import that bai; da huy cac thay doi: " << sqlite3_errmsg(db) << '\n';
+        cerr << "Import that bai; da huy cac thay doi: " << sqlite3_errmsg(db) << '\n';
         sqlite3_exec(db, "ROLLBACK;", nullptr, nullptr, nullptr);
         success = 0;
     }
@@ -255,10 +257,10 @@ int main()
     sqlite3_close(db);
     file.close();
 
-    std::cout << "\n===== IMPORT HOAN TAT =====\n";
-    std::cout << "Thanh cong: " << success << '\n';
-    std::cout << "That bai:    " << failed << '\n';
+    cout << "\n===== IMPORT HOAN TAT =====\n";
+    cout << "Thanh cong: " << success << '\n';
+    cout << "That bai:    " << failed << '\n';
 
-    std::cout << "Bo qua trung: " << skipped << '\n';
+    cout << "Bo qua trung: " << skipped << '\n';
     return committed ? 0 : 1;
 }
