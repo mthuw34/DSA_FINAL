@@ -4,7 +4,7 @@
 
 using namespace std;
 
-// Chuc nang: Nhap chan doan, don thuoc va loi nhac cua bac si tu ban phim.
+// Nhập chẩn đoán, đơn thuốc và lời nhắc của bác sĩ từ bàn phím.
 void NhapChanDoan(
     const string& idBenhNhan,
     string& chanDoan,
