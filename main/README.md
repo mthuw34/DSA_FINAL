@@ -28,6 +28,9 @@ Nếu server cũ đang chạy, bấm Ctrl+C trong terminal đó, build lại r�
 Sau check-in, bệnh nhân tự xuất hiện ở **Hàng đợi** và rời danh sách **Hồ sơ chờ check-in**.
 Hồ sơ gốc vẫn được lưu để tra cứu trong lượt khám. Server tự đồng bộ mỗi 5 giây,
 kể cả khi đóng trình duyệt; giao diện tự tải dữ liệu mỗi 5 giây khi không mở biểu mẫu.
+Trong mỗi lần đồng bộ, server cũng tự tăng mức ưu tiên sau mỗi 90 phút làm việc
+(07:30–11:30 và 13:00–16:30), tính bù các mốc đã qua và dừng ở mức 1.
+Mức ưu tiên hiện tại trên web sẽ tự thay đổi khi chu kỳ nền kế tiếp chạy.
 Trong **Lịch khám → Phân bác sĩ**, chọn **Phân một khoa** hoặc **Phân theo bác sĩ**.
 Ca tới giờ được tự nhận khi bác sĩ trống; bác sĩ chỉ khám một ca cùng lúc.
 Trong **Bác sĩ**, trạng thái gồm Đang khám, Đang trong ca trực, Ngoài ca/nghỉ và Bận đột xuất.

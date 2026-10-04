@@ -8,6 +8,7 @@
 #include "../QUAN_LY_BENH_NHAN/src/patient_validation.h"
 #include "../QUAN_LY_BENH_NHAN/src/CHECK_IN/khoa.h"
 #include "../THAY_DOI_MUC_DO_UU_TIEN/src/DONG_BO/PrioritySync.h"
+#include "../THAY_DOI_MUC_DO_UU_TIEN/src/THAY_DOI_TU_DONG/AutoPriority.h"
 #include "../THAY_DOI_MUC_DO_UU_TIEN/src/CAP_NHAT_THU_CONG/PriorityManager.h"
 #include "../TRUY_XUAT_BENH_NHAN/src/TRUY_XUAT/TruyXuat.h"
 #include "../TRUY_XUAT_BENH_NHAN/src/TAO_BANG/TaoBangTruyXuat.h"
@@ -263,6 +264,9 @@ Json WebService::listCheckIns() {
 void WebService::syncPriority() {
     PrioritySync sync(hospital, priority);
     require(sync.syncAll(), 500, "Dong bo uu tien that bai");
+    AutoPriorityHeap heap;
+    loadPatients(priority, heap);
+    processAuto(priority, heap);
 }
 Json WebService::queue() {
     // GET chỉ đọc. Đồng bộ/ghi queue được thực hiện bằng POST /api/queue/sync.
