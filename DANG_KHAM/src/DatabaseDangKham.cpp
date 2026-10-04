@@ -5,7 +5,7 @@
 
 using namespace std;
 
-// Chuc nang: Lay chuoi TEXT an toan tu SQLite.
+// Lấy chuỗi TEXT an toàn từ SQLite.
 static string getText(
     sqlite3_stmt* stmt,
     int column
@@ -24,7 +24,7 @@ DatabaseDangKham::~DatabaseDangKham()
     dong();
 }
 
-// Chuc nang: Thuc thi mot cau lenh SQL khong can tra ve dong du lieu.
+// Thực thi một câu lệnh SQL không cần trả về dòng dữ liệu.
 bool DatabaseDangKham::executeSql(
     const string& sql,
     const char* errorMessage
@@ -53,7 +53,7 @@ bool DatabaseDangKham::executeSql(
     return false;
 }
 
-// Chuc nang: Kiem tra mot cot da ton tai trong bang hay chua.
+// Kiểm tra một cột đã tồn tại trong bảng hay chưa.
 bool DatabaseDangKham::columnExists(
     const char* table,
     const char* column
@@ -92,7 +92,7 @@ bool DatabaseDangKham::columnExists(
     return found;
 }
 
-// Chuc nang: Bo sung cot vao bang neu database cu chua co cot do.
+// Bổ sung cột vào bảng nếu database cũ chưa có cột đó.
 bool DatabaseDangKham::addColumnIfMissing(
     const char* table,
     const char* column,
@@ -117,7 +117,7 @@ bool DatabaseDangKham::addColumnIfMissing(
     );
 }
 
-// Chuc nang: Kiem tra bang nguon co ton tai trong database duoc lien ket.
+// Kiểm tra bảng nguồn có tồn tại trong database được liên kết.
 bool DatabaseDangKham::sourceTableExists(
     const char* tableName
 )
@@ -158,7 +158,7 @@ bool DatabaseDangKham::sourceTableExists(
     return exists;
 }
 
-// Chuc nang: Mo dangKham.db va lien ket database nguon.
+// Mở dangKham.db và liên kết database nguồn.
 bool DatabaseDangKham::mo(
     const string& sourcePath,
     const string& destinationPath
@@ -227,7 +227,7 @@ bool DatabaseDangKham::mo(
     return true;
 }
 
-// Chuc nang: Tao va cap nhat cau truc bang dang_kham.
+// Tạo và cập nhật cấu trúc bảng dang_kham.
 bool DatabaseDangKham::taoCauTruc()
 {
     if (!executeSql(
@@ -327,7 +327,7 @@ bool DatabaseDangKham::taoCauTruc()
     return true;
 }
 
-// Chuc nang: Nhan ket qua phan bac si va dong bo vao dangKham.db.
+// Nhận kết quả phân bác sĩ và đồng bộ vào dangKham.db.
 bool DatabaseDangKham::dongBoTuXepBacSi()
 {
     if (!sourceTableExists("ket_qua_kham"))
@@ -374,7 +374,7 @@ bool DatabaseDangKham::dongBoTuXepBacSi()
     );
 }
 
-// Chuc nang: Ngat lien ket database nguon va dong ket noi SQLite.
+// Ngắt liên kết database nguồn và đóng kết nối SQLite.
 void DatabaseDangKham::dong()
 {
     if (db == nullptr)
@@ -392,7 +392,7 @@ void DatabaseDangKham::dong()
     db = nullptr;
 }
 
-// Chuc nang: Tra ve ket noi SQLite de cac lop nghiep vu su dung.
+// Trả về kết nối SQLite để các lớp nghiệp vụ sử dụng.
 sqlite3* DatabaseDangKham::get() const
 {
     return db;
