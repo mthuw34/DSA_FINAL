@@ -7,6 +7,7 @@
 
 using namespace std;
 
+// Chuc nang: Cho nguoi dung chon khoa kham.
 string chonKhoa()
 {
     int luaChon;
@@ -60,6 +61,7 @@ string chonKhoa()
     }
 }
 
+// Chuc nang: Kiem tra khoa co dang nhan benh nhan theo thoi gian va muc uu tien.
 bool khoaDangHoatDong(
     const string& department,
     int priority,
