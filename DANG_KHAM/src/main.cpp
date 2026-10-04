@@ -44,7 +44,6 @@ int main(int argc, char* argv[])
     }
 
     sqlite3* db = nullptr;
-
     const std::string destinationText = destination.string();
 
     if (sqlite3_open_v2(
@@ -163,8 +162,7 @@ int main(int argc, char* argv[])
 
         const std::string name = table;
 
-        // DangKham la ban sao hien tai cua hang doi, nen tao lai schema
-        // de tranh database cu chi co 5 cot.
+        // DangKham chi can thong tin co ban cua benh nhan dang cho/kham.
         success = execute(
             "DROP TABLE IF EXISTS main." + name + ";"
         );
@@ -178,12 +176,7 @@ int main(int argc, char* argv[])
                 checkin_id INTEGER NOT NULL UNIQUE,
                 patient_id INTEGER NOT NULL,
                 department TEXT NOT NULL,
-                checkin_time TEXT NOT NULL,
-                base_priority INTEGER NOT NULL
-                    CHECK(base_priority BETWEEN 1 AND 5),
-                current_priority INTEGER NOT NULL
-                    CHECK(current_priority BETWEEN 1 AND 5),
-                last_update TEXT
+                checkin_time TEXT NOT NULL
             );)"
         );
 
@@ -192,10 +185,8 @@ int main(int argc, char* argv[])
 
         success = execute(
             "INSERT INTO main." + name +
-            " (retrieval_order, checkin_id, patient_id, department, "
-            "checkin_time, base_priority, current_priority, last_update) "
-            "SELECT retrieval_order, checkin_id, patient_id, department, "
-            "checkin_time, base_priority, current_priority, last_update "
+            " (retrieval_order, checkin_id, patient_id, department, checkin_time) "
+            "SELECT retrieval_order, checkin_id, patient_id, department, checkin_time "
             "FROM source." + name +
             " ORDER BY retrieval_order;"
         );
@@ -212,7 +203,6 @@ int main(int argc, char* argv[])
     else
         execute("ROLLBACK;");
 
-    // DETACH truoc khi dong ket noi de ket thuc sach database nguon.
     sqlite3_exec(db, "DETACH DATABASE source;", nullptr, nullptr, nullptr);
     sqlite3_close(db);
 
@@ -222,7 +212,7 @@ int main(int argc, char* argv[])
     std::cout
         << "Da cap nhat 10 bang theo khoa: "
         << total
-        << " dong, moi bang 8 cot.\n"
+        << " dong, moi bang 5 cot.\n"
         << "Database: "
         << destination
         << '\n';
