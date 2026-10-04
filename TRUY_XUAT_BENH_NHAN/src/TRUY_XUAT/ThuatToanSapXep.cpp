@@ -3,18 +3,7 @@
 using namespace std;
 
 int ThuatToanSapXep::layThuTuKhoa(const string& department) {
-    static const vector<string> departments = {
-        "Khoa Cap cuu", "Khoa Noi", "Khoa Ngoai", "Khoa Tim mach",
-        "Khoa Nhi", "Khoa San", "Khoa Tai Mui Hong", "Khoa Mat",
-        "Khoa Da lieu", "Khoa Than kinh"
-    };
-
-    for (int index = 0; index < static_cast<int>(departments.size()); ++index) {
-        if (departments[index] == department) {
-            return index + 1;
-        }
-    }
-    return 99;
+    return CauHinhTruyXuat::thuTuKhoa(department);
 }   
 
 bool ThuatToanSapXep::xetUuTien(const HoSoTruyXuat& left, const HoSoTruyXuat& right) {
@@ -48,17 +37,21 @@ bool ThuatToanSapXep::xetUuTien(const HoSoTruyXuat& left, const HoSoTruyXuat& ri
         return left.checkinTime < right.checkinTime;
     }
     
-    // 7. Chốt chặn cuối bằng ID bốc số
+    // checkinId provides deterministic ordering when all clinical/time keys match;
+    // it is a tie-breaker, not by itself proof of stability relative to input order.
     return left.checkinId < right.checkinId;
 }
 
 void ThuatToanSapXep::tron(vector<HoSoTruyXuat>& records, vector<HoSoTruyXuat>& buffer, int left, int middle, int right) {
+    // Precondition: 0 <= left <= middle < right < records.size(), and buffer.size() >= records.size().
     int first = left;
     int second = middle + 1;
     int target = left;
 
     while (first <= middle && second <= right) {
-        if (xetUuTien(records[first], records[second])) {
+        // Pick the left item unless the right one strictly precedes it; this preserves
+        // input order for comparator-equivalent items. Selecting right on equality breaks stability.
+        if (!xetUuTien(records[second], records[first])) {
             buffer[target++] = records[first++];
         } else {
             buffer[target++] = records[second++];
@@ -78,6 +71,7 @@ void ThuatToanSapXep::tron(vector<HoSoTruyXuat>& records, vector<HoSoTruyXuat>& 
 }
 
 void ThuatToanSapXep::sapXepTron(vector<HoSoTruyXuat>& records, vector<HoSoTruyXuat>& buffer, int left, int right) {
+    // Precondition: buffer.size() >= records.size(), and [left, right] is a valid range or empty.
     if (left >= right) {
         return;
     }

@@ -1,38 +1,21 @@
 #include "TruyXuat.h"
 #include <vector>
-#include <sqlite3.h>
+#include <iostream>
 
 using namespace std;
 
 bool QuanLyHangDoi::taiVaXuLyBenhNhan() {
-    const char* priorityPath = "THAY_DOI_MUC_DO_UU_TIEN/db/priority.db";
-    sqlite3* priorityDatabase = nullptr;
-
-    if (sqlite3_open_v2(priorityPath, &priorityDatabase, SQLITE_OPEN_READONLY, nullptr) != SQLITE_OK) {
-        if (priorityDatabase != nullptr) {
-            sqlite3_close(priorityDatabase);
-        }
+    vector<HoSoTruyXuat> records;
+    if (!DBTruyXuat::docDanhSachBenhNhan(records)) {
+        cerr << "Khong the doc danh sach benh nhan tu database.\n";
         return false;
     }
 
-    vector<HoSoTruyXuat> records;
-    bool success = false;
-    
-    // 1. Lấy dữ liệu trực tiếp từ priority.db
-    if (DocDuLieu::layDanhSachBenhNhan(priorityDatabase, records)) {
-        
-        // 2. Thuật toán Merge Sort sắp xếp dữ liệu
-        if (!records.empty()) {
-            vector<HoSoTruyXuat> buffer(records.size());
-            ThuatToanSapXep::sapXepTron(records, buffer, 0, static_cast<int>(records.size()) - 1);
-        }
-        
-        // 3. Đổ dữ liệu đã sort vào truyXuat.db và lưu lại trạng thái thành công
-        const char* outputPath = "TRUY_XUAT_BENH_NHAN/db/truyXuat.db";
-        success = GhiDuLieu::ghiDanhSachDaSapXep(records, outputPath);
+    if (!records.empty()) {
+        // Merge Sort uses O(n) auxiliary storage to guarantee stable sorting in Theta(n log n) time.
+        vector<HoSoTruyXuat> buffer(records.size());
+        ThuatToanSapXep::sapXepTron(records, buffer, 0, static_cast<int>(records.size()) - 1);
     }
 
-    sqlite3_close(priorityDatabase);
-
-    return success;
+    return DBTruyXuat::ghiDanhSachDaSapXep(records);
 }
