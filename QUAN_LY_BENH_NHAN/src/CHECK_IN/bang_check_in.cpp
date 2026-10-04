@@ -7,13 +7,9 @@
 
 using namespace std;
 
-static string getText(
-    sqlite3_stmt* stmt,
-    int column
-)
+static string getText(sqlite3_stmt* stmt, int column)
 {
-    const unsigned char* text =
-        sqlite3_column_text(stmt, column);
+    const unsigned char* text = sqlite3_column_text(stmt, column);
 
     if (text == nullptr)
         return "";
@@ -30,16 +26,13 @@ static string tenUuTien(int priority)
         case 3: return "Cao";
         case 4: return "Binh thuong";
         case 5: return "Thap";
-
-        default:
-            return "Khong xac dinh";
+        default: return "Khong xac dinh";
     }
 }
 
 void hienThiBangCheckIn(sqlite3* db)
 {
     const char* sql = R"(
-
         SELECT
             c.department,
             c.checkin_id,
@@ -47,16 +40,11 @@ void hienThiBangCheckIn(sqlite3* db)
             p.name,
             c.priority,
             c.checkin_time
-
         FROM checkins c
-
         JOIN patients p
             ON c.patient_id = p.id
-
         ORDER BY
-
             CASE c.department
-
                 WHEN 'Khoa Cap cuu' THEN 1
                 WHEN 'Khoa Noi' THEN 2
                 WHEN 'Khoa Ngoai' THEN 3
@@ -67,61 +55,39 @@ void hienThiBangCheckIn(sqlite3* db)
                 WHEN 'Khoa Mat' THEN 8
                 WHEN 'Khoa Da lieu' THEN 9
                 WHEN 'Khoa Than kinh' THEN 10
-
                 ELSE 99
-
             END ASC,
-
             c.priority ASC,
             c.checkin_time ASC,
             p.id ASC,
             c.checkin_id ASC;
-
     )";
 
     sqlite3_stmt* stmt = nullptr;
 
-    if (sqlite3_prepare_v2(
-            db,
-            sql,
-            -1,
-            &stmt,
-            nullptr
-        ) != SQLITE_OK)
+    if (sqlite3_prepare_v2(db, sql, -1, &stmt, nullptr) != SQLITE_OK)
     {
         cerr << "Loi doc bang check-in: "
              << sqlite3_errmsg(db)
              << '\n';
-
         return;
     }
 
-    string khoaHienTai = "";
-
+    string khoaHienTai;
     int stt = 0;
     int tongBenhNhan = 0;
 
-    while (sqlite3_step(stmt) == SQLITE_ROW)
+    int stepResult = SQLITE_ROW;
+
+    while ((stepResult = sqlite3_step(stmt)) == SQLITE_ROW)
     {
-        string department =
-            getText(stmt, 0);
+        string department = getText(stmt, 0);
+        int checkinId = sqlite3_column_int(stmt, 1);
+        int patientId = sqlite3_column_int(stmt, 2);
+        string name = getText(stmt, 3);
+        int priority = sqlite3_column_int(stmt, 4);
+        string checkinTime = getText(stmt, 5);
 
-        int checkinId =
-            sqlite3_column_int(stmt, 1);
-
-        int patientId =
-            sqlite3_column_int(stmt, 2);
-
-        string name =
-            getText(stmt, 3);
-
-        int priority =
-            sqlite3_column_int(stmt, 4);
-
-        string checkinTime =
-            getText(stmt, 5);
-
-        // Khoa moi
         if (department != khoaHienTai)
         {
             khoaHienTai = department;
@@ -145,8 +111,8 @@ void hienThiBangCheckIn(sqlite3* db)
             cout << "--------------------------------------------------------------------\n";
         }
 
-        stt++;
-        tongBenhNhan++;
+        ++stt;
+        ++tongBenhNhan;
 
         cout
             << left
@@ -154,14 +120,16 @@ void hienThiBangCheckIn(sqlite3* db)
             << setw(12) << checkinId
             << setw(10) << patientId
             << setw(25) << name.substr(0, 23)
-            << setw(20)
-            << (
-                to_string(priority)
-                + " - "
-                + tenUuTien(priority)
-            )
+            << setw(20) << (to_string(priority) + " - " + tenUuTien(priority))
             << setw(22) << checkinTime
             << '\n';
+    }
+
+    if (stepResult != SQLITE_DONE)
+    {
+        cerr << "Loi khi duyet bang check-in: "
+             << sqlite3_errmsg(db)
+             << '\n';
     }
 
     sqlite3_finalize(stmt);
@@ -173,24 +141,26 @@ void hienThiBangCheckIn(sqlite3* db)
     }
 
     cout << "\n====================================================================\n";
-    cout << "Tong so check-in: "
-         << tongBenhNhan
-         << '\n';
+    cout << "Tong so check-in: " << tongBenhNhan << '\n';
     cout << "====================================================================\n";
 }
 
 bool xoaToanBoCheckIn(sqlite3* db)
 {
+    char* errorMessage = nullptr;
+
     const char* sql = R"(
+        BEGIN IMMEDIATE;
+
         DELETE FROM checkins;
 
         DELETE FROM sqlite_sequence
         WHERE name = 'checkins';
-)";    
 
-    char* errorMessage = nullptr;
+        COMMIT;
+    )";
 
-    int result = sqlite3_exec(
+    const int result = sqlite3_exec(
         db,
         sql,
         nullptr,
@@ -200,38 +170,36 @@ bool xoaToanBoCheckIn(sqlite3* db)
 
     if (result != SQLITE_OK)
     {
-        std::cerr
-            << "Loi khi xoa du lieu check-in: "
-            << errorMessage
-            << '\n';
+        sqlite3_exec(db, "ROLLBACK;", nullptr, nullptr, nullptr);
+
+        cerr << "Loi khi xoa du lieu check-in: "
+             << (errorMessage ? errorMessage : sqlite3_errmsg(db))
+             << '\n';
 
         sqlite3_free(errorMessage);
-
         return false;
     }
 
     cout << "\nDa xoa toan bo du lieu trong bang checkins.\n";
-    cout <<"Ma check-in da duoc reset ve 1.\n";
+    cout << "Ma check-in da duoc reset ve 1.\n";
 
     return true;
 }
-bool xoaMotCheckIn(
-    sqlite3* db,
-    int checkinId
-)
+
+bool xoaMotCheckIn(sqlite3* db, int checkinId)
 {
+    if (checkinId <= 0)
+    {
+        cout << "\nMa check-in phai lon hon 0.\n";
+        return false;
+    }
+
     const char* sql =
         "DELETE FROM checkins WHERE checkin_id = ?;";
 
     sqlite3_stmt* stmt = nullptr;
 
-    if (sqlite3_prepare_v2(
-            db,
-            sql,
-            -1,
-            &stmt,
-            nullptr
-        ) != SQLITE_OK)
+    if (sqlite3_prepare_v2(db, sql, -1, &stmt, nullptr) != SQLITE_OK)
     {
         cerr << "Loi SQL khi xoa check-in: "
              << sqlite3_errmsg(db)
@@ -240,26 +208,21 @@ bool xoaMotCheckIn(
         return false;
     }
 
-    sqlite3_bind_int(
-        stmt,
-        1,
-        checkinId
-    );
+    sqlite3_bind_int(stmt, 1, checkinId);
 
-    if (sqlite3_step(stmt) != SQLITE_DONE)
+    const int stepResult = sqlite3_step(stmt);
+
+    if (stepResult != SQLITE_DONE)
     {
         cerr << "Khong the xoa check-in: "
              << sqlite3_errmsg(db)
              << '\n';
 
         sqlite3_finalize(stmt);
-
         return false;
     }
 
-    int soDongDaXoa =
-        sqlite3_changes(db);
-
+    const int soDongDaXoa = sqlite3_changes(db);
     sqlite3_finalize(stmt);
 
     if (soDongDaXoa == 0)
