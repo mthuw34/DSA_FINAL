@@ -8,7 +8,7 @@
 using namespace std;
 
 // Doc 1 dong CSV, co xu ly truong hop dia chi co dau phay
-// Chuc nang: Tach mot dong CSV thanh cac truong du lieu, co xu ly dau phay trong dau ngoac kep.
+// Tách một dòng CSV thành các trường dữ liệu, có xử lý dấu phẩy trong dấu ngoặc kép.
 vector<string> parseCSV(const string& line)
 {
     vector<string> fields;
@@ -49,7 +49,7 @@ vector<string> parseCSV(const string& line)
     return fields;
 }
 
-// Chuc nang: Doc file CSV va them danh sach benh nhan vao hospital.db.
+// Đọc file CSV và thêm danh sách bệnh nhân vào hospital.db.
 int main()
 {
     sqlite3* db = nullptr;
