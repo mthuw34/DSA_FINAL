@@ -1,7 +1,7 @@
 #include <iostream>
 #include "patient.h"
 #include "FixedCapacityList.h"
-
+using namespace std;
 int main() {
     // Tạo danh sách với K = 50
     FixedCapacityList recentList = createList(50);
@@ -16,16 +16,16 @@ int main() {
     insertExaminedPatient(recentList, p3);
 
     // In danh sách hiện tại
-    std::vector<Patient> all = getAll(recentList);
-    std::cout << "Danh sach benh nhan vua kham:\n";
+    vector<Patient> all = getAll(recentList);
+    cout << "Danh sach benh nhan vua kham:\n";
     for (const auto& p : all) {
-        std::cout << "- " << p.id << " | " << p.name << "\n";
+        cout << "- " << p.id << " | " << p.name << "\n";
     }
 
     // Thử xem nhanh 1 người
     Patient found;
     if (getById(recentList, "BN02", found)) {
-        std::cout << "\nTim thay: " << found.name << " - " << found.lastDiagnosis << "\n";
+        cout << "\nTim thay: " << found.name << " - " << found.lastDiagnosis << "\n";
     }
 
     // Dọn dẹp bộ nhớ trước khi kết thúc
