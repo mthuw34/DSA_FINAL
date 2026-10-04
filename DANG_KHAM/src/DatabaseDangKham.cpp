@@ -204,6 +204,80 @@ bool DatabaseDangKham::mo(
     return true;
 }
 
+bool DatabaseDangKham::migrateLegacyAssignments() {
+    if (!sourceTableExists("ket_qua_kham")) return true;
+
+    const char* selectSql = R"(
+        SELECT checkin_id, patient_id, khoa_benh_nhan, khoa_bac_si,
+               doctor_id, doctor_name, start_time, exam_duration,
+               end_time, Status, Note
+        FROM source.ket_qua_kham;
+    )";
+    const char* insertSql = R"(
+        INSERT INTO dang_kham (
+            checkin_id, patient_id, department, checkin_time,
+            doctor_id, doctor_name, doctor_department, start_time, planned_end_time,
+            exam_duration, status, note, updated_at
+        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, datetime('now','localtime'))
+        ON CONFLICT(checkin_id) DO UPDATE SET
+            patient_id=excluded.patient_id,
+            department=excluded.department,
+            doctor_id=excluded.doctor_id,
+            doctor_name=excluded.doctor_name,
+            doctor_department=excluded.doctor_department,
+            start_time=excluded.start_time,
+            planned_end_time=excluded.planned_end_time,
+            exam_duration=excluded.exam_duration,
+            status=excluded.status,
+            note=excluded.note,
+            updated_at=datetime('now','localtime')
+        WHERE dang_kham.end_time IS NULL;
+    )";
+    sqlite3_stmt* select = nullptr;
+    sqlite3_stmt* insert = nullptr;
+    if (sqlite3_prepare_v2(db, selectSql, -1, &select, nullptr) != SQLITE_OK) return false;
+    if (sqlite3_prepare_v2(db, insertSql, -1, &insert, nullptr) != SQLITE_OK) {
+        sqlite3_finalize(select); return false;
+    }
+
+    bool ok = true;
+    while (sqlite3_step(select) == SQLITE_ROW) {
+        const int checkinId = sqlite3_column_int(select, 0);
+        const int patientId = sqlite3_column_int(select, 1);
+        const string department = getText(select, 2);
+        const string doctorDepartment = getText(select, 3);
+        const string doctorId = getText(select, 4);
+        const string doctorName = getText(select, 5);
+        const string startTime = getText(select, 6);
+        const int duration = sqlite3_column_int(select, 7);
+        const string plannedEnd = getText(select, 8);
+        const string status = getText(select, 9);
+        const string note = getText(select, 10);
+        (void)doctorDepartment;
+
+        sqlite3_bind_int(insert, 1, checkinId);
+        sqlite3_bind_int(insert, 2, patientId);
+        sqlite3_bind_text(insert, 3, department.c_str(), -1, SQLITE_TRANSIENT);
+        sqlite3_bind_text(insert, 4, startTime.c_str(), -1, SQLITE_TRANSIENT);
+        sqlite3_bind_text(insert, 5, doctorId.c_str(), -1, SQLITE_TRANSIENT);
+        sqlite3_bind_text(insert, 6, doctorName.c_str(), -1, SQLITE_TRANSIENT);
+        sqlite3_bind_text(insert, 7, doctorDepartment.c_str(), -1, SQLITE_TRANSIENT);
+        sqlite3_bind_text(insert, 8, startTime.c_str(), -1, SQLITE_TRANSIENT);
+        sqlite3_bind_text(insert, 9, plannedEnd.c_str(), -1, SQLITE_TRANSIENT);
+        sqlite3_bind_int(insert, 10, duration);
+        sqlite3_bind_text(insert, 11, status.c_str(), -1, SQLITE_TRANSIENT);
+        sqlite3_bind_text(insert, 12, note.c_str(), -1, SQLITE_TRANSIENT);
+        if (sqlite3_step(insert) != SQLITE_DONE) { ok = false; break; }
+        sqlite3_reset(insert); sqlite3_clear_bindings(insert);
+    }
+    sqlite3_finalize(select);
+    sqlite3_finalize(insert);
+    if (!ok) return false;
+
+    // Sau khi da chuyen du lieu, xoa bang cu khoi truyXuat.db.
+    return executeSql("DROP TABLE IF EXISTS source.ket_qua_kham;", "Loi xoa bang ket_qua_kham cu");
+}
+
 // Tạo và cập nhật cấu trúc bảng dang_kham.
 bool DatabaseDangKham::taoCauTruc()
 {
@@ -216,7 +290,12 @@ bool DatabaseDangKham::taoCauTruc()
                     checkin_time TEXT NOT NULL,
                     doctor_id TEXT,
                     doctor_name TEXT,
+                    doctor_department TEXT,
                     start_time TEXT,
+                    planned_end_time TEXT,
+                    exam_duration INTEGER,
+                    status TEXT,
+                    note TEXT,
                     end_time TEXT,
                     chan_doan TEXT,
                     don_thuoc TEXT,
@@ -265,6 +344,13 @@ bool DatabaseDangKham::taoCauTruc()
     {
         return false;
     }
+
+    if (!addColumnIfMissing("dang_kham", "doctor_department", "TEXT")) return false;
+
+    if (!addColumnIfMissing("dang_kham", "planned_end_time", "TEXT")) return false;
+    if (!addColumnIfMissing("dang_kham", "exam_duration", "INTEGER")) return false;
+    if (!addColumnIfMissing("dang_kham", "status", "TEXT")) return false;
+    if (!addColumnIfMissing("dang_kham", "note", "TEXT")) return false;
 
     if (!addColumnIfMissing(
             "dang_kham",
@@ -326,11 +412,12 @@ bool DatabaseDangKham::taoCauTruc()
         sqlite3_reset(stmt); sqlite3_clear_bindings(stmt);
     }
     sqlite3_finalize(stmt);
-    return success;
+    if (!success) return false;
+    return migrateLegacyAssignments();
 }
 
+// DANG_KHAM la nguon assignment duy nhat sau khi bo ket_qua_kham.
 namespace {
-// Giữ NULL của dữ liệu cũ để phân biệt ca chưa kết thúc và trường chưa nhập.
 optional<string> nullableText(sqlite3_stmt* stmt, int column) {
     if (sqlite3_column_type(stmt, column) == SQLITE_NULL) return nullopt;
     return getText(stmt, column);
@@ -339,30 +426,6 @@ optional<string> nullableText(sqlite3_stmt* stmt, int column) {
 void bindText(sqlite3_stmt* stmt, int column, const optional<string>& text) {
     if (text) sqlite3_bind_text(stmt, column, text->c_str(), -1, SQLITE_TRANSIENT);
     else sqlite3_bind_null(stmt, column);
-}
-
-// Nạp toàn bộ kết quả phân bác sĩ; tầng ExamCore quyết định ca cần nhận.
-bool loadAssignments(sqlite3* db, vector<ExamAssignment>& records) {
-    records.clear();
-    const char* sql = "SELECT checkin_id, patient_id, khoa_bac_si, doctor_id, doctor_name, "
-                      "start_time, end_time, Status FROM source.ket_qua_kham;";
-    sqlite3_stmt* stmt = nullptr;
-    if (sqlite3_prepare_v2(db, sql, -1, &stmt, nullptr) != SQLITE_OK) return false;
-    int result;
-    while ((result = sqlite3_step(stmt)) == SQLITE_ROW) {
-        ExamAssignment assignment;
-        assignment.session.checkinId = sqlite3_column_int(stmt, 0);
-        assignment.session.patientId = sqlite3_column_int(stmt, 1);
-        assignment.session.department = getText(stmt, 2);
-        assignment.session.doctorId = nullableText(stmt, 3);
-        assignment.session.doctorName = nullableText(stmt, 4);
-        assignment.session.startTime = nullableText(stmt, 5);
-        assignment.plannedEnd = nullableText(stmt, 6);
-        assignment.status = getText(stmt, 7);
-        records.push_back(assignment);
-    }
-    sqlite3_finalize(stmt);
-    return result == SQLITE_DONE;
 }
 }
 
@@ -390,61 +453,67 @@ bool DatabaseDangKham::docDanhSach(vector<ExamSession>& records) {
 }
 
 // Nhận thay đổi do tầng C++ đã tính và ghi từng bản ghi trong một giao dịch.
-bool DatabaseDangKham::dongBoTuXepBacSi(const vector<string>& blockedDoctors) {
-    if (!sourceTableExists("ket_qua_kham")) {
-        cerr << "Chua co bang ket_qua_kham trong truyXuat.db. Hay chay SAP_XEP_BAC_SI truoc.\n";
+bool DatabaseDangKham::ghiPhanBacSi(const vector<BenhNhanKham>& assignments) {
+    if (!executeSql("BEGIN IMMEDIATE;", "Loi bat dau ghi phan bac si")) return false;
+
+    const char* sql = R"(
+        INSERT INTO dang_kham (checkin_id, patient_id, department, checkin_time,
+            doctor_id, doctor_name, doctor_department, start_time, planned_end_time, exam_duration, status, note, updated_at)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, datetime('now','localtime'))
+        ON CONFLICT(checkin_id) DO UPDATE SET
+            patient_id=excluded.patient_id, department=excluded.department,
+            doctor_id=excluded.doctor_id, doctor_name=excluded.doctor_name,
+            doctor_department=excluded.doctor_department, start_time=excluded.start_time, planned_end_time=excluded.planned_end_time,
+            exam_duration=excluded.exam_duration, status=excluded.status, note=excluded.note,
+            updated_at=datetime('now','localtime')
+        WHERE dang_kham.end_time IS NULL;
+    )";
+    sqlite3_stmt* stmt = nullptr;
+    if (sqlite3_prepare_v2(db, sql, -1, &stmt, nullptr) != SQLITE_OK) {
+        sqlite3_exec(db, "ROLLBACK;", nullptr, nullptr, nullptr);
         return false;
     }
-    if (!executeSql("BEGIN IMMEDIATE;", "Loi bat dau dong bo")) return false;
-    vector<ExamAssignment> assignments;
-    vector<ExamSession> existing;
-    bool success = loadAssignments(db, assignments) && docDanhSach(existing);
-    assignments.erase(remove_if(assignments.begin(), assignments.end(), [&](const ExamAssignment& a) {
-        return !ExamCore::findActive(existing, a.session.checkinId) && a.session.doctorId &&
-            find(blockedDoctors.begin(), blockedDoctors.end(), *a.session.doctorId) != blockedDoctors.end();
-    }), assignments.end());
-    stable_sort(assignments.begin(), assignments.end(), [](const ExamAssignment& a, const ExamAssignment& b) {
-        return ExamCore::startsBefore(a.session, b.session);
-    });
-    sqlite3_stmt* insert = nullptr;
-    sqlite3_stmt* update = nullptr;
-    const char* insertSql = "INSERT INTO dang_kham (checkin_id, patient_id, department, checkin_time, "
-        "doctor_id, doctor_name, start_time, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?, datetime('now','localtime'));";
-    // Điều kiện ghi chỉ bảo vệ bản ghi nếu phiên khác đã kết thúc khám sau khi nạp.
-    const char* updateSql = "UPDATE dang_kham SET patient_id=?, department=?, doctor_id=?, doctor_name=?, "
-        "start_time=? WHERE checkin_id=? AND end_time IS NULL;";
-    if (success) success = sqlite3_prepare_v2(db, insertSql, -1, &insert, nullptr) == SQLITE_OK;
-    if (success) success = sqlite3_prepare_v2(db, updateSql, -1, &update, nullptr) == SQLITE_OK;
-    if (success) {
-        const auto changes = ExamCore::synchronizationChanges(assignments, existing, time(nullptr));
-        ExamCore::SessionIndex ids;
-        for (size_t i = 0; i < existing.size(); ++i) ids.put(existing[i].checkinId, i);
-        for (const auto& session : changes) {
-            size_t position;
-            const bool found = ids.find(session.checkinId, position);
-            auto* stmt = found ? update : insert;
-            if (found) {
-                sqlite3_bind_int(stmt, 1, session.patientId);
-                bindText(stmt, 2, session.department); bindText(stmt, 3, session.doctorId);
-                bindText(stmt, 4, session.doctorName); bindText(stmt, 5, session.startTime);
-                sqlite3_bind_int(stmt, 6, session.checkinId);
-            } else {
-                sqlite3_bind_int(stmt, 1, session.checkinId); sqlite3_bind_int(stmt, 2, session.patientId);
-                bindText(stmt, 3, session.department); bindText(stmt, 4, session.checkinTime);
-                bindText(stmt, 5, session.doctorId); bindText(stmt, 6, session.doctorName);
-                bindText(stmt, 7, session.startTime);
-            }
-            if (sqlite3_step(stmt) != SQLITE_DONE) { success = false; break; }
-            sqlite3_reset(stmt); sqlite3_clear_bindings(stmt);
-        }
+    bool ok = true;
+    for (const auto& bn : assignments) {
+        sqlite3_bind_int(stmt, 1, bn.CheckinId);
+        sqlite3_bind_int(stmt, 2, bn.PatientId);
+        bindText(stmt, 3, bn.khoa);
+        bindText(stmt, 4, bn.CheckinTime);
+        bindText(stmt, 5, bn.DoctorId);
+        bindText(stmt, 6, bn.DoctorName);
+        bindText(stmt, 7, bn.KhoaBacSi);
+        bindText(stmt, 8, bn.StartTime);
+        bindText(stmt, 9, bn.EndTime);
+        sqlite3_bind_int(stmt, 10, bn.ExamDuration);
+        bindText(stmt, 11, bn.Status);
+        bindText(stmt, 12, bn.Note);
+        if (sqlite3_step(stmt) != SQLITE_DONE) { ok = false; break; }
+        sqlite3_reset(stmt); sqlite3_clear_bindings(stmt);
     }
-    sqlite3_finalize(insert); sqlite3_finalize(update);
-    if (success) success = executeSql("COMMIT;", "Loi luu dong bo");
-    if (!success) {
-        cerr << "Loi dong bo benh nhan dang kham: " << sqlite3_errmsg(db) << '\n';
-        sqlite3_exec(db, "ROLLBACK;", nullptr, nullptr, nullptr);
+    sqlite3_finalize(stmt);
+    if (ok) ok = executeSql("COMMIT;", "Loi commit phan bac si");
+    if (!ok) sqlite3_exec(db, "ROLLBACK;", nullptr, nullptr, nullptr);
+    return ok;
+}
+
+bool DatabaseDangKham::xoaCaChuaBatDauCuaBacSi(const string& doctorId) {
+    sqlite3_stmt* stmt = nullptr;
+    const char* sql = "DELETE FROM dang_kham WHERE doctor_id=? AND end_time IS NULL "
+                      "AND (start_time IS NULL OR start_time > datetime('now','localtime'));";
+    if (sqlite3_prepare_v2(db, sql, -1, &stmt, nullptr) != SQLITE_OK) return false;
+    sqlite3_bind_text(stmt, 1, doctorId.c_str(), -1, SQLITE_TRANSIENT);
+    const bool ok = sqlite3_step(stmt) == SQLITE_DONE;
+    sqlite3_finalize(stmt);
+    return ok;
+}
+
+bool DatabaseDangKham::dongBoTuXepBacSi(const vector<string>& blockedDoctors) {
+    // Scheduler da ghi assignment truc tiep vao DANG_KHAM.
+    // O buoc dong bo, chi can tra cac ca chua bat dau cua bac si dang bi khoa.
+    for (const auto& doctorId : blockedDoctors) {
+        if (!xoaCaChuaBatDauCuaBacSi(doctorId)) return false;
     }
-    return success;
+    return true;
 }
 
 // Lưu chẩn đoán cho ca đã được tầng xử lý tìm và kiểm tra trong bộ nhớ.

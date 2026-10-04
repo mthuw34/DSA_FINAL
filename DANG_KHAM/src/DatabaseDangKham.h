@@ -3,6 +3,8 @@
 #include <string>
 #include <sqlite3.h>
 #include "ExamCore.h"
+#include "BenhNhanKham.h"
+#include <vector>
 class DatabaseDangKham
 {
 private:
@@ -28,6 +30,8 @@ private:
         const char* tableName
     );
 
+    bool migrateLegacyAssignments();
+
 public:
     DatabaseDangKham() = default;
     DatabaseDangKham(const DatabaseDangKham&) = delete;
@@ -42,6 +46,12 @@ public:
     bool taoCauTruc();
 
     bool dongBoTuXepBacSi(const std::vector<std::string>& blockedDoctors = {});
+
+    // Ghi ket qua phan bac si truc tiep vao DANG_KHAM, khong qua ket_qua_kham.
+    bool ghiPhanBacSi(const std::vector<BenhNhanKham>& assignments);
+
+    // Tra cac ca chua bat dau ve hang doi khi bac si bi khoa/bận.
+    bool xoaCaChuaBatDauCuaBacSi(const std::string& doctorId);
 
     bool docDanhSach(std::vector<ExamSession>& records);
     bool luuChanDoan(int checkinId, const std::string& diagnosis,

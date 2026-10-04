@@ -1,40 +1,36 @@
 #pragma once
 #include <ctime>
 #include <string>
-#include <vector>
-using namespace std;
 
 namespace ThoiGian {
-    struct CaTruc { string ngay; time_t batDau; time_t ketThuc; };
-    vector<CaTruc> LichTruc(time_t tuNgay, bool capCuu, int pha, int soNgay = 7);
-    // Khoang ca [batDau, ketThuc): toi da 12 gio, khong trung ca cung bac si.
-    bool KiemTraLichTruc(const vector<CaTruc>& lich);
-    bool DuThoiGianKhamCapCuu(time_t batDau, int soPhut, int pha);
-    time_t HienTai();
+    std::time_t HienTai();
 
-    string DinhDang(time_t t);
-    string DinhDangNgay(time_t t);
+    std::string DinhDang(std::time_t t);
+    std::string DinhDangNgay(std::time_t t);
 
-    bool LaCuoiTuan(time_t t);
+    bool LaCuoiTuan(std::time_t t);
 
     // Khoa thường:
-    // Sáng: 07:00 -> 11:30
-    // Chiều: 13:00 -> 17:00
-    bool DangTrongCaThuong(time_t t);
+    // - sáng: 07:00 -> 11:30
+    // - chiều: 13:00 -> 17:00
+    bool DangTrongCaThuong(std::time_t t);
 
-    // Trả về thời điểm bắt đầu ca tiếp theo mà khoa thường có thể làm
-    time_t CaThuongTiepTheo(time_t t);
+    // Trả về thời điểm bắt đầu ca tiếp theo mà khoa thường có thể làm.
+    std::time_t CaThuongTiepTheo(std::time_t t);
 
-    // Điều chỉnh thời điểm bắt đầu để nằm trong ca làm việc và ko rơi vào cuối tuần
-    time_t DieuChinhThoiGianKhoaThuong(time_t t);
+    // Điều chỉnh thời điểm bắt đầu sao cho nằm trong ca làm việc
+    // và không rơi vào cuối tuần.
+    std::time_t DieuChinhThoiGianKhoaThuong(std::time_t t);
 
-    // Kiểm tra 1 ca khám có kết thúc trước khi ca hiện tại kết thúc hay ko
-    bool DuThoiGianKhamKhoaThuong(time_t batDau, int soPhut);
+    // Kiểm tra một ca khám có kết thúc trước khi ca hiện tại kết thúc hay không.
+    bool DuThoiGianKhamKhoaThuong(std::time_t batDau, int soPhut);
 
-    // Khoa cap cuu: 3 ca 8 gio, moi bac si lam mot ca va nghi cach ngay.
-    // Pha 0..5: pha / 2 la ca (00, 08, 16 gio), pha % 2 la nhom ngay nghi.
-    bool DangTrucCapCuu(time_t t, int ngayBatDauTruc);
+    // Khoa cấp cứu: chia bác sĩ thành 2 nhóm ca.
+    // loaiCa = 0: ca ngày 06:00 -> 18:00.
+    // loaiCa = 1: ca đêm 18:00 -> 06:00 hôm sau.
+    // Nhóm ca đêm trực theo chu kỳ 1 trực - 2 nghỉ.
+    bool DangTrucCapCuu(std::time_t t, int loaiCa);
 
-    // Tìm thời điểm trực cấp cứu tiếp theo của bác sĩ
-    time_t TrucCapCuuTiepTheo(time_t t, int ngayBatDauTruc);
+    // Tìm thời điểm bắt đầu ca cấp cứu tiếp theo mà bác sĩ được phép trực.
+    std::time_t TrucCapCuuTiepTheo(std::time_t t, int loaiCa);
 }

@@ -2,8 +2,6 @@
 #include "ThoiGian.h"
 #include <fstream>
 #include <iostream>
-#include <random>
-#include <chrono>
 using namespace std;
 
 namespace {
@@ -112,43 +110,40 @@ vector<int> QuanLyBacSi::LayBacSiTheoKhoa(
     return result;
 }
 
-void QuanLyBacSi::KhoiTaoLich(time_t hienTai, bool onDinh) {
+void QuanLyBacSi::KhoiTaoLich(time_t hienTai) {
     NgayBatDauTrucCapCuu.assign(DanhSach.size(), 0);
 
-    mt19937 gen(
-        static_cast<unsigned int>(
-            chrono::system_clock::now().time_since_epoch().count()
-        )
-    );
-    uniform_int_distribution<int> randomPha(0, 5);
-    int capCuuIndex = 0;
-
     for (int i = 0; i < static_cast<int>(DanhSach.size()); ++i) {
-        if (DanhSach[i].khoaChuyenMon == "Khoa Cap cuu") {
-            NgayBatDauTrucCapCuu[i] = onDinh ? capCuuIndex % 6 : randomPha(gen);
-            ++capCuuIndex;
-        }
+        BacSi& bs = DanhSach[i];
+        bs.TamNghiDen = 0;
+        bs.NghiSauCaDemDen = 0;
+        bs.TrucThuCong = false;
 
-        DanhSach[i].TamNghiDen = 0;
-
-        if (DanhSach[i].khoaChuyenMon == "Khoa Cap cuu") {
-            DanhSach[i].ThoiGianRanh =
-                ThoiGian::TrucCapCuuTiepTheo(
-                    hienTai,
-                    NgayBatDauTrucCapCuu[i]
-                );
-            DanhSach[i].DangLamViec =
-                ThoiGian::DangTrucCapCuu(
-                    hienTai,
-                    NgayBatDauTrucCapCuu[i]
-                );
+        if (bs.khoaChuyenMon == "Khoa Cap cuu") {
+            // 0 = ca ngay, 1 = ca dem. Phan co dinh de Web/CLI dong nhat.
+            NgayBatDauTrucCapCuu[i] = i % 2;
+            bs.ThoiGianRanh = ThoiGian::TrucCapCuuTiepTheo(
+                hienTai, NgayBatDauTrucCapCuu[i]);
+            bs.DangLamViec = ThoiGian::DangTrucCapCuu(
+                hienTai, NgayBatDauTrucCapCuu[i]);
         } else {
-            DanhSach[i].ThoiGianRanh =
-                ThoiGian::DieuChinhThoiGianKhoaThuong(hienTai);
-            DanhSach[i].DangLamViec =
-                ThoiGian::DangTrongCaThuong(hienTai);
+            bs.ThoiGianRanh = ThoiGian::DieuChinhThoiGianKhoaThuong(hienTai);
+            bs.DangLamViec = ThoiGian::DangTrongCaThuong(hienTai);
         }
     }
+}
+
+int QuanLyBacSi::LayPhaTrucCapCuu(int index) const {
+    if (index < 0 || index >= static_cast<int>(DanhSach.size())) return -1;
+    return NgayBatDauTrucCapCuu.empty() ? (index % 2) : NgayBatDauTrucCapCuu[index];
+}
+
+bool QuanLyBacSi::DangTrucBacSi(int index, time_t thoiDiem) const {
+    if (index < 0 || index >= static_cast<int>(DanhSach.size())) return false;
+    if (DanhSach[index].khoaChuyenMon == "Khoa Cap cuu") {
+        return ThoiGian::DangTrucCapCuu(thoiDiem, LayPhaTrucCapCuu(index));
+    }
+    return ThoiGian::DangTrongCaThuong(thoiDiem);
 }
 
 bool QuanLyBacSi::CoBacSiDangTruc(
@@ -159,10 +154,7 @@ bool QuanLyBacSi::CoBacSiDangTruc(
         bool dangTruc = false;
 
         if (khoa == "Khoa Cap cuu") {
-            dangTruc = ThoiGian::DangTrucCapCuu(
-                thoiDiem,
-                NgayBatDauTrucCapCuu[i]
-            );
+            dangTruc = DangTrucBacSi(i, thoiDiem);
         } else {
             dangTruc = ThoiGian::DangTrongCaThuong(thoiDiem);
         }
@@ -180,26 +172,41 @@ bool QuanLyBacSi::TinhThoiDiemNhanBenhNhan(
     int thoiLuong,
     time_t& batDau
 ) const {
-    if (index < 0 || index >= static_cast<int>(DanhSach.size())) {
-        return false;
-    }
+    if (index < 0 || index >= static_cast<int>(DanhSach.size())) return false;
 
     const BacSi& bs = DanhSach[index];
-
     time_t t = hienTai;
     if (bs.ThoiGianRanh > t) t = bs.ThoiGianRanh;
     if (bs.TamNghiDen > t) t = bs.TamNghiDen;
-    if (bs.TrucThuCong) { batDau = t; return true; }
+    if (bs.NghiSauCaDemDen > t) t = bs.NghiSauCaDemDen;
+
+    if (bs.TrucThuCong) {
+        batDau = t;
+        return true;
+    }
 
     if (khoa == "Khoa Cap cuu") {
-        if (thoiLuong <= 0 || thoiLuong > 8 * 60) return false;
-        for (;;) {
-            t = ThoiGian::TrucCapCuuTiepTheo(
-                t,
-                NgayBatDauTrucCapCuu[index]
-            );
-            if (ThoiGian::DuThoiGianKhamCapCuu(t, thoiLuong, NgayBatDauTrucCapCuu[index])) break;
-            t += 8 * 3600; // Ca hien tai khong con du thoi gian: tim ca tiep theo.
+        if (!ThoiGian::DangTrucCapCuu(t, NgayBatDauTrucCapCuu[index])) {
+            t = ThoiGian::TrucCapCuuTiepTheo(t, NgayBatDauTrucCapCuu[index]);
+        }
+
+        // Khong cho mot ca kham bi tran qua moc ket thuc ca truc.
+        const tm local = [&]() {
+            tm x{};
+#ifdef _WIN32
+            localtime_s(&x, &t);
+#else
+            localtime_r(&t, &x);
+#endif
+            return x;
+        }();
+        const int p = local.tm_hour * 60 + local.tm_min;
+        const int ketThuc = p + thoiLuong;
+        const bool laCaNgay = NgayBatDauTrucCapCuu[index] == 0;
+        if ((laCaNgay && ketThuc > 18 * 60) ||
+            (!laCaNgay && p < 6 * 60 && ketThuc > 6 * 60) ||
+            (!laCaNgay && p >= 18 * 60 && ketThuc > 24 * 60)) {
+            t = ThoiGian::TrucCapCuuTiepTheo(t + 60, NgayBatDauTrucCapCuu[index]);
         }
 
         batDau = t;
@@ -208,12 +215,10 @@ bool QuanLyBacSi::TinhThoiDiemNhanBenhNhan(
 
     while (true) {
         t = ThoiGian::DieuChinhThoiGianKhoaThuong(t);
-
         if (ThoiGian::DuThoiGianKhamKhoaThuong(t, thoiLuong)) {
             batDau = t;
             return true;
         }
-
         t = ThoiGian::CaThuongTiepTheo(t + 60);
     }
 }
@@ -223,22 +228,25 @@ void QuanLyBacSi::CapNhatSauKhiKham(
     time_t ketThuc
 ) {
     if (index < 0 || index >= static_cast<int>(DanhSach.size())) return;
-    DanhSach[index].ThoiGianRanh = ketThuc;
-}
 
-void QuanLyBacSi::MoPhongBanDotXuat(time_t hienTai) {
-    mt19937 gen(
-        static_cast<unsigned int>(
-            chrono::system_clock::now().time_since_epoch().count()
-        )
-    );
+    BacSi& bs = DanhSach[index];
+    bs.ThoiGianRanh = ketThuc;
 
-    uniform_int_distribution<int> randomTyLe(1, 100);
-    uniform_int_distribution<int> randomPhut(20, 45);
-
-    for (BacSi& bs : DanhSach) {
-        if (bs.DangLamViec && randomTyLe(gen) <= 8) {
-            bs.TamNghiDen = hienTai + randomPhut(gen) * 60;
+    if (bs.khoaChuyenMon == "Khoa Cap cuu" &&
+        NgayBatDauTrucCapCuu[index] == 1) {
+        tm local{};
+#ifdef _WIN32
+        localtime_s(&local, &ketThuc);
+#else
+        localtime_r(&ketThuc, &local);
+#endif
+        const int p = local.tm_hour * 60 + local.tm_min;
+        if (p >= 5 * 60 && p <= 7 * 60) {
+            local.tm_hour = 6;
+            local.tm_min = 0;
+            local.tm_sec = 0;
+            local.tm_mday += 2;
+            bs.NghiSauCaDemDen = mktime(&local);
         }
     }
 }

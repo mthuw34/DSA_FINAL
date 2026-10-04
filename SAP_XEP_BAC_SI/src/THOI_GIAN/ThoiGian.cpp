@@ -1,8 +1,6 @@
 #include "ThoiGian.h"
 #include <iomanip>
 #include <sstream>
-#include <algorithm>
-#include <stdexcept>
 using namespace std;
 
 namespace {
@@ -33,59 +31,9 @@ namespace {
         // 0 = Chủ nhật, 1 = Thứ hai, 2 = Thứ ba, ..., 6 = Thứ bảy
         return layLocalTm(t).tm_wday;
     }
-
-    int phaHopLe(int pha) { return (pha % 6 + 6) % 6; }
-
-    // Chi so ngay dan su, khong reset vao dau nam hay phu thuoc DST.
-    long long chiSoNgay(time_t t) {
-        auto date = layLocalTm(t);
-        long long year = date.tm_year + 1900;
-        int month = date.tm_mon + 1;
-        year -= month <= 2;
-        const auto era = year / 400;
-        const auto yoe = year - era * 400;
-        const auto doy = (153 * (month + (month > 2 ? -3 : 9)) + 2) / 5 + date.tm_mday - 1;
-        return era * 146097 + yoe * 365 + yoe / 4 - yoe / 100 + doy;
-    }
-
-    bool ngayTruc(time_t t, int pha) {
-        return (chiSoNgay(t) + phaHopLe(pha) % 2) % 2 == 0;
-    }
 }
 
 namespace ThoiGian {
-    vector<CaTruc> LichTruc(time_t tuNgay, bool capCuu, int pha, int soNgay) {
-        vector<CaTruc> result;
-        auto date = layLocalTm(tuNgay);
-        date.tm_hour = 0; date.tm_min = 0; date.tm_sec = 0;
-        for (int i = 0; i < soNgay; ++i) {
-            date.tm_isdst = -1;
-            const auto midnight = mktime(&date);
-            const auto day = DinhDangNgay(midnight);
-            if (capCuu && ngayTruc(midnight, pha)) {
-                const int hour = (phaHopLe(pha) / 2) * 8;
-                result.push_back({day, taoThoiGianCungNgay(midnight, hour, 0),
-                    taoThoiGianCungNgay(midnight, hour + 8, 0)});
-            } else if (!capCuu && !LaCuoiTuan(midnight)) {
-                result.push_back({day, taoThoiGianCungNgay(midnight, 7, 0), taoThoiGianCungNgay(midnight, 11, 30)});
-                result.push_back({day, taoThoiGianCungNgay(midnight, 13, 0), taoThoiGianCungNgay(midnight, 17, 0)});
-            }
-            ++date.tm_mday;
-        }
-        if (!KiemTraLichTruc(result)) throw invalid_argument("Lich truc khong hop le");
-        return result;
-    }
-    bool KiemTraLichTruc(const vector<CaTruc>& lich) {
-        auto sorted = lich;
-        sort(sorted.begin(), sorted.end(), [](const CaTruc& a, const CaTruc& b) { return a.batDau < b.batDau; });
-        for (size_t i = 0; i < sorted.size(); ++i) {
-            const auto& ca = sorted[i];
-            if (ca.batDau >= ca.ketThuc || difftime(ca.ketThuc, ca.batDau) > 12 * 3600 ||
-                ca.ngay != DinhDangNgay(ca.batDau)) return false;
-            if (i && ca.batDau < sorted[i - 1].ketThuc) return false;
-        }
-        return true;
-    }
     time_t HienTai() {
         return time(nullptr);
     }
@@ -196,28 +144,63 @@ namespace ThoiGian {
         return false;
     }
 
-    bool DangTrucCapCuu(time_t t, int ngayBatDauTruc) {
-        const int start = phaHopLe(ngayBatDauTruc) / 2 * 8 * 60;
-        const int minutes = phutTrongNgay(t);
-        return ngayTruc(t, ngayBatDauTruc) && minutes >= start && minutes < start + 8 * 60;
-    }
+    bool DangTrucCapCuu(time_t t, int loaiCa) {
+        tm local = layLocalTm(t);
+        const int p = local.tm_hour * 60 + local.tm_min;
 
-    time_t TrucCapCuuTiepTheo(time_t t, int ngayBatDauTruc) {
-        if (DangTrucCapCuu(t, ngayBatDauTruc)) return t;
-
-        const int hour = phaHopLe(ngayBatDauTruc) / 2 * 8;
-        auto date = layLocalTm(t);
-        for (;;) {
-            date.tm_hour = hour; date.tm_min = 0; date.tm_sec = 0; date.tm_isdst = -1;
-            const auto next = mktime(&date);
-            if (next >= t && ngayTruc(next, ngayBatDauTruc)) return next;
-            ++date.tm_mday;
+        if (loaiCa == 0) {
+            return p >= 6 * 60 && p < 18 * 60;
         }
+
+        tm ngayCa = local;
+        if (p < 6 * 60) {
+            ngayCa.tm_mday -= 1;
+            mktime(&ngayCa);
+        }
+
+        const int dayIndex = ngayCa.tm_year * 366 + ngayCa.tm_yday;
+        const bool dungNgayTruc = (dayIndex % 3) == 0;
+        const bool dungKhungGio = (p >= 18 * 60 || p < 6 * 60);
+        return dungNgayTruc && dungKhungGio;
     }
 
-    bool DuThoiGianKhamCapCuu(time_t batDau, int soPhut, int pha) {
-        if (soPhut <= 0 || soPhut > 8 * 60 || !DangTrucCapCuu(batDau, pha)) return false;
-        const auto end = taoThoiGianCungNgay(batDau, phaHopLe(pha) / 2 * 8 + 8, 0);
-        return difftime(end, batDau) >= soPhut * 60;
+    time_t TrucCapCuuTiepTheo(time_t t, int loaiCa) {
+        if (DangTrucCapCuu(t, loaiCa)) return t;
+
+        tm local = layLocalTm(t);
+        const int p = phutTrongNgay(t);
+
+        if (loaiCa == 0) {
+            if (p < 6 * 60) return taoThoiGianCungNgay(t, 6, 0);
+            local.tm_mday += 1;
+            local.tm_hour = 6;
+            local.tm_min = 0;
+            local.tm_sec = 0;
+            return mktime(&local);
+        }
+
+        // Sau 06:00 thi ca dem hien tai da ket thuc, phai bat dau tim
+        // tu ngay ke tiep de bao dam it nhat 48 gio nghi.
+        if (p < 6 * 60) {
+            local.tm_mday -= 1;
+        } else {
+            local.tm_mday += 1;
+        }
+
+        local.tm_hour = 18;
+        local.tm_min = 0;
+        local.tm_sec = 0;
+
+        for (int i = 0; i < 4; ++i) {
+            mktime(&local);
+            const int dayIndex = local.tm_year * 366 + local.tm_yday;
+            if ((dayIndex % 3) == 0) return mktime(&local);
+            local.tm_mday += 1;
+            local.tm_hour = 18;
+            local.tm_min = 0;
+            local.tm_sec = 0;
+        }
+        return mktime(&local);
     }
+
 }

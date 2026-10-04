@@ -22,7 +22,12 @@ public:
 
     vector<int> LayBacSiTheoKhoa(const string& khoa) const;
 
-    void KhoiTaoLich(time_t HienTai, bool onDinh = false);
+    void KhoiTaoLich(time_t HienTai);
+
+    // 0 = ca ngay, 1 = ca dem. Web dung chung pha nay voi bo phan xep lich.
+    int LayPhaTrucCapCuu(int index) const;
+
+    bool DangTrucBacSi(int index, time_t thoiDiem) const;
 
     bool CoBacSiDangTruc(const string& khoa, time_t thoiDiem) const;
 
@@ -36,7 +41,6 @@ public:
 
     void CapNhatSauKhiKham(int index, time_t ketThuc);
 
-    void MoPhongBanDotXuat(time_t HienTai);
 
     const BacSi& LayBacSi(int index) const;
     BacSi& LayBacSi(int index);
