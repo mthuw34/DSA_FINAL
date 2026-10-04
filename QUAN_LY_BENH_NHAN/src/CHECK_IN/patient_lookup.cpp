@@ -12,6 +12,7 @@ using namespace std;
 // =========================================
 // LAY TEXT TU SQLITE
 // =========================================
+// Chuc nang: Lay du lieu TEXT tu SQLite.
 static string getText(
     sqlite3_stmt* stmt,
     int column
@@ -33,6 +34,7 @@ static string getText(
 // =========================================
 // TIM BENH NHAN THEO ID
 // =========================================
+// Chuc nang: Tim benh nhan theo ID va nap thong tin vao cau truc Patient.
 bool timBenhNhan(
     sqlite3* db,
     int patientId,
@@ -219,6 +221,7 @@ bool timBenhNhan(
 // =========================================
 // HIEN THI THONG TIN BENH NHAN
 // =========================================
+// Chuc nang: Hien thi day du thong tin cua mot benh nhan.
 void hienThiBenhNhan(
     const Patient& patient
 )
