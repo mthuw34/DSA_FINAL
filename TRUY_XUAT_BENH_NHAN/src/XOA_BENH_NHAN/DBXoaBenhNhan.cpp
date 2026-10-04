@@ -6,13 +6,15 @@
 #include <sqlite3.h>
 #include <string>
 
+using namespace std;
+
 namespace {
 
 constexpr const char* priorityPath = "THAY_DOI_MUC_DO_UU_TIEN/db/priority.db";
 constexpr const char* retrievalPath = "TRUY_XUAT_BENH_NHAN/db/truyXuat.db";
 
 void reportError(sqlite3* database, const char* operation) {
-    std::cerr << operation << ": "
+    cerr << operation << ": "
               << (database ? sqlite3_errmsg(database) : "loi SQLite") << '\n';
 }
 
@@ -22,7 +24,7 @@ bool executeSql(sqlite3* database, const char* sql, const char* operation) {
         return true;
     }
 
-    std::cerr << operation << ": "
+    cerr << operation << ": "
               << (errorMessage ? errorMessage : sqlite3_errmsg(database)) << '\n';
     sqlite3_free(errorMessage);
     return false;
@@ -33,11 +35,11 @@ bool executeSql(sqlite3* database, const char* sql, const char* operation) {
 bool DBXoaBenhNhan::xoaBenhNhan(int patientId) {
     // Precondition: patientId must be positive and both database files must already exist.
     if (patientId <= 0) {
-        std::cerr << "ID benh nhan phai lon hon 0.\n";
+        cerr << "ID benh nhan phai lon hon 0.\n";
         return false;
     }
-    if (!std::filesystem::exists(priorityPath) || !std::filesystem::exists(retrievalPath)) {
-        std::cerr << "Khong tim thay priority.db hoac truyXuat.db. "
+    if (!filesystem::exists(priorityPath) || !filesystem::exists(retrievalPath)) {
+        cerr << "Khong tim thay priority.db hoac truyXuat.db. "
                      "Hay chay chuong trinh tu thu muc goc workspace.\n";
         return false;
     }
@@ -78,7 +80,7 @@ bool DBXoaBenhNhan::xoaBenhNhan(int patientId) {
 
     int deletedRows = 0;
     bool success = true;
-    const auto deleteForPatient = [&](const std::string& sql) {
+    const auto deleteForPatient = [&](const string& sql) {
         sqlite3_stmt* statement = nullptr;
         if (sqlite3_prepare_v2(database, sql.c_str(), -1, &statement, nullptr) != SQLITE_OK) {
             reportError(database, "Khong the chuan bi cau lenh xoa");
@@ -103,18 +105,18 @@ bool DBXoaBenhNhan::xoaBenhNhan(int patientId) {
     );
     for (const auto& department : CauHinhTruyXuat::danhSachKhoa) {
         if (!success) break;
-        const std::string deleteSql =
-            "DELETE FROM retrieval." + std::string(department.tenBang)
+        const string deleteSql =
+            "DELETE FROM retrieval." + string(department.tenBang)
             + " WHERE patient_id = ?;";
         success = deleteForPatient(deleteSql);
     }
 
     if (success && executeSql(database, "COMMIT;", "Khong the hoan tat giao dich xoa")) {
         if (deletedRows == 0) {
-            std::cout << "Khong tim thay benh nhan ID " << patientId
+            cout << "Khong tim thay benh nhan ID " << patientId
                       << " trong hai database.\n";
         } else {
-            std::cout << "Da xoa benh nhan ID " << patientId
+            cout << "Da xoa benh nhan ID " << patientId
                       << " khoi priority.db va truyXuat.db.\n";
         }
     } else {

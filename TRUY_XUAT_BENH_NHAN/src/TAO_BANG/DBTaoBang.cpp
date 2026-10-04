@@ -5,17 +5,19 @@
 #include <sqlite3.h>
 #include <string>
 
+using namespace std;
+
 namespace {
 
 constexpr const char* retrievalPath = "TRUY_XUAT_BENH_NHAN/db/truyXuat.db";
 
-bool executeSql(sqlite3* database, const std::string& sql, const char* operation) {
+bool executeSql(sqlite3* database, const string& sql, const char* operation) {
     char* errorMessage = nullptr;
     if (sqlite3_exec(database, sql.c_str(), nullptr, nullptr, &errorMessage) == SQLITE_OK) {
         return true;
     }
 
-    std::cerr << operation << ": "
+    cerr << operation << ": "
               << (errorMessage ? errorMessage : sqlite3_errmsg(database)) << '\n';
     sqlite3_free(errorMessage);
     return false;
@@ -31,7 +33,7 @@ bool DBTaoBang::taoBangTruyXuat() {
             SQLITE_OPEN_READWRITE | SQLITE_OPEN_CREATE,
             nullptr
         ) != SQLITE_OK) {
-        std::cerr << "Khong mo duoc truyXuat.db: "
+        cerr << "Khong mo duoc truyXuat.db: "
                   << (database ? sqlite3_errmsg(database) : "loi SQLite") << '\n';
         if (database) sqlite3_close(database);
         return false;
@@ -44,8 +46,8 @@ bool DBTaoBang::taoBangTruyXuat() {
 
     bool success = true;
     for (const auto& department : CauHinhTruyXuat::danhSachKhoa) {
-        const std::string createSql =
-            "CREATE TABLE IF NOT EXISTS " + std::string(department.tenBang) + R"( (
+        const string createSql =
+            "CREATE TABLE IF NOT EXISTS " + string(department.tenBang) + R"( (
                 retrieval_order INTEGER PRIMARY KEY,
                 checkin_id INTEGER NOT NULL UNIQUE,
                 patient_id INTEGER NOT NULL,
@@ -63,7 +65,7 @@ bool DBTaoBang::taoBangTruyXuat() {
 
     if (success && executeSql(database, "COMMIT;", "Khong the hoan tat giao dich tao bang")) {
         sqlite3_close(database);
-        std::cout << "Tao bang truy xuat thanh cong.\n";
+        cout << "Tao bang truy xuat thanh cong.\n";
         return true;
     }
 

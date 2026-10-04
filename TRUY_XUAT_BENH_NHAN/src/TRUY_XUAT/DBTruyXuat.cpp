@@ -5,13 +5,15 @@
 #include <sqlite3.h>
 #include <string>
 
+using namespace std;
+
 namespace {
 
 constexpr const char* priorityPath = "THAY_DOI_MUC_DO_UU_TIEN/db/priority.db";
 constexpr const char* retrievalPath = "TRUY_XUAT_BENH_NHAN/db/truyXuat.db";
 
 void reportError(sqlite3* database, const char* operation) {
-    std::cerr << operation << ": "
+    cerr << operation << ": "
               << (database ? sqlite3_errmsg(database) : "loi SQLite") << '\n';
 }
 
@@ -21,7 +23,7 @@ bool executeSql(sqlite3* database, const char* sql, const char* operation) {
         return true;
     }
 
-    std::cerr << operation << ": "
+    cerr << operation << ": "
               << (errorMessage ? errorMessage : sqlite3_errmsg(database)) << '\n';
     sqlite3_free(errorMessage);
     return false;
@@ -29,7 +31,7 @@ bool executeSql(sqlite3* database, const char* sql, const char* operation) {
 
 }
 
-bool DBTruyXuat::docDanhSachBenhNhan(std::vector<HoSoTruyXuat>& outRecords) {
+bool DBTruyXuat::docDanhSachBenhNhan(vector<HoSoTruyXuat>& outRecords) {
     outRecords.clear();
 
     sqlite3* database = nullptr;
@@ -89,7 +91,7 @@ bool DBTruyXuat::docDanhSachBenhNhan(std::vector<HoSoTruyXuat>& outRecords) {
 }
 
 bool DBTruyXuat::ghiDanhSachDaSapXep(
-    const std::vector<HoSoTruyXuat>& sortedRecords
+    const vector<HoSoTruyXuat>& sortedRecords
 ) {
     sqlite3* database = nullptr;
     if (sqlite3_open_v2(retrievalPath, &database, SQLITE_OPEN_READWRITE, nullptr) != SQLITE_OK) {
@@ -105,18 +107,18 @@ bool DBTruyXuat::ghiDanhSachDaSapXep(
 
     bool success = true;
     for (const auto& department : CauHinhTruyXuat::danhSachKhoa) {
-        const std::string clearSql =
-            "DELETE FROM " + std::string(department.tenBang) + ";";
+        const string clearSql =
+            "DELETE FROM " + string(department.tenBang) + ";";
         if (!executeSql(database, clearSql.c_str(), "Khong the xoa du lieu hang doi cu")) {
             success = false;
             break;
         }
     }
 
-    std::array<sqlite3_stmt*, CauHinhTruyXuat::danhSachKhoa.size()> statements{};
-    for (std::size_t index = 0; success && index < statements.size(); ++index) {
-        const std::string insertSql =
-            "INSERT INTO " + std::string(CauHinhTruyXuat::danhSachKhoa[index].tenBang)
+    array<sqlite3_stmt*, CauHinhTruyXuat::danhSachKhoa.size()> statements{};
+    for (size_t index = 0; success && index < statements.size(); ++index) {
+        const string insertSql =
+            "INSERT INTO " + string(CauHinhTruyXuat::danhSachKhoa[index].tenBang)
             + " VALUES (?, ?, ?, ?, ?, ?, ?, ?);";
         if (sqlite3_prepare_v2(
                 database,
@@ -130,16 +132,16 @@ bool DBTruyXuat::ghiDanhSachDaSapXep(
         }
     }
 
-    std::array<int, CauHinhTruyXuat::danhSachKhoa.size()> departmentOrders{};
+    array<int, CauHinhTruyXuat::danhSachKhoa.size()> departmentOrders{};
     for (const HoSoTruyXuat& record : sortedRecords) {
         if (!success) break;
         if (record.departmentOrder < 1
-            || static_cast<std::size_t>(record.departmentOrder) > statements.size()) {
+            || static_cast<size_t>(record.departmentOrder) > statements.size()) {
             continue;
         }
 
-        const std::size_t departmentIndex =
-            static_cast<std::size_t>(record.departmentOrder - 1);
+        const size_t departmentIndex =
+            static_cast<size_t>(record.departmentOrder - 1);
         sqlite3_stmt* statement = statements[departmentIndex];
         sqlite3_reset(statement);
         sqlite3_clear_bindings(statement);
