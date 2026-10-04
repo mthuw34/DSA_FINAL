@@ -1,0 +1,215 @@
+"""HTTP integration test on isolated SQLite databases; build the server first."""
+import concurrent.futures
+from contextlib import closing
+import json
+import os
+import base64
+from pathlib import Path
+import shutil
+import socket
+import sqlite3
+import subprocess
+import tempfile
+import time
+from urllib.error import HTTPError
+from urllib.request import Request, urlopen
+
+ROOT = Path(__file__).resolve().parents[2]
+EXE = Path(os.environ.get('HOSPITAL_TEST_EXE', ROOT / 'main/build/hospital_web.exe'))
+
+
+def main():
+    assert EXE.exists(), 'Run main/build.ps1 first'
+    with tempfile.TemporaryDirectory(prefix='api-test-', dir=EXE.parent) as folder:
+        sandbox = Path(folder)
+        (sandbox / 'SAP_XEP_BAC_SI/src').mkdir(parents=True)
+        (sandbox / 'SAP_XEP_BAC_SI/db').mkdir()
+        shutil.copytree(ROOT / 'main/web', sandbox / 'main/web')
+        shutil.copyfile(ROOT / 'SAP_XEP_BAC_SI/db/bac_si_500_chia_khoa.csv',
+                        sandbox / 'SAP_XEP_BAC_SI/db/bac_si_500_chia_khoa.csv')
+        # Old schema without measurement columns must be migrated at startup.
+        (sandbox / 'QUAN_LY_BENH_NHAN/db').mkdir(parents=True)
+        with closing(sqlite3.connect(sandbox / 'QUAN_LY_BENH_NHAN/db/hospital.db')) as db:
+            db.execute('CREATE TABLE patients (id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT NOT NULL, '
+                       'birth_date TEXT NOT NULL, age INTEGER NOT NULL, gender TEXT, hometown TEXT, address TEXT, phone TEXT)')
+        with socket.socket() as sock:
+            sock.bind(('127.0.0.1', 0))
+            port = sock.getsockname()[1]
+        log = open(sandbox / 'server.log', 'w', encoding='utf-8')
+
+        def start(password=None, environment_port=False):
+            environment = os.environ.copy()
+            for key in ('HOSPITAL_PASSWORD', 'HOSPITAL_BIND', 'PORT'):
+                environment.pop(key, None)
+            if password is not None:
+                environment['HOSPITAL_PASSWORD'] = password
+            arguments = [str(EXE), str(sandbox)]
+            if environment_port:
+                environment['PORT'] = str(port)
+            else:
+                arguments.append(str(port))
+            return subprocess.Popen(arguments, stdout=log, stderr=log, env=environment)
+
+        process = start()
+
+        def request(path, method='GET', data=None, expected=200, raw=None):
+            payload = raw if raw is not None else (json.dumps(data).encode() if data is not None else None)
+            req = Request(f'http://127.0.0.1:{port}{path}', data=payload, method=method,
+                          headers={'Content-Type': 'application/json'})
+            try:
+                with urlopen(req, timeout=20) as response:
+                    status, result = response.status, json.load(response)
+            except HTTPError as error:
+                status, result = error.code, json.load(error)
+            assert status == expected, (path, status, result)
+            assert result['ok'] == (status < 400), result
+            return result.get('data')
+
+        def ready():
+            for _ in range(150):
+                if process.poll() is not None:
+                    raise AssertionError((sandbox / 'server.log').read_text())
+                try:
+                    request('/api/health')
+                    return
+                except OSError:
+                    time.sleep(.1)
+            raise AssertionError('Server did not start')
+
+        try:
+            ready()
+            for path, content_type, marker in [('/', 'text/html', 'MediFlow'),
+                    ('/assets/app.css', 'text/css', '.sidebar'),
+                    ('/assets/app.js', 'text/javascript', 'loadData')]:
+                with urlopen(f'http://127.0.0.1:{port}{path}', timeout=10) as response:
+                    assert response.status == 200
+                    assert content_type in response.headers['Content-Type']
+                    assert marker in response.read().decode('utf-8')
+            assert request('/api/patients') == []
+            assert len(request('/api/departments')) == 10
+            assert len(request('/api/doctors')) == 500
+            request('/api/patients', 'POST', raw=b'{', expected=400)
+            request('/api/patients', 'POST', [], expected=400)
+            request('/api/patients', 'POST', {'name':'Test', 'birth_date':'2025-02-30'}, expected=400)
+            request('/api/patients/999', expected=404)
+            patient = request('/api/patients', 'POST', {
+                'name': 'Nguyễn Test', 'birth_date': '2000-01-15', 'height':170, 'weight':65
+            }, 201)
+            assert abs(patient['bmi'] - 65 / 1.7**2) < .001
+            pid = patient['id']
+            with closing(sqlite3.connect(sandbox / 'QUAN_LY_BENH_NHAN/db/hospital.db')) as db:
+                db.execute('UPDATE patients SET gender=NULL WHERE id=?', (pid,))
+                db.commit()
+            request(f'/api/patients/{pid}', 'PATCH', {'weight':70})
+            assert request(f'/api/patients/{pid}')['weight'] == 70
+            with closing(sqlite3.connect(sandbox / 'QUAN_LY_BENH_NHAN/db/hospital.db')) as db:
+                assert db.execute('SELECT gender FROM patients').fetchone()[0] is None
+            assert len(request('/api/patients?q=Test')) == 1
+            request('/api/checkins', 'POST', {'patient_id':pid, 'department':'Unknown', 'priority':1}, 400)
+            request('/api/checkins', 'POST', {'patient_id':pid, 'department':'Khoa Cap cuu', 'priority':6}, 400)
+            request('/api/checkins', 'POST', {'patient_id':2**64-1, 'department':'Khoa Cap cuu', 'priority':1}, 400)
+            ticket = request('/api/checkins', 'POST', {'patient_id':pid, 'department':'Khoa Cap cuu', 'priority':1}, 201)
+            cid = ticket['checkin_id']
+            request('/api/checkins', 'POST', {'patient_id':pid, 'department':'Khoa Cap cuu', 'priority':1}, 409)
+            request(f'/api/patients/{pid}', 'DELETE', expected=409)
+            request('/api/queue/sync', 'POST')
+            assert request('/api/queue')[0]['checkin_id'] == cid
+            request(f'/api/checkins/{cid}/priority', 'PATCH', {'priority':2})
+            request(f'/api/checkins/{cid}/priority', 'PATCH', {'priority':2})
+            assert request('/api/queue')[0]['current_priority'] == 2
+            scheduled = request('/api/assignments', 'POST', {})
+            assert scheduled['assigned_count'] == 1, scheduled
+            original = request('/api/assignments')
+            assert request('/api/assignments', 'POST', {})['assigned_count'] == 0
+            assert request('/api/assignments') == original
+            assert request('/api/queue') == []
+            request(f'/api/checkins/{cid}/priority', 'PATCH', {'priority':3}, 409)
+            # Restart must preserve appointments and doctor availability.
+            process.terminate()
+            process.wait(timeout=10)
+            process = start()
+            ready()
+            assert request('/api/assignments', 'POST', {})['assigned_count'] == 0
+            assert request('/api/assignments') == original
+            # Make the saved appointment currently active regardless of fixture doctor shifts.
+            db = sqlite3.connect(sandbox / 'TRUY_XUAT_BENH_NHAN/db/truyXuat.db')
+            db.execute("UPDATE ket_qua_kham SET start_time=datetime('now','localtime','-1 minute'), end_time=datetime('now','localtime','+20 minutes')")
+            db.commit()
+            db.close()
+            request('/api/exams/sync', 'POST')
+            assert request('/api/exams')[0]['checkin_id'] == cid
+            request(f'/api/exams/{cid}/diagnosis', 'PATCH', {'diagnosis':'Test diagnosis', 'prescription':'Test', 'reminder':'Again'})
+            request('/api/exams/sync', 'POST')
+            assert request('/api/exams')[0]['diagnosis'] == 'Test diagnosis'
+            request(f'/api/exams/{cid}/finish', 'POST')
+            request('/api/exams/sync', 'POST')
+            assert request('/api/exams') == []
+            assert request('/api/exams?active=false')[0]['end_time'] is not None
+            request(f'/api/exams/{cid}/diagnosis', 'PATCH', {'diagnosis':'Too late'}, 409)
+            request(f'/api/exams/{cid}/finish', 'POST', expected=409)
+            # Two simultaneous check-ins: only one may succeed.
+            new = request('/api/patients', 'POST', {'name':'Race', 'birth_date':'2001-01-01'}, 201)
+            def race(_):
+                req = Request(f'http://127.0.0.1:{port}/api/checkins', method='POST',
+                              data=json.dumps({'patient_id':new['id'], 'department':'Khoa Cap cuu', 'priority':1}).encode(),
+                              headers={'Content-Type':'application/json'})
+                try:
+                    with urlopen(req, timeout=20) as response:
+                        return response.status
+                except HTTPError as error:
+                    return error.code
+            with concurrent.futures.ThreadPoolExecutor(2) as pool:
+                assert sorted(pool.map(race, range(2))) == [201,409]
+            assert request('/api/assignments', 'POST', {})['assigned_count'] == 1
+            booked = request('/api/assignments')
+            assert len(booked) == 2
+            assert booked[0]['checkin_id'] != booked[1]['checkin_id']
+            if booked[0]['doctor_id'] == booked[1]['doctor_id']:
+                assert booked[1]['start_time'] >= booked[0]['planned_end_time']
+            removable = request('/api/patients', 'POST', {'name':'Delete', 'birth_date':'2000-01-01'}, 201)
+            request(f"/api/patients/{removable['id']}", 'DELETE')
+            request(f"/api/patients/{removable['id']}", expected=404)
+            process.terminate()
+            process.wait(timeout=10)
+            password = 'isolated-test-password'
+            process = start(password, environment_port=True)
+            ready()
+            request('/api/patients', expected=401)
+            for path in ('/', '/assets/app.js', '/assets/app.css', '/api/doctors'):
+                try:
+                    urlopen(f'http://127.0.0.1:{port}{path}', timeout=10)
+                    raise AssertionError('Unauthenticated route accepted')
+                except HTTPError as error:
+                    assert error.code == 401
+                    assert 'Basic realm=' in error.headers['WWW-Authenticate']
+            credentials = base64.b64encode(f'admin:{password}'.encode()).decode()
+            authenticated = Request(f'http://127.0.0.1:{port}/api/patients',
+                                    headers={'Authorization':f'Basic {credentials}'})
+            with urlopen(authenticated, timeout=10) as response:
+                assert response.status == 200 and json.load(response)['ok']
+            wrong = Request(f'http://127.0.0.1:{port}/api/patients', headers={'Authorization':'Basic wrong'})
+            try:
+                urlopen(wrong, timeout=10)
+                raise AssertionError('Wrong password accepted')
+            except HTTPError as error:
+                assert error.code == 401
+            process.terminate()
+            process.wait(timeout=10)
+            for variables in ({'HOSPITAL_BIND':'0.0.0.0'}, {'HOSPITAL_PASSWORD':'too-short'}, {'PORT':'4294985376'}):
+                environment = os.environ.copy()
+                for key in ('HOSPITAL_PASSWORD', 'HOSPITAL_BIND', 'PORT'):
+                    environment.pop(key, None)
+                environment.update(variables)
+                rejected = subprocess.run([str(EXE),str(sandbox)], env=environment,
+                                          capture_output=True, timeout=10)
+                assert rejected.returncode == 1, variables
+            print('PASS: API validation, CRUD, queue, scheduling/restart, diagnosis, concurrency, password protection')
+        finally:
+            if process.poll() is None:
+                process.terminate()
+                process.wait(timeout=10)
+            log.close()
+
+
+if __name__ == '__main__':
+    main()

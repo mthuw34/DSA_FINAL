@@ -19,9 +19,10 @@ private:
 
     std::vector<BenhNhanKham> KetQuaTrongLanChay;
     bool DaMoPhongBanDotXuat = false;
+    std::vector<int> DaPhanCong;
 
     int TimChiSoKhoa(const std::string& khoa) const;
-    void NapHangDoiTuDatabase();
+    bool NapHangDoiTuDatabase();
     int RandomThoiGianKham() const;
 
     bool XuLyMotBenhNhan(
@@ -46,9 +47,14 @@ public:
 
     void InDanhSachBacSiTheoKhoa(const std::string& khoa) const;
 
-    void XuLyKhoa(const std::string& khoa);
+    // Web khôi phục lịch đã lưu để không phân lại bệnh nhân hoặc trùng lịch bác sĩ.
+    bool KhoiDongWeb(const std::string& database, const std::string& csv,
+                    const std::vector<BenhNhanKham>& daPhanCong);
+    const std::vector<BenhNhanKham>& LayKetQua() const { return KetQuaTrongLanChay; }
 
-    void XuLyTatCaKhoa();
+    bool XuLyKhoa(const std::string& khoa);
+
+    bool XuLyTatCaKhoa();
 
     void HienThiKetQua() const;
 };

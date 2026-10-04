@@ -4,6 +4,7 @@
 #include <random>
 #include <algorithm>
 #include <chrono>
+#include "../../../DANG_KHAM/src/ExamCore.h"
 
 /*
 TimChiSoKhoa()             : dòng 58
@@ -78,7 +79,7 @@ bool QuanLyKhamBenh::KhoiDong(
     QuanLyBacSiManager.KhoiTaoLich(hienTai);
 
     // Database chi duoc doc mot lan: nap toan bo benh nhan vao RAM.
-    NapHangDoiTuDatabase();
+    if (!NapHangDoiTuDatabase()) return false;
 
     std::cout << "Thoi gian he thong: "
               << ThoiGian::DinhDang(hienTai) << "\n";
@@ -86,12 +87,29 @@ bool QuanLyKhamBenh::KhoiDong(
     return true;
 }
 
-void QuanLyKhamBenh::NapHangDoiTuDatabase() {
+bool QuanLyKhamBenh::KhoiDongWeb(const std::string& database, const std::string& csv,
+                              const std::vector<BenhNhanKham>& assignments) {
+    if (!QuanLyBacSiManager.DocCSV(csv) || !Database.MoDatabase(database)) return false;
+    QuanLyBacSiManager.KhoiTaoLich(ThoiGian::HienTai());
+    for (const auto& bn : assignments) {
+        DaPhanCong.push_back(bn.CheckinId);
+        std::time_t end;
+        if (!ExamCore::parseTime(bn.EndTime, end)) return false;
+        for (int i = 0; i < static_cast<int>(QuanLyBacSiManager.LayDanhSach().size()); ++i) {
+            auto& doctor = QuanLyBacSiManager.LayBacSi(i);
+            if (doctor.id == bn.DoctorId)
+                doctor.ThoiGianRanh = std::max(doctor.ThoiGianRanh, end);
+        }
+    }
+    return NapHangDoiTuDatabase();
+}
+
+bool QuanLyKhamBenh::NapHangDoiTuDatabase() {
     std::vector<BenhNhanKham> tatCaBenhNhan;
 
     if (!Database.LayTatCaBenhNhan(tatCaBenhNhan)) {
         std::cerr << "Khong nap duoc toan bo hang doi benh nhan.\n";
-        return;
+        return false;
     }
 
     // Khong phu thuoc vao thu tu SQLite tra ve.
@@ -108,6 +126,7 @@ void QuanLyKhamBenh::NapHangDoiTuDatabase() {
     int soNap = 0;
 
     for (const BenhNhanKham& bn : tatCaBenhNhan) {
+        if (std::find(DaPhanCong.begin(), DaPhanCong.end(), bn.CheckinId) != DaPhanCong.end()) continue;
         int index = TimChiSoKhoa(bn.khoa);
 
         if (index < 0) {
@@ -122,6 +141,7 @@ void QuanLyKhamBenh::NapHangDoiTuDatabase() {
 
     std::cout << "Da nap " << soNap
               << " benh nhan vao cac hang doi RAM.\n";
+    return true;
 }
 
 int QuanLyKhamBenh::RandomThoiGianKham() const {
@@ -257,13 +277,13 @@ bool QuanLyKhamBenh::XuLyMotBenhNhan(
     return true;
 }
 
-void QuanLyKhamBenh::XuLyKhoa(
+bool QuanLyKhamBenh::XuLyKhoa(
     const std::string& khoa
 ) {
     int khoaIndex = TimChiSoKhoa(khoa);
     if (khoaIndex < 0) {
         std::cout << "Khoa khong hop le.\n";
-        return;
+        return false;
     }
 
     std::time_t hienTai = ThoiGian::HienTai();
@@ -284,7 +304,7 @@ void QuanLyKhamBenh::XuLyKhoa(
 
     if (hangDoi.empty()) {
         std::cout << "Hang doi dang rong.\n";
-        return;
+        return true;
     }
 
     std::cout << "So benh nhan trong hang: "
@@ -364,14 +384,17 @@ void QuanLyKhamBenh::XuLyKhoa(
                       << " ket qua vao database.\n";
         } else {
             std::cout << "Ghi ket qua vao database that bai.\n";
+            return false;
         }
     }
+    return true;
 }
 
-void QuanLyKhamBenh::XuLyTatCaKhoa() {
+bool QuanLyKhamBenh::XuLyTatCaKhoa() {
     for (int i = 0; i < SO_KHOA; ++i) {
-        XuLyKhoa(CAC_KHOA[i]);
+        if (!XuLyKhoa(CAC_KHOA[i])) return false;
     }
+    return true;
 }
 
 void QuanLyKhamBenh::HienThiKetQua() const {

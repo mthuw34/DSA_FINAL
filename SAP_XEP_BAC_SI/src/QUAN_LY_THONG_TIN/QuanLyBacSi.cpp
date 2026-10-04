@@ -49,6 +49,9 @@ bool QuanLyBacSi::DocCSV(const std::string& duongDan) {
     int stt = 1;
 
     while (std::getline(file, line)) {
+        // CSV UTF-8 từ Excel có thể có BOM; getline trên Windows cũng có thể giữ CR.
+        if (dongDau && line.compare(0, 3, "\xEF\xBB\xBF") == 0) line.erase(0, 3);
+        if (!line.empty() && line.back() == '\r') line.pop_back();
         if (line.empty()) continue;
 
         std::vector<std::string> cot = tachCSV(line);
