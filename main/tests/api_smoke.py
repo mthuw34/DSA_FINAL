@@ -78,7 +78,7 @@ def main():
 
         try:
             ready()
-            for path, content_type, marker in [('/', 'text/html', 'MediFlow'),
+            for path, content_type, marker in [('/', 'text/html', 'KMIN HEALTH'),
                     ('/assets/app.css', 'text/css', '.sidebar'),
                     ('/assets/app.js', 'text/javascript', 'loadData')]:
                 with urlopen(f'http://127.0.0.1:{port}{path}', timeout=10) as response:

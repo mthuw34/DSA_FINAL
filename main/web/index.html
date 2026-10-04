@@ -3,30 +3,30 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="theme-color" content="#087f78">
-  <title>MediFlow · Quản lý khám bệnh</title>
+  <meta name="theme-color" content="#123b3e">
+  <title>KMIN HEALTH · Quản lý khám bệnh</title>
   <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%23087f78'/%3E%3Cpath d='M14 7h4v7h7v4h-7v7h-4v-7H7v-4h7z' fill='white'/%3E%3C/svg%3E">
   <link rel="stylesheet" href="/assets/app.css">
   <script src="/assets/app.js" defer></script>
 </head>
 <body>
   <aside class="sidebar">
-    <a href="#overview" class="brand"><span class="brand-mark">+</span><span>MediFlow<small>QUẢN LÝ KHÁM BỆNH</small></span></a>
-    <div class="workspace"><span class="workspace-icon">H</span><div>Trung tâm điều phối<small>Hệ thống bệnh viện</small></div><span class="online-dot"></span></div>
-    <p class="nav-label">KHÔNG GIAN LÀM VIỆC</p>
+    <a href="#overview" class="brand" aria-label="KMIN HEALTH · Trang tổng quan"><span class="brand-mark">+</span><span>KMIN<small>HEALTH</small></span></a>
+    <div class="workspace"><span class="workspace-icon">KH</span><div>Bệnh viện KMIN HEALTH<small>Trung tâm điều phối</small></div><span class="online-dot"></span></div>
+    <p class="nav-label">QUẢN LÝ BỆNH VIỆN</p>
     <nav id="navigation" aria-label="Điều hướng chính"></nav>
-    <div class="sidebar-bottom"><div class="care-symbol">✚</div><strong>Mỗi lượt khám, một sự chăm sóc.</strong><p>Kết nối tiếp nhận, hàng đợi và bác sĩ trong cùng một nơi.</p><span class="version">ĐỒ ÁN DSA <span>v1.0</span></span></div>
+    <div class="sidebar-bottom"><div class="care-symbol">✚</div><strong>Chăm sóc bằng sự tận tâm.</strong><p>Đồng hành cùng bạn trong từng lượt khám.</p><span class="version">KMIN HEALTH <span>HOSPITAL</span></span></div>
   </aside>
   <div class="app-shell">
-    <header class="topbar"><div class="breadcrumb">Không gian làm việc <span>/</span> <strong id="breadcrumb-current">Tổng quan</strong></div><div class="topbar-right"><span id="connection" class="connection"><span class="online-dot"></span> Đang kết nối</span><span class="avatar" aria-label="Nhân viên điều phối">ĐP</span></div></header>
+    <header class="topbar"><div class="breadcrumb">KMIN HEALTH <span>/</span> <strong id="breadcrumb-current">Tổng quan</strong></div><div class="topbar-right"><span id="header-date" class="header-date"></span><span id="connection" class="connection"><span class="online-dot"></span> Đang kết nối</span><span class="avatar" aria-label="Nhân viên điều phối">ĐP</span></div></header>
     <main id="main-content">
       <div class="page-heading"><div><p class="eyebrow">ĐIỀU PHỐI KHÁM BỆNH</p><h1 id="page-title">Tổng quan</h1><p id="page-description">Theo dõi và điều phối mọi lượt khám.</p></div><div class="heading-actions"><button class="button secondary" data-action="refresh" id="refresh-button">Làm mới</button><button class="button primary" data-action="new-patient"><span>＋</span> Thêm bệnh nhân</button></div></div>
       <div id="notice" class="notice" role="status" aria-live="polite" hidden></div>
       <div id="content" aria-busy="true"><div class="loading"><span class="spinner"></span> Đang tải dữ liệu bệnh viện…</div></div>
-      <footer class="page-footer"><span>MediFlow · Hệ thống quản lý khám bệnh</span><span id="last-updated">Đang kết nối…</span></footer>
+      <footer class="page-footer"><span>KMIN HEALTH <span class="footer-dot">·</span> Chăm sóc tận tâm, kết nối sức khỏe.</span><span id="last-updated">Đang kết nối…</span></footer>
     </main>
   </div>
-  <dialog id="modal" aria-labelledby="modal-title"><form id="modal-form"><div class="modal-header"><div><p class="eyebrow" id="modal-eyebrow">QUẢN LÝ KHÁM BỆNH</p><h2 id="modal-title"></h2></div><button type="button" class="icon-button" data-action="close-modal" aria-label="Đóng">×</button></div><div id="modal-body"></div><p id="form-error" class="form-error" role="alert" hidden></p><div class="modal-footer"><button type="button" class="button secondary" data-action="close-modal">Đóng</button><button type="submit" class="button primary" id="modal-submit">Lưu thông tin</button></div></form></dialog>
+  <dialog id="modal" aria-labelledby="modal-title"><form id="modal-form"><div class="modal-header"><div><p class="eyebrow" id="modal-eyebrow">KMIN HEALTH · CHĂM SÓC SỨC KHỎE</p><h2 id="modal-title"></h2></div><button type="button" class="icon-button" data-action="close-modal" aria-label="Đóng">×</button></div><div id="modal-body"></div><p id="form-error" class="form-error" role="alert" hidden></p><div class="modal-footer"><button type="button" class="button secondary" data-action="close-modal">Đóng</button><button type="submit" class="button primary" id="modal-submit">Lưu thông tin</button></div></form></dialog>
   <noscript><p class="notice error">Hãy bật JavaScript trong trình duyệt để sử dụng giao diện.</p></noscript>
 </body>
 </html>
