@@ -1,146 +1,150 @@
 #include "PriorityManager.h"
-
 #include <iostream>
-#include <sqlite3.h>
+#include <vector>
+#include "../LUU_MUC_UU_TIEN/PriorityStorage.h"
+
 using namespace std;
 
-// KHỞI TẠO 
+// Tìm kiếm tuyến tính theo check-in ID.
+static int findCheckinIndex(
+    const vector<priority_storage::Record>& records,
+    int checkinId
+)
+{
+    for (int i = 0; i < static_cast<int>(records.size()); i++)
+    {
+        if (records[i].checkinId == checkinId)
+        {
+            return i;
+        }
+    }
+
+    return -1;
+}
+
+// Hủy các thay đổi trong giao dịch hiện tại.
+static void rollbackUpdate(sqlite3* db)
+{
+    priority_storage::execute(
+        db,
+        "ROLLBACK;",
+        "Loi rollback priority.db"
+    );
+}
+
+// Khởi tạo đối tượng quản lý ưu tiên.
 PriorityManager::PriorityManager(sqlite3* database)
 {
     db = database;
 }
 
-// KIỂM TRA CHECKIN ID CÓ TỒN TẠO HAY KHÔNG
-bool PriorityManager::checkinExists(int checkinId)
+// Đọc mức ưu tiên gốc và mức ưu tiên hiện tại.
+bool PriorityManager::getPriority(
+    int checkinId,
+    int& basePriority,
+    int& currentPriority
+)
 {
-    const char* sql = R"(
+    vector<priority_storage::Record> records;
 
-        SELECT 1
-        FROM priority_checkins
-        WHERE checkin_id = ?;
-
-    )";
-
-    sqlite3_stmt* stmt = nullptr;
-
-    if (sqlite3_prepare_v2(db, sql, -1, &stmt, nullptr) != SQLITE_OK)
+    if (!priority_storage::loadRecords(db, records))
     {
         return false;
     }
 
-    sqlite3_bind_int(stmt, 1, checkinId);
+    int index = findCheckinIndex(records, checkinId);
 
-    bool exists = sqlite3_step(stmt) == SQLITE_ROW;
-    sqlite3_finalize(stmt);
-    return exists;
-}
-
-// LẤY MỨC ĐỘ ƯU TIÊN BAN ĐẦU VÀ HIỆN TẠI 
-bool PriorityManager::getPriority(int checkinId, int& basePriority, int& currentPriority)
-{
-    const char* sql = R"(
-
-        SELECT
-            base_priority,
-            current_priority
-
-        FROM priority_checkins
-        WHERE checkin_id = ?;
-
-    )";
-
-    sqlite3_stmt* stmt = nullptr;
-
-    if (sqlite3_prepare_v2(db, sql, -1, &stmt, nullptr) != SQLITE_OK)
+    if (index == -1)
     {
         return false;
     }
 
-    sqlite3_bind_int(stmt, 1, checkinId);
-
-    if (sqlite3_step(stmt) != SQLITE_ROW)
-    {
-        sqlite3_finalize(stmt);
-        return false;
-    }
-
-    basePriority = sqlite3_column_int(stmt, 0);
-    currentPriority = sqlite3_column_int(stmt, 1);
-    sqlite3_finalize(stmt);
+    basePriority = records[index].basePriority;
+    currentPriority = records[index].currentPriority;
 
     return true;
 }
 
-// CẬP NHẬT MỨC DỘ ƯU TIÊN THỦ CÔNG
-bool PriorityManager::updatePriority(int checkinId, int newPriority)
+// Cập nhật mức ưu tiên thủ công.
+bool PriorityManager::updatePriority(
+    int checkinId,
+    int newPriority
+)
 {
-    // KIỂM TRA ID CÓ TỒN TẠI HAY KHÔNG
-    if (!checkinExists(checkinId))
+    // Chờ tối đa khoảng 5 giây nếu database bị khóa.
+    sqlite3_busy_timeout(db, 5000);
+
+    // Bắt đầu giao dịch trước khi đọc và sửa dữ liệu.
+    if (!priority_storage::execute(
+            db,
+            "BEGIN IMMEDIATE;",
+            "Khong the bat dau cap nhat uu tien"
+        ))
     {
-        cout << "Check-in ID khong ton tai.\n";
         return false;
     }
 
-    // KIỂM TRA MỨC ĐỘ ƯU TIÊN MỚI
-    if (newPriority < 1 || newPriority > 5)
-    {
-        cout<< "Muc do uu tien phai tu 1 den 5.\n";
-        return false;
-    }
+    // Đọc danh sách check-in vào mảng động.
+    vector<priority_storage::Record> records;
 
-    // LẤY MỨC ĐỘ ƯU TIÊN HIỆN TẠI
-    int basePriority;
-    int currentPriority;
-
-    if (!getPriority(checkinId, basePriority, currentPriority))
+    if (!priority_storage::loadRecords(db, records))
     {
+        rollbackUpdate(db);
         cout << "Khong doc duoc thong tin check-in.\n";
         return false;
     }
 
-    if (newPriority == currentPriority)
+    // Tìm vị trí check-in cần cập nhật.
+    int index = findCheckinIndex(records, checkinId);
+
+    if (index == -1)
     {
+        rollbackUpdate(db);
+        cout << "Check-in ID khong ton tai.\n";
+        return false;
+    }
+
+    // Kiểm tra mức ưu tiên mới.
+    if (newPriority < 1 || newPriority > 5)
+    {
+        rollbackUpdate(db);
+        cout << "Muc do uu tien phai tu 1 den 5.\n";
+        return false;
+    }
+
+    int oldPriority = records[index].currentPriority;
+
+    if (newPriority == oldPriority)
+    {
+        rollbackUpdate(db);
         cout << "Muc do uu tien moi giong muc hien tai.\n";
         return false;
     }
-    // Cập nhật mức ưu tiên nhưng giữ nguyên mốc thời gian đã tích lũy.
-    const char* sql = R"(
 
-        UPDATE priority_checkins
+    // Sửa mức ưu tiên của phần tử trong mảng.
+    records[index].currentPriority = newPriority;
 
-        SET
-            current_priority = ?
-
-        WHERE checkin_id = ?;
-
-    )";
-
-    sqlite3_busy_timeout(db, 5000);
-
-    sqlite3_stmt* stmt = nullptr;
-
-    if (sqlite3_prepare_v2(db, sql, -1, &stmt, nullptr ) != SQLITE_OK)
+    // Ghi danh sách đã sửa vào database.
+    if (!priority_storage::replaceRecords(db, records))
     {
-        cout << "Loi tao cau lenh cap nhat: " << sqlite3_errmsg(db) << '\n';
+        rollbackUpdate(db);
         return false;
     }
 
-    sqlite3_bind_int(stmt, 1, newPriority);
-    sqlite3_bind_int(stmt, 2, checkinId);
-
-    // UPDATE
-    bool success = sqlite3_step(stmt) == SQLITE_DONE;
-    sqlite3_finalize(stmt);
-
-    if (!success)
+    // Xác nhận lưu các thay đổi.
+    if (!priority_storage::execute(
+            db,
+            "COMMIT;",
+            "Loi hoan tat cap nhat uu tien"
+        ))
     {
-        cout << "Cap nhat that bai: " << sqlite3_errmsg(db) << '\n';
+        rollbackUpdate(db);
         return false;
     }
 
     cout << "Cap nhat thanh cong.\n";
     cout << "Check-in ID: " << checkinId << '\n';
-    cout << "Priority cu: " << currentPriority << '\n';
+    cout << "Priority cu: " << oldPriority << '\n';
     cout << "Priority moi: " << newPriority << '\n';
 
     return true;

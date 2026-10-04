@@ -4,19 +4,20 @@
 #include <iostream>
 #include <sstream>
 #include <string>
+#include <unordered_map>
+#include <vector>
 
+#include "../LUU_MUC_UU_TIEN/PriorityStorage.h"
 #include "WorkingTime.h"
 
 using namespace std;
 
-// Chuyển đổi thời gian thành time_t
 static bool parseTime(const string& text, time_t& result)
 {
     tm t = {};
     stringstream ss(text);
 
     ss >> get_time(&t, "%Y-%m-%d %H:%M:%S");
-
     if (ss.fail())
     {
         return false;
@@ -27,229 +28,100 @@ static bool parseTime(const string& text, time_t& result)
     return result != static_cast<time_t>(-1);
 }
 
-// Nạp tất cả các bệnh nhân vào Heap
+static string formatTime(time_t timestamp)
+{
+    tm* info = localtime(&timestamp);
+    if (info == nullptr) return "";
+    char text[20];
+    if (strftime(text, sizeof(text), "%Y-%m-%d %H:%M:%S", info) == 0)
+    {
+        return "";
+    }
+
+    return text;
+}
+
 void loadPatients(sqlite3* db, AutoPriorityHeap& heap)
 {
-    const char* sql = R"(
-
-        SELECT
-            checkin_id,
-            current_priority,
-            last_update
-
-        FROM priority_checkins;
-
-    )";
-
-    sqlite3_stmt* stmt = nullptr;
-
-    if (
-        sqlite3_prepare_v2(
-            db,
-            sql,
-            -1,
-            &stmt,
-            nullptr
-        ) != SQLITE_OK
-    )
+    vector<priority_storage::Record> records;
+    if (!priority_storage::loadRecords(db, records))
     {
-        cout << "Loi doc priority.db\n";
         return;
     }
 
-    //Duyệt từng bệnh nhân
-    while (sqlite3_step(stmt) == SQLITE_ROW)
+    for (const priority_storage::Record& record : records)
     {
-        int checkinId = sqlite3_column_int(stmt, 0);
-        int priority = sqlite3_column_int(stmt, 1);
-
-        // Mức ưu tiên 1 không tăng
-        if (priority <= 1)
+        if (record.currentPriority <= 1 || !record.hasLastUpdate)
         {
             continue;
         }
 
-        const unsigned char* text = sqlite3_column_text(stmt, 2);
-        if (text == nullptr)
-        {
-            continue;
-        }
-
-        string lastUpdate = reinterpret_cast<const char*>(text);
-        time_t startTime;
-
-        if (!parseTime(lastUpdate, startTime))
-        {
-            continue;
-        }
+        time_t lastUpdateTime;
+        if (!parseTime(record.lastUpdate, lastUpdateTime)) continue;
 
         AutoPriorityItem item;
-
-        item.checkinId = checkinId;
-        item.nextBoostTime = calculateNextBoostTime(startTime);
-
+        item.checkinId = record.checkinId;
+        item.nextBoostTime = calculateNextBoostTime(lastUpdateTime);
         heap.insert(item);
     }
-
-    sqlite3_finalize(stmt);
 }
 
-// Đọc mức độ ưu tiên hiện tại từ database 
-static bool getPriority(sqlite3* db, int checkinId, int& priority, string& lastUpdate)
-{
-    const char* sql = R"(
-
-        SELECT
-            current_priority,
-            last_update
-
-        FROM priority_checkins
-
-        WHERE checkin_id = ?;
-
-    )";
-
-    sqlite3_stmt* stmt = nullptr;
-
-    if (
-        sqlite3_prepare_v2(
-            db,
-            sql,
-            -1,
-            &stmt,
-            nullptr
-        ) != SQLITE_OK
-    )
-    {
-        return false;
-    }
-
-    sqlite3_bind_int(stmt, 1, checkinId);
-
-    if (sqlite3_step(stmt) != SQLITE_ROW)
-    {
-        sqlite3_finalize(stmt);
-        return false;
-    }
-
-    priority = sqlite3_column_int(stmt, 0);
-
-    const unsigned char* text = sqlite3_column_text(stmt, 1);
-
-    lastUpdate = text ? reinterpret_cast<const char*>(text): "";
-
-    sqlite3_finalize(stmt);
-
-    return true;
-}
-
-// Cập nhật mức đọ ưu tiên tự động
-static bool updatePriority(
-    sqlite3* db,
-    int checkinId,
-    int currentPriority,
-    const string& lastUpdate,
-    int newPriority,
-    time_t updateTime
-)
-{
-    tm info = *localtime(&updateTime);
-    char timeText[20];
-
-    strftime(
-        timeText,
-        sizeof(timeText),
-        "%Y-%m-%d %H:%M:%S",
-        &info
-    );
-
-
-    const char* sql = R"(
-
-        UPDATE priority_checkins
-
-        SET
-            current_priority = ?,
-            last_update = ?
-
-        WHERE
-            checkin_id = ?
-            AND current_priority = ?
-            AND last_update = ?;
-
-    )";
-
-    sqlite3_busy_timeout(db, 5000);
-
-    sqlite3_stmt* stmt = nullptr;
-
-    if (sqlite3_prepare_v2(
-            db,
-            sql,
-            -1,
-            &stmt,
-            nullptr
-        ) != SQLITE_OK
-    )
-    {
-        cerr << "Loi chuan bi cap nhat uu tien tu dong: "
-             << sqlite3_errmsg(db) << '\n';
-        return false;
-    }
-
-    sqlite3_bind_int(stmt, 1, newPriority);
-    sqlite3_bind_text(stmt, 2, timeText, -1, SQLITE_TRANSIENT);
-    sqlite3_bind_int(stmt, 3, checkinId);
-    sqlite3_bind_int(stmt, 4, currentPriority);
-    sqlite3_bind_text(stmt, 5, lastUpdate.c_str(), -1, SQLITE_TRANSIENT);
-
-    int result = sqlite3_step(stmt);
-    bool success = result == SQLITE_DONE && sqlite3_changes(db) == 1;
-
-    if (result != SQLITE_DONE)
-    {
-        cerr << "Loi cap nhat uu tien tu dong: "
-             << sqlite3_errmsg(db) << '\n';
-    }
-
-    sqlite3_finalize(stmt);
-
-    return success;
-}
-
-// Xử lí các bệnh nhân đã đến mốc
 void processAuto(sqlite3* db, AutoPriorityHeap& heap)
 {
+    sqlite3_busy_timeout(db, 5000);
+    if (!priority_storage::execute(
+            db,
+            "BEGIN IMMEDIATE;",
+            "Khong the bat dau cap nhat uu tien tu dong"
+        ))
+    {
+        return;
+    }
+
+    vector<priority_storage::Record> records;
+    if (!priority_storage::loadRecords(db, records))
+    {
+        priority_storage::execute(db, "ROLLBACK;", "Loi rollback priority.db");
+        return;
+    }
+
+    unordered_map<int, size_t> recordIndexes;
+    for (size_t i = 0; i < records.size(); ++i)
+    {
+        recordIndexes.emplace(records[i].checkinId, i);
+    }
+
+    struct PriorityChange
+    {
+        int checkinId;
+        int oldPriority;
+        int newPriority;
+    };
+    vector<PriorityChange> changes;
+
     time_t now = time(nullptr);
     AutoPriorityItem item;
 
     while (heap.peek(item) && item.nextBoostTime <= now)
     {
         heap.extractMin(item);
-        int currentPriority;
-        string lastUpdate;
 
-        if (!getPriority(db, item.checkinId, currentPriority, lastUpdate))
+        auto found = recordIndexes.find(item.checkinId);
+        if (found == recordIndexes.end())
         {
             continue;
         }
 
-        // Đã ở mức cao nhất
-        if (currentPriority <= 1)
+        priority_storage::Record& record = records[found->second];
+        if (record.currentPriority <= 1 || !record.hasLastUpdate)
         {
             continue;
         }
 
         time_t lastUpdateTime;
-
-        if (!parseTime(lastUpdate, lastUpdateTime))
-        {
-            continue;
-        }
+        if (!parseTime(record.lastUpdate, lastUpdateTime)) continue;
 
         time_t correctBoostTime = calculateNextBoostTime(lastUpdateTime);
-
-        // Nếu bác sĩ cập nhật thủ công, mốc trong heap cũ không còn dùng
         if (item.nextBoostTime != correctBoostTime)
         {
             item.nextBoostTime = correctBoostTime;
@@ -257,34 +129,40 @@ void processAuto(sqlite3* db, AutoPriorityHeap& heap)
             continue;
         }
 
-        int newPriority = currentPriority - 1;
-        time_t updateTime = item.nextBoostTime;
+        int oldPriority = record.currentPriority;
+        record.currentPriority -= 1;
+        record.lastUpdate = formatTime(item.nextBoostTime);
+        record.hasLastUpdate = true;
+        changes.push_back({record.checkinId, oldPriority, record.currentPriority});
 
-        if (updatePriority(
-                db,
-                item.checkinId,
-                currentPriority,
-                lastUpdate,
-                newPriority,
-                updateTime
-            ))
+        if (record.currentPriority > 1)
         {
-            cout<< "Checkin ID "
-                << item.checkinId
-                << ": "
-                << currentPriority
-                << " -> "
-                << newPriority
-                << '\n';
-
-            // Chưa đếm mức 1 thì đưa lại vào heap
-            if (newPriority > 1)
-            {
-                AutoPriorityItem newItem;
-                newItem.checkinId = item.checkinId;
-                newItem.nextBoostTime = calculateNextBoostTime(updateTime);
-                heap.insert(newItem);
-            }
+            AutoPriorityItem nextItem;
+            nextItem.checkinId = record.checkinId;
+            nextItem.nextBoostTime = calculateNextBoostTime(item.nextBoostTime);
+            heap.insert(nextItem);
         }
+    }
+
+    if (!changes.empty() && !priority_storage::replaceRecords(db, records))
+    {
+        priority_storage::execute(db, "ROLLBACK;", "Loi rollback priority.db");
+        return;
+    }
+
+    if (!priority_storage::execute(
+            db,
+            "COMMIT;",
+            "Loi hoan tat cap nhat uu tien tu dong"
+        ))
+    {
+        priority_storage::execute(db, "ROLLBACK;", "Loi rollback priority.db");
+        return;
+    }
+
+    for (const PriorityChange& change : changes)
+    {
+        cout << "Checkin ID " << change.checkinId << ": "
+             << change.oldPriority << " -> " << change.newPriority << '\n';
     }
 }

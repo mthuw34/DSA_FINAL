@@ -6,7 +6,6 @@
 
 #include "AutoPriority.h"
 #include "PrioritySync.h"
-using namespace std;
 
 int main()
 {
@@ -27,10 +26,11 @@ int main()
             nullptr
         ) != SQLITE_OK)
     {
-        cout << "Khong mo duoc hospital.db\n";
+        std::cout << "Khong mo duoc hospital.db\n";
 
         if (hospitalDb != nullptr)
         {
+            std::cout << sqlite3_errmsg(hospitalDb) << '\n';
             sqlite3_close(hospitalDb);
         }
 
@@ -45,10 +45,11 @@ int main()
             nullptr
         ) != SQLITE_OK)
     {
-        cout << "Khong mo duoc priority.db\n";
+        std::cout << "Khong mo duoc priority.db\n";
 
         if (priorityDb != nullptr)
         {
+            std::cout << sqlite3_errmsg(priorityDb) << '\n';
             sqlite3_close(priorityDb);
         }
 
@@ -56,19 +57,19 @@ int main()
         return 1;
     }
 
-    // Khởi tạo đối tượng đồng bộ giữa hai database.
+    // Khởi tạo đối tượng đồng bộ.
     PrioritySync sync(hospitalDb, priorityDb);
 
-    cout << "====================================\n";
-    cout << " CAP NHAT UU TIEN TU DONG\n";
-    cout << "====================================\n";
-    cout << "Tu dong dong bo tu hospital.db sang priority.db.\n";
-    cout << "Check-in moi: tinh cho tu thoi gian check-in.\n";
-    cout << "Moi 90 phut cho trong gio lam: tang 1 muc.\n";
-    cout << "Tinh bu cac moc da qua, dung o muc 1.\n";
-    cout << "Khong tinh thoi gian nghi trua va ngoai gio.\n";
-    cout << "Kiem tra lai sau moi 30 giay.\n";
-    cout << "Nhan S de dung.\n\n";
+    std::cout << "====================================\n";
+    std::cout << " CAP NHAT UU TIEN TU DONG\n";
+    std::cout << "====================================\n";
+    std::cout << "Tu dong dong bo tu hospital.db sang priority.db.\n";
+    std::cout << "Check-in moi: tinh cho tu thoi gian check-in.\n";
+    std::cout << "Moi 90 phut cho trong gio lam: tang 1 muc.\n";
+    std::cout << "Tinh bu cac moc da qua, dung o muc 1.\n";
+    std::cout << "Khong tinh thoi gian nghi trua va ngoai gio.\n";
+    std::cout << "Kiem tra lai sau moi 30 giay.\n";
+    std::cout << "Nhan S de dung.\n\n";
 
     bool running = true;
 
@@ -85,23 +86,22 @@ int main()
             }
         }
 
-        // Đồng bộ check-in mới và các thay đổi từ database gốc.
+        // Đồng bộ trước khi cập nhật ưu tiên.
         if (sync.syncAll())
         {
-            // Tạo heap mới để nhận trạng thái dữ liệu mới nhất.
+            // Nạp dữ liệu mới nhất vào heap.
             AutoPriorityHeap heap;
             loadPatients(priorityDb, heap);
 
-            // Xử lý các mốc đã đến, kể cả khi mở ngoài giờ.
-            // calculateNextBoostTime chỉ cộng thời gian làm việc.
+            // Xử lý các mốc tăng ưu tiên đã đến.
             processAuto(priorityDb, heap);
         }
         else
         {
-            cout << "Dong bo that bai. Se thu lai o luot sau.\n";
+            std::cout << "Dong bo that bai. Se thu lai o luot sau.\n";
         }
 
-        // Chờ 30 giây và kiểm tra phím S trong lúc chờ.
+        // Chờ 30 giây, kiểm tra phím S mỗi 100 mili giây.
         for (int i = 0; i < 300 && running; i++)
         {
             if (_kbhit())
@@ -115,7 +115,9 @@ int main()
                 }
             }
 
-            this_thread::sleep_for(chrono::milliseconds(100));
+            std::this_thread::sleep_for(
+                std::chrono::milliseconds(100)
+            );
         }
     }
 
@@ -123,6 +125,6 @@ int main()
     sqlite3_close(priorityDb);
     sqlite3_close(hospitalDb);
 
-    cout << "\nDa dung chuong trinh.\n";
+    std::cout << "\nDa dung chuong trinh.\n";
     return 0;
 }
