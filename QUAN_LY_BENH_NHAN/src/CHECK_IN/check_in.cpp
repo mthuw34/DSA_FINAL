@@ -10,6 +10,7 @@
 using namespace std;
 
 
+// Chuc nang: Lay du lieu TEXT tu SQLite.
 static string getText(
     sqlite3_stmt* stmt,
     int column
@@ -25,6 +26,7 @@ static string getText(
 }
 
 
+// Chuc nang: Doi muc uu tien tu so sang ten hien thi.
 static string getPriorityName(int priority)
 {
     switch (priority)
@@ -50,6 +52,7 @@ static string getPriorityName(int priority)
 }
 
 
+// Chuc nang: Thuc hien toan bo quy trinh check-in cho mot benh nhan.
 bool checkInMotBenhNhan(sqlite3* db)
 {
     // =====================================
