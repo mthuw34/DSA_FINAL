@@ -5,7 +5,7 @@
 
 using namespace std;
 
-// Chuc nang: Xoa thong tin benh nhan theo ID trong hospital.db.
+// Xóa thông tin bệnh nhân theo ID trong hospital.db.
 int main() {
     sqlite3* db = nullptr;
     if (sqlite3_open("QUAN_LY_BENH_NHAN/db/hospital.db", &db) != SQLITE_OK) {
