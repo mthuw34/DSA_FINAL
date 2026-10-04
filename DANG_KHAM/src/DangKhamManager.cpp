@@ -5,7 +5,9 @@
 
 #include "NhapChanDoan.h"
 
-static std::string getText(
+using namespace std;
+
+static string getText(
     sqlite3_stmt* stmt,
     int column
 )
@@ -19,8 +21,8 @@ static std::string getText(
 }
 
 bool DangKhamManager::khoiDong(
-    const std::string& sourcePath,
-    const std::string& destinationPath
+    const string& sourcePath,
+    const string& destinationPath
 )
 {
     if (!database.mo(
@@ -70,7 +72,7 @@ void DangKhamManager::hienThiDangKham()
             nullptr
         ) != SQLITE_OK)
     {
-        std::cerr
+        cerr
             << "Loi doc dang_kham: "
             << sqlite3_errmsg(db)
             << '\n';
@@ -78,7 +80,7 @@ void DangKhamManager::hienThiDangKham()
         return;
     }
 
-    std::cout
+    cout
         << "\n========== BENH NHAN DANG KHAM ==========\n";
 
     int count = 0;
@@ -87,7 +89,7 @@ void DangKhamManager::hienThiDangKham()
     {
         ++count;
 
-        std::cout
+        cout
             << count
             << ". Check-in: "
             << sqlite3_column_int(stmt, 0)
@@ -118,7 +120,7 @@ void DangKhamManager::hienThiDangKham()
 
     if (count == 0)
     {
-        std::cout
+        cout
             << "Khong co benh nhan nao dang kham.\n";
     }
 
@@ -172,21 +174,21 @@ void DangKhamManager::nhapChanDoan()
 {
     sqlite3* db = database.get();
 
-    std::cout << "Nhap check-in ID: ";
+    cout << "Nhap check-in ID: ";
 
     int checkinId = 0;
 
-    if (!(std::cin >> checkinId) ||
+    if (!(cin >> checkinId) ||
         checkinId <= 0)
     {
-        std::cin.clear();
+        cin.clear();
 
-        std::cin.ignore(
-            std::numeric_limits<std::streamsize>::max(),
+        cin.ignore(
+            numeric_limits<streamsize>::max(),
             '\n'
         );
 
-        std::cout
+        cout
             << "Check-in ID khong hop le.\n";
 
         return;
@@ -199,18 +201,18 @@ void DangKhamManager::nhapChanDoan()
             patientId
         ))
     {
-        std::cout
+        cout
             << "Benh nhan khong o trang thai dang kham.\n";
 
         return;
     }
 
-    std::string chanDoan;
-    std::string donThuoc;
-    std::string loiNhacBacSi;
+    string chanDoan;
+    string donThuoc;
+    string loiNhacBacSi;
 
     NhapChanDoan(
-        std::to_string(patientId),
+        to_string(patientId),
         chanDoan,
         donThuoc,
         loiNhacBacSi
@@ -218,7 +220,7 @@ void DangKhamManager::nhapChanDoan()
 
     if (chanDoan.empty())
     {
-        std::cout
+        cout
             << "Chan doan khong duoc de trong.\n";
 
         return;
@@ -246,7 +248,7 @@ void DangKhamManager::nhapChanDoan()
             nullptr
         ) != SQLITE_OK)
     {
-        std::cerr
+        cerr
             << "Loi tao lenh cap nhat: "
             << sqlite3_errmsg(db)
             << '\n';
@@ -287,12 +289,12 @@ void DangKhamManager::nhapChanDoan()
     if (sqlite3_step(stmt) == SQLITE_DONE &&
         sqlite3_changes(db) > 0)
     {
-        std::cout
+        cout
             << "Da luu chan doan, don thuoc va loi nhac bac si.\n";
     }
     else
     {
-        std::cerr
+        cerr
             << "Khong cap nhat duoc thong tin kham.\n";
     }
 
@@ -303,22 +305,22 @@ void DangKhamManager::ketThucKham()
 {
     sqlite3* db = database.get();
 
-    std::cout
+    cout
         << "Nhap check-in ID ket thuc kham: ";
 
     int checkinId = 0;
 
-    if (!(std::cin >> checkinId) ||
+    if (!(cin >> checkinId) ||
         checkinId <= 0)
     {
-        std::cin.clear();
+        cin.clear();
 
-        std::cin.ignore(
-            std::numeric_limits<std::streamsize>::max(),
+        cin.ignore(
+            numeric_limits<streamsize>::max(),
             '\n'
         );
 
-        std::cout
+        cout
             << "Check-in ID khong hop le.\n";
 
         return;
@@ -345,7 +347,7 @@ void DangKhamManager::ketThucKham()
             nullptr
         ) != SQLITE_OK)
     {
-        std::cerr
+        cerr
             << "Loi tao lenh ket thuc kham: "
             << sqlite3_errmsg(db)
             << '\n';
@@ -362,12 +364,12 @@ void DangKhamManager::ketThucKham()
     if (sqlite3_step(stmt) == SQLITE_DONE &&
         sqlite3_changes(db) > 0)
     {
-        std::cout
+        cout
             << "Da ket thuc phien kham.\n";
     }
     else
     {
-        std::cout
+        cout
             << "Khong tim thay phien dang kham phu hop.\n";
     }
 
@@ -378,7 +380,7 @@ void DangKhamManager::chayMenu()
 {
     while (true)
     {
-        std::cout
+        cout
             << "\n========== DANG KHAM ==========\n"
             << "1. Xem benh nhan dang kham\n"
             << "2. Nhap chan doan, don thuoc va loi nhac bac si\n"
@@ -388,22 +390,22 @@ void DangKhamManager::chayMenu()
 
         int choice = -1;
 
-        if (!(std::cin >> choice))
+        if (!(cin >> choice))
         {
-            if (std::cin.eof() ||
-                std::cin.bad())
+            if (cin.eof() ||
+                cin.bad())
             {
                 break;
             }
 
-            std::cin.clear();
+            cin.clear();
 
-            std::cin.ignore(
-                std::numeric_limits<std::streamsize>::max(),
+            cin.ignore(
+                numeric_limits<streamsize>::max(),
                 '\n'
             );
 
-            std::cout
+            cout
                 << "Lua chon khong hop le.\n";
 
             continue;
@@ -419,7 +421,7 @@ void DangKhamManager::chayMenu()
         else if (choice == 3)
             ketThucKham();
         else
-            std::cout
+            cout
                 << "Lua chon khong hop le.\n";
     }
 }
