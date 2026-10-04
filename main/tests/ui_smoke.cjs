@@ -24,7 +24,7 @@ const fixture = {
   '/api/assignments':[{checkin_id:10,patient_id:1,department:'Khoa Cap cuu',doctor_name:'Bác sĩ An',doctor_id:'BS001',start_time:'2026-10-04 10:00:00',planned_end_time:'2026-10-04 10:20:00',duration_minutes:20}],
   '/api/exams?active=false':[{checkin_id:10,patient_id:1,department:'Khoa Cap cuu',doctor_name:'Bác sĩ An',doctor_id:'BS001',start_time:'2026-10-04 10:00:00',end_time:null,diagnosis:malicious}],
   '/api/doctors':[{id:'BS001',name:'Bác sĩ An',department:'Khoa Cap cuu',experience_years:10,status:'on_duty',duty_mode:'auto',busy:false,
-    shift_rule:'24h_on_24h_off',shift_period_start:'2026-10-05',shifts:[{date:'2026-10-05',start_time:'2026-10-05 00:00:00',end_time:'2026-10-06 00:00:00',is_current:true}]}]
+    shift_rule:'three_8h_rotating_days_off',shift_period_start:'2026-10-05',shifts:[{date:'2026-10-05',start_time:'2026-10-05 00:00:00',end_time:'2026-10-05 08:00:00',is_current:true}]}]
 };
 const document = {querySelector:element,activeElement:null,body:element('body'),listeners:{},addEventListener(type,handler){this.listeners[type]=handler;}};
 const context = vm.createContext({document,location:{hash:''},window:{addEventListener(){}},console,Map,Set,Date,
@@ -92,7 +92,7 @@ const run = code => vm.runInContext(code,context);
   assert(element('#modal-body').innerHTML.includes('birth_date'));
   run("openModal('doctor-shifts','BS001')");
   assert(element('#modal-body').innerHTML.includes('00:00 · 05/10/2026'));
-  assert(element('#modal-body').innerHTML.includes('00:00 · 06/10/2026'));
+  assert(element('#modal-body').innerHTML.includes('08:00 · 05/10/2026'));
   assert(element('#modal-body').innerHTML.includes('Nghỉ'));
   assert(element('#modal-submit').hidden);
   run("state.data.doctors[0].duty_mode='off_duty';openModal('doctor-shifts','BS001')");

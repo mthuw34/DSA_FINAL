@@ -7,6 +7,9 @@ using namespace std;
 namespace ThoiGian {
     struct CaTruc { string ngay; time_t batDau; time_t ketThuc; };
     vector<CaTruc> LichTruc(time_t tuNgay, bool capCuu, int pha, int soNgay = 7);
+    // Khoang ca [batDau, ketThuc): toi da 12 gio, khong trung ca cung bac si.
+    bool KiemTraLichTruc(const vector<CaTruc>& lich);
+    bool DuThoiGianKhamCapCuu(time_t batDau, int soPhut, int pha);
     time_t HienTai();
 
     string DinhDang(time_t t);
@@ -28,8 +31,8 @@ namespace ThoiGian {
     // Kiểm tra 1 ca khám có kết thúc trước khi ca hiện tại kết thúc hay ko
     bool DuThoiGianKhamKhoaThuong(time_t batDau, int soPhut);
 
-    // Khoa cấp cứu: một bác sĩ làm 24h rồi nghỉ 24h
-    // ngayBatDauTruc: 0 là ngày trực, 1 là ngày nghỉ
+    // Khoa cap cuu: 3 ca 8 gio, moi bac si lam mot ca va nghi cach ngay.
+    // Pha 0..5: pha / 2 la ca (00, 08, 16 gio), pha % 2 la nhom ngay nghi.
     bool DangTrucCapCuu(time_t t, int ngayBatDauTruc);
 
     // Tìm thời điểm trực cấp cứu tiếp theo của bác sĩ

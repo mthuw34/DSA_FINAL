@@ -120,11 +120,13 @@ void QuanLyBacSi::KhoiTaoLich(time_t hienTai, bool onDinh) {
             chrono::system_clock::now().time_since_epoch().count()
         )
     );
-    uniform_int_distribution<int> randomPha(0, 1);
+    uniform_int_distribution<int> randomPha(0, 5);
+    int capCuuIndex = 0;
 
     for (int i = 0; i < static_cast<int>(DanhSach.size()); ++i) {
         if (DanhSach[i].khoaChuyenMon == "Khoa Cap cuu") {
-            NgayBatDauTrucCapCuu[i] = onDinh ? i % 2 : randomPha(gen);
+            NgayBatDauTrucCapCuu[i] = onDinh ? capCuuIndex % 6 : randomPha(gen);
+            ++capCuuIndex;
         }
 
         DanhSach[i].TamNghiDen = 0;
@@ -190,13 +192,14 @@ bool QuanLyBacSi::TinhThoiDiemNhanBenhNhan(
     if (bs.TrucThuCong) { batDau = t; return true; }
 
     if (khoa == "Khoa Cap cuu") {
-        if (!ThoiGian::DangTrucCapCuu(
-                t,
-                NgayBatDauTrucCapCuu[index])) {
+        if (thoiLuong <= 0 || thoiLuong > 8 * 60) return false;
+        for (;;) {
             t = ThoiGian::TrucCapCuuTiepTheo(
                 t,
                 NgayBatDauTrucCapCuu[index]
             );
+            if (ThoiGian::DuThoiGianKhamCapCuu(t, thoiLuong, NgayBatDauTrucCapCuu[index])) break;
+            t += 8 * 3600; // Ca hien tai khong con du thoi gian: tim ca tiep theo.
         }
 
         batDau = t;

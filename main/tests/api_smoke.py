@@ -1,6 +1,7 @@
 """HTTP integration test on isolated SQLite databases; build the server first."""
 import concurrent.futures
 from contextlib import closing
+from datetime import datetime
 import json
 import os
 import base64
@@ -89,12 +90,32 @@ def main():
             assert len(request('/api/departments')) == 10
             doctors=request('/api/doctors')
             assert len(doctors) == 500
+            emergency_coverage = set()
             for doctor in doctors:
-                assert doctor['shift_rule'] in ('24h_on_24h_off','weekday_split')
+                assert doctor['shift_rule'] in ('three_8h_rotating_days_off','weekday_split')
                 assert len(doctor['shift_period_start']) == 10
                 assert all(s['start_time'] < s['end_time'] and s['date'] == s['start_time'][:10] for s in doctor['shifts'])
+                previous_end = None
+                for shift in doctor['shifts']:
+                    shift_start = datetime.fromisoformat(shift['start_time'])
+                    shift_end = datetime.fromisoformat(shift['end_time'])
+                    duration = (shift_end - shift_start).total_seconds()
+                    assert 0 < duration <= 12 * 3600
+                    assert previous_end is None or previous_end <= shift_start
+                    previous_end = shift_end
+                    if doctor['shift_rule'] == 'three_8h_rotating_days_off':
+                        assert duration == 8 * 3600
+                        emergency_coverage.add((shift['date'], shift_start.hour))
+                    else:
+                        assert shift_start.weekday() < 5
+                if doctor['shift_rule'] == 'weekday_split':
+                    assert len(doctor['shifts']) == 10
+                else:
+                    starts = [datetime.fromisoformat(s['start_time']) for s in doctor['shifts']]
+                    assert all((b - a).days == 2 for a, b in zip(starts, starts[1:]))
                 assert sum(s['is_current'] for s in doctor['shifts']) <= 1
                 assert doctor['on_duty'] == any(s['is_current'] for s in doctor['shifts'])
+            assert len(emergency_coverage) == 7 * 3
             request('/api/patients', 'POST', raw=b'{', expected=400)
             request('/api/patients', 'POST', [], expected=400)
             request('/api/patients', 'POST', {'name':'Test', 'birth_date':'2025-02-30'}, expected=400)

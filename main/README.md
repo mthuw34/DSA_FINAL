@@ -34,7 +34,13 @@ Ca tới giờ được tự nhận khi bác sĩ trống; bác sĩ chỉ khám m
 Trong **Bác sĩ**, trạng thái gồm Đang khám, Đang trong ca trực, Ngoài ca/nghỉ và Bận đột xuất.
 **Xem ca trực** hiển thị 7 ngày từ ngày hiện tại của server, kèm giờ bắt đầu/kết thúc và ngày nghỉ.
 Khoa thường làm Thứ Hai–Thứ Sáu, 07:00–11:30 và 13:00–17:00;
-cấp cứu trực 24 giờ (00:00 đến 00:00 hôm sau), nghỉ 24 giờ theo pha lịch web.
+Khoa Cấp cứu (24/7) chia 3 ca 8 giờ: 00:00–08:00, 08:00–16:00 và
+16:00–00:00 hôm sau. Bác sĩ chia 6 nhóm (3 ca × 2 nhóm ngày), trực một ca
+và nghỉ cách ngày luân phiên; chu kỳ liên tục khi chuyển năm.
+Ca phải bắt đầu trước khi kết thúc, tối đa 12 giờ, không chồng lấn với ca khác
+của cùng bác sĩ (kể cả qua nửa đêm). Ca liền kề được phép.
+Lịch mẫu sinh tự động theo quy tắc, không ghi đè các cuộc hẹn đã lưu.
+Lượt khám tự động chỉ được xếp nếu kết thúc trong ca trực.
 Lịch hiển thị dùng cùng quy tắc với bộ phân bác sĩ. Trực/nghỉ thủ công và bận đột xuất
 được ghi riêng trong hộp xem lịch để phân biệt với lịch tự động.
 **Ca trực** cho chọn tự động theo lịch, đang trực thủ công hoặc nghỉ ca.
