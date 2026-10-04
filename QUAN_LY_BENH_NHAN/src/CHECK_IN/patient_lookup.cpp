@@ -12,7 +12,7 @@ using namespace std;
 // =========================================
 // LAY TEXT TU SQLITE
 // =========================================
-// Chuc nang: Lay du lieu TEXT tu SQLite.
+// Lấy dữ liệu TEXT từ SQLite.
 static string getText(
     sqlite3_stmt* stmt,
     int column
@@ -34,7 +34,7 @@ static string getText(
 // =========================================
 // TIM BENH NHAN THEO ID
 // =========================================
-// Chuc nang: Tim benh nhan theo ID va nap thong tin vao cau truc Patient.
+// Tìm bệnh nhân theo ID và nạp thông tin vào cấu trúc Patient.
 bool timBenhNhan(
     sqlite3* db,
     int patientId,
@@ -221,7 +221,7 @@ bool timBenhNhan(
 // =========================================
 // HIEN THI THONG TIN BENH NHAN
 // =========================================
-// Chuc nang: Hien thi day du thong tin cua mot benh nhan.
+// Hiển thị đầy đủ thông tin của một bệnh nhân.
 void hienThiBenhNhan(
     const Patient& patient
 )
