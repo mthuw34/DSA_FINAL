@@ -13,7 +13,7 @@
 
 using namespace std;
 
-// Chuc nang: Lay duong dan file chuong trinh dang chay.
+// Lấy đường dẫn file chương trình đang chạy.
 static filesystem::path getExecutablePath(const char* argv0)
 {
 #ifdef _WIN32
@@ -43,7 +43,7 @@ static filesystem::path getExecutablePath(const char* argv0)
     return {};
 }
 
-// Chuc nang: Tim duong dan hospital.db phu hop khi chay chuong trinh.
+// Tìm đường dẫn hospital.db phù hợp khi chạy chương trình.
 static string resolveDatabasePath(const char* argv0)
 {
     vector<filesystem::path> candidates;
@@ -75,7 +75,7 @@ static string resolveDatabasePath(const char* argv0)
     return "QUAN_LY_BENH_NHAN/db/hospital.db";
 }
 
-// Chuc nang: Mo database va dieu khien menu quan ly check-in.
+// Mở database và điều khiển menu quản lý check-in.
 int main(int argc, char* argv[])
 {
     sqlite3* db = nullptr;
