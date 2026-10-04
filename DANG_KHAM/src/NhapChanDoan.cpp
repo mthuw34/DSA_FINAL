@@ -1,21 +1,17 @@
-#pragma once
-#include <string>
-#include <vector>
-#include "patient.h"
 #include <iostream>
-using namespace std;
+#include <string>
 
-void NhapChanDoan (const string& idBenhNhan, string& chanDoan, string& donThuoc)
+void NhapChanDoan(
+    const std::string& idBenhNhan,
+    std::string& chanDoan,
+    std::string& donThuoc
+)
 {
-    cout << "Chan doan cua benh nhan: ";
-    getline(cin, chanDoan);
-    cin .ignore(); 
-    cout << endl;
+    std::cout << "\nBenh nhan ID: " << idBenhNhan << '\n';
 
-    cout << "Don thuoc cua benh nhan: ";
-    getline(cin, donThuoc);
-    cin .ignore();
+    std::cout << "Chan doan cua benh nhan: ";
+    std::getline(std::cin >> std::ws, chanDoan);
 
-    return;
+    std::cout << "Don thuoc cua benh nhan: ";
+    std::getline(std::cin, donThuoc);
 }
-

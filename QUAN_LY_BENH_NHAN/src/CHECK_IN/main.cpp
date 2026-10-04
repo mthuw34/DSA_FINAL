@@ -66,7 +66,7 @@ static string resolveDatabasePath(const char* argv0)
     {
         if (filesystem::exists(candidate))
         {
-            return candidate.u8string();
+            return candidate.string();
         }
     }
 
@@ -95,13 +95,21 @@ int main(int argc, char* argv[])
         return 1;
     }
 
-    sqlite3_exec(
-        db,
-        "PRAGMA foreign_keys = ON;",
-        nullptr,
-        nullptr,
-        nullptr
-    );
+    sqlite3_busy_timeout(db, 5000);
+
+    if (sqlite3_exec(
+            db,
+            "PRAGMA foreign_keys = ON;",
+            nullptr,
+            nullptr,
+            nullptr
+        ) != SQLITE_OK)
+    {
+        cerr << "Khong the bat foreign key: "
+             << sqlite3_errmsg(db) << '\n';
+        sqlite3_close(db);
+        return 1;
+    }
 
     // Rang buoc tai database de hai phien khong the check-in trung.
     if (sqlite3_exec(db,
