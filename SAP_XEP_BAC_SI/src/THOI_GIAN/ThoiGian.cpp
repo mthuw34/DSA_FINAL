@@ -1,10 +1,11 @@
 #include "ThoiGian.h"
 #include <iomanip>
 #include <sstream>
+using namespace std;
 
 namespace {
-    std::tm layLocalTm(std::time_t t) {
-        std::tm result{};
+    tm layLocalTm(time_t t) {
+        tm result{};
 #ifdef _WIN32
         localtime_s(&result, &t);
 #else
@@ -13,50 +14,50 @@ namespace {
         return result;
     }
 
-    std::time_t taoThoiGianCungNgay(std::time_t goc, int hour, int minute) {
-        std::tm tm = layLocalTm(goc);
+    time_t taoThoiGianCungNgay(time_t goc, int hour, int minute) {
+        tm tm = layLocalTm(goc);
         tm.tm_hour = hour;
         tm.tm_min = minute;
         tm.tm_sec = 0;
-        return std::mktime(&tm);
+        return mktime(&tm);
     }
 
-    int phutTrongNgay(std::time_t t) {
-        std::tm tm = layLocalTm(t);
+    int phutTrongNgay(time_t t) {
+        tm tm = layLocalTm(t);
         return tm.tm_hour * 60 + tm.tm_min;
     }
 
-    int thuTrongTuan(std::time_t t) {
-        // 0 = Chủ nhật, 1 = Thứ 2, ..., 6 = Thứ 7
+    int thuTrongTuan(time_t t) {
+        // 0 = Chủ nhật, 1 = Thứ hai, 2 = Thứ ba, ..., 6 = Thứ bảy
         return layLocalTm(t).tm_wday;
     }
 }
 
 namespace ThoiGian {
-    std::time_t HienTai() {
-        return std::time(nullptr);
+    time_t HienTai() {
+        return time(nullptr);
     }
 
-    std::string DinhDang(std::time_t t) {
-        std::tm tm = layLocalTm(t);
-        std::ostringstream out;
-        out << std::put_time(&tm, "%Y-%m-%d %H:%M:%S");
+    string DinhDang(time_t t) {
+        tm tm = layLocalTm(t);
+        ostringstream out;
+        out << put_time(&tm, "%Y-%m-%d %H:%M:%S");
         return out.str();
     }
 
-    std::string DinhDangNgay(std::time_t t) {
-        std::tm tm = layLocalTm(t);
-        std::ostringstream out;
-        out << std::put_time(&tm, "%Y-%m-%d");
+    string DinhDangNgay(time_t t) {
+        tm tm = layLocalTm(t);
+        ostringstream out;
+        out << put_time(&tm, "%Y-%m-%d");
         return out.str();
     }
 
-    bool LaCuoiTuan(std::time_t t) {
+    bool LaCuoiTuan(time_t t) {
         int thu = thuTrongTuan(t);
         return thu == 0 || thu == 6;
     }
 
-    bool DangTrongCaThuong(std::time_t t) {
+    bool DangTrongCaThuong(time_t t) {
         if (LaCuoiTuan(t)) return false;
 
         int p = phutTrongNgay(t);
@@ -64,27 +65,27 @@ namespace ThoiGian {
                (p >= 13 * 60 && p < 17 * 60);
     }
 
-    std::time_t CaThuongTiepTheo(std::time_t t) {
+    time_t CaThuongTiepTheo(time_t t) {
         int thu = thuTrongTuan(t);
         int p = phutTrongNgay(t);
 
-        // Nếu đang cuối tuần -> tìm 07:00 thứ 2 kế tiếp.
+        // Nếu đang cuối tuần -> tìm 07:00 thứ 2 kế tiếp
         if (thu == 6) { // Thứ 7
-            std::tm tm = layLocalTm(t);
+            tm tm = layLocalTm(t);
             tm.tm_mday += 2;
             tm.tm_hour = 7;
             tm.tm_min = 0;
             tm.tm_sec = 0;
-            return std::mktime(&tm);
+            return mktime(&tm);
         }
 
         if (thu == 0) { // Chủ nhật
-            std::tm tm = layLocalTm(t);
+            tm tm = layLocalTm(t);
             tm.tm_mday += 1;
             tm.tm_hour = 7;
             tm.tm_min = 0;
             tm.tm_sec = 0;
-            return std::mktime(&tm);
+            return mktime(&tm);
         }
 
         if (p < 7 * 60) {
@@ -103,30 +104,30 @@ namespace ThoiGian {
             return t;
         }
 
-        // Sau 17:00 -> ngày làm việc kế tiếp.
-        std::tm tm = layLocalTm(t);
+        // Sau 17:00 -> ngày làm việc kế tiếp
+        tm tm = layLocalTm(t);
         tm.tm_mday += 1;
         tm.tm_hour = 7;
         tm.tm_min = 0;
         tm.tm_sec = 0;
 
-        std::time_t next = std::mktime(&tm);
+        time_t next = mktime(&tm);
         while (LaCuoiTuan(next)) {
             tm = layLocalTm(next);
             tm.tm_mday += 1;
             tm.tm_hour = 7;
             tm.tm_min = 0;
             tm.tm_sec = 0;
-            next = std::mktime(&tm);
+            next = mktime(&tm);
         }
         return next;
     }
 
-    std::time_t DieuChinhThoiGianKhoaThuong(std::time_t t) {
+    time_t DieuChinhThoiGianKhoaThuong(time_t t) {
         return CaThuongTiepTheo(t);
     }
 
-    bool DuThoiGianKhamKhoaThuong(std::time_t batDau, int soPhut) {
+    bool DuThoiGianKhamKhoaThuong(time_t batDau, int soPhut) {
         if (LaCuoiTuan(batDau)) return false;
 
         int p = phutTrongNgay(batDau);
@@ -143,27 +144,24 @@ namespace ThoiGian {
         return false;
     }
 
-    bool DangTrucCapCuu(std::time_t t, int ngayBatDauTruc) {
-        // Quy ước đơn giản: mỗi ngày 00:00 -> 24:00 là một ngày trực/nghỉ.
-        // ngayBatDauTruc = 0: hôm nay trực; 1: hôm nay nghỉ.
-        std::tm tm = layLocalTm(t);
+    bool DangTrucCapCuu(time_t t, int ngayBatDauTruc) {
+        // 00:00 -> 24:00 là một ngày. ngayBatDauTruc = 0: ngày trực; 1: ngày nghỉ
+        tm tm = layLocalTm(t);
 
-        // Dùng số ngày từ một mốc cố định để tạo chu kỳ 24h/24h.
-        // tm_yday thay đổi theo năm nên cộng thêm năm hiện tại vào pha.
-        // Với mục đích mô phỏng, lấy ngày trong năm + pha là đủ.
+        // tm_yday thay đổi theo năm nên cộng thêm năm hiện tại vào pha => lấy ngày trong năm + pha là đc
         int dayIndex = tm.tm_yday;
         return ((dayIndex + ngayBatDauTruc) % 2) == 0;
     }
 
-    std::time_t TrucCapCuuTiepTheo(std::time_t t, int ngayBatDauTruc) {
+    time_t TrucCapCuuTiepTheo(time_t t, int ngayBatDauTruc) {
         if (DangTrucCapCuu(t, ngayBatDauTruc)) return t;
 
-        std::tm tm = layLocalTm(t);
+        tm tm = layLocalTm(t);
         tm.tm_mday += 1;
         tm.tm_hour = 0;
         tm.tm_min = 0;
         tm.tm_sec = 0;
-        std::time_t next = std::mktime(&tm);
+        time_t next = mktime(&tm);
 
         while (!DangTrucCapCuu(next, ngayBatDauTruc)) {
             tm = layLocalTm(next);
@@ -171,7 +169,7 @@ namespace ThoiGian {
             tm.tm_hour = 0;
             tm.tm_min = 0;
             tm.tm_sec = 0;
-            next = std::mktime(&tm);
+            next = mktime(&tm);
         }
 
         return next;

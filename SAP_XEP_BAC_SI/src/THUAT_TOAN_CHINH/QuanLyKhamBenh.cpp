@@ -4,24 +4,10 @@
 #include <random>
 #include <algorithm>
 #include <chrono>
-#include "../../../DANG_KHAM/src/ExamCore.h"
-
-/*
-TimChiSoKhoa()             : dòng 58
-KhoiDong()                 : dòng 65
-NapHangDoiTuDatabase()     : dòng 89
-RandomThoiGianKham()       : dòng 127
-InDanhSachBacSiTheoKhoa()  : dòng 138
-TimBacSiTotNhat()          : dòng 162
-XuLyMotBenhNhan()          : dòng 200
-XuLyKhoa()                 : dòng 260
-XuLyTatCaKhoa()            : dòng 371
-HienThiKetQua()            : dòng 377
-*/
+using namespace std;
 
 namespace {
-    // Dung cung dinh dang voi khoa_chuyen_mon trong CSV va department trong DB.
-    const std::string CAC_KHOA[] = {
+    const string CAC_KHOA[] = {
         "Khoa Cap cuu",
         "Khoa Noi",
         "Khoa Ngoai",
@@ -34,13 +20,13 @@ namespace {
         "Khoa Than kinh"
     };
 
-    std::string tenKhoaDep(const std::string& khoa) {
+    string tenKhoaDep(const string& khoa) {
         return khoa;
     }
 
     struct UngVienBacSi {
         int index = -1;
-        std::time_t batDau = 0;
+        time_t batDau = 0;
     };
 
     struct SoSanhUngVien {
@@ -56,7 +42,7 @@ namespace {
     };
 }
 
-int QuanLyKhamBenh::TimChiSoKhoa(const std::string& khoa) const {
+int QuanLyKhamBenh::TimChiSoKhoa(const string& khoa) const {
     for (int i = 0; i < SO_KHOA; ++i) {
         if (CAC_KHOA[i] == khoa) return i;
     }
@@ -64,8 +50,8 @@ int QuanLyKhamBenh::TimChiSoKhoa(const std::string& khoa) const {
 }
 
 bool QuanLyKhamBenh::KhoiDong(
-    const std::string& duongDanDatabase,
-    const std::string& duongDanCSV
+    const string& duongDanDatabase,
+    const string& duongDanCSV
 ) {
     if (!QuanLyBacSiManager.DocCSV(duongDanCSV)) {
         return false;
@@ -75,46 +61,29 @@ bool QuanLyKhamBenh::KhoiDong(
         return false;
     }
 
-    std::time_t hienTai = ThoiGian::HienTai();
+    time_t hienTai = ThoiGian::HienTai();
     QuanLyBacSiManager.KhoiTaoLich(hienTai);
 
-    // Database chi duoc doc mot lan: nap toan bo benh nhan vao RAM.
-    if (!NapHangDoiTuDatabase()) return false;
+    // Database chỉ đc đọc 1 lần -> nạp vào RAM
+    NapHangDoiTuDatabase();
 
-    std::cout << "Thoi gian he thong: "
+    cout << "Thoi gian he thong: "
               << ThoiGian::DinhDang(hienTai) << "\n";
 
     return true;
 }
 
-bool QuanLyKhamBenh::KhoiDongWeb(const std::string& database, const std::string& csv,
-                              const std::vector<BenhNhanKham>& assignments) {
-    if (!QuanLyBacSiManager.DocCSV(csv) || !Database.MoDatabase(database)) return false;
-    QuanLyBacSiManager.KhoiTaoLich(ThoiGian::HienTai());
-    for (const auto& bn : assignments) {
-        DaPhanCong.push_back(bn.CheckinId);
-        std::time_t end;
-        if (!ExamCore::parseTime(bn.EndTime, end)) return false;
-        for (int i = 0; i < static_cast<int>(QuanLyBacSiManager.LayDanhSach().size()); ++i) {
-            auto& doctor = QuanLyBacSiManager.LayBacSi(i);
-            if (doctor.id == bn.DoctorId)
-                doctor.ThoiGianRanh = std::max(doctor.ThoiGianRanh, end);
-        }
-    }
-    return NapHangDoiTuDatabase();
-}
-
-bool QuanLyKhamBenh::NapHangDoiTuDatabase() {
-    std::vector<BenhNhanKham> tatCaBenhNhan;
+void QuanLyKhamBenh::NapHangDoiTuDatabase() {
+    vector<BenhNhanKham> tatCaBenhNhan;
 
     if (!Database.LayTatCaBenhNhan(tatCaBenhNhan)) {
-        std::cerr << "Khong nap duoc toan bo hang doi benh nhan.\n";
-        return false;
+        cerr << "Khong nap duoc toan bo hang doi benh nhan.\n";
+        return;
     }
 
-    // Khong phu thuoc vao thu tu SQLite tra ve.
-    // Sau khi nap vao RAM, sap xep theo khoa roi den retrieval_order.
-    std::stable_sort(
+    // Ko phụ thuộc vào thứ tự SQLite trả về
+    // Sau khi nạp dô RAM, sắp xếp theo khoa rồi đến retrieval_order
+    stable_sort(
         tatCaBenhNhan.begin(),
         tatCaBenhNhan.end(),
         [](const BenhNhanKham& a, const BenhNhanKham& b) {
@@ -126,11 +95,10 @@ bool QuanLyKhamBenh::NapHangDoiTuDatabase() {
     int soNap = 0;
 
     for (const BenhNhanKham& bn : tatCaBenhNhan) {
-        if (std::find(DaPhanCong.begin(), DaPhanCong.end(), bn.CheckinId) != DaPhanCong.end()) continue;
         int index = TimChiSoKhoa(bn.khoa);
 
         if (index < 0) {
-            std::cerr << "Bo qua benh nhan co khoa khong hop le: "
+            cerr << "Bo qua benh nhan co khoa khong hop le: "
                       << bn.khoa << "\n";
             continue;
         }
@@ -139,39 +107,38 @@ bool QuanLyKhamBenh::NapHangDoiTuDatabase() {
         ++soNap;
     }
 
-    std::cout << "Da nap " << soNap
+    cout << "Da nap " << soNap
               << " benh nhan vao cac hang doi RAM.\n";
-    return true;
 }
 
 int QuanLyKhamBenh::RandomThoiGianKham() const {
-    static std::mt19937 gen(
+    static mt19937 gen(
         static_cast<unsigned int>(
-            std::chrono::system_clock::now().time_since_epoch().count()
+            chrono::system_clock::now().time_since_epoch().count()
         )
     );
 
-    std::uniform_int_distribution<int> dist(10, 30);
+    uniform_int_distribution<int> dist(10, 30);
     return dist(gen);
 }
 
 void QuanLyKhamBenh::InDanhSachBacSiTheoKhoa(
-    const std::string& khoa
+    const string& khoa
 ) const {
-    std::vector<int> danhSach =
+    vector<int> danhSach =
         QuanLyBacSiManager.LayBacSiTheoKhoa(khoa);
 
-    std::cout << "\n===== " << tenKhoaDep(khoa) << " =====\n";
+    cout << "\n===== " << tenKhoaDep(khoa) << " =====\n";
 
     if (danhSach.empty()) {
-        std::cout << "Khong co bac si nao trong khoa.\n";
+        cout << "Khong co bac si nao trong khoa.\n";
         return;
     }
 
     for (int index : danhSach) {
         const BacSi& bs = QuanLyBacSiManager.LayBacSi(index);
 
-        std::cout
+        cout
             << bs.id << " | "
             << bs.name
             << " | Kinh nghiem: "
@@ -180,20 +147,20 @@ void QuanLyKhamBenh::InDanhSachBacSiTheoKhoa(
 }
 
 bool QuanLyKhamBenh::TimBacSiTotNhat(
-    const std::string& khoa,
-    std::time_t hienTai,
+    const string& khoa,
+    time_t hienTai,
     int thoiLuong,
     int& bacSiIndex,
-    std::time_t& batDau
+    time_t& batDau
 ) {
-    // MinHeap tu cai dat: phan tu dau la bac si co thoi diem bat dau som nhat.
+    // MinHeap: phần tử đầu là bsi có thời điểm bắt đầu sớm nhất
     MinHeapTuCaiDat<UngVienBacSi, SoSanhUngVien> minHeap;
 
-    std::vector<int> danhSach =
+    vector<int> danhSach =
         QuanLyBacSiManager.LayBacSiTheoKhoa(khoa);
 
     for (int index : danhSach) {
-        std::time_t thoiDiemNhan = 0;
+        time_t thoiDiemNhan = 0;
 
         if (QuanLyBacSiManager.TinhThoiDiemNhanBenhNhan(
                 index,
@@ -219,13 +186,13 @@ bool QuanLyKhamBenh::TimBacSiTotNhat(
 
 bool QuanLyKhamBenh::XuLyMotBenhNhan(
     BenhNhanKham& benhNhan,
-    const std::string& khoaThucTe,
-    std::time_t hienTai
+    const string& khoaThucTe,
+    time_t hienTai
 ) {
     int thoiLuong = RandomThoiGianKham();
 
     int bacSiIndex = -1;
-    std::time_t batDau = 0;
+    time_t batDau = 0;
 
     if (!TimBacSiTotNhat(
             khoaThucTe,
@@ -240,7 +207,7 @@ bool QuanLyKhamBenh::XuLyMotBenhNhan(
     }
 
     BacSi& bs = QuanLyBacSiManager.LayBacSi(bacSiIndex);
-    std::time_t ketThuc = batDau + thoiLuong * 60;
+    time_t ketThuc = batDau + thoiLuong * 60;
 
     if (khoaThucTe != "Khoa Cap cuu" &&
         !ThoiGian::DuThoiGianKhamKhoaThuong(
@@ -277,23 +244,23 @@ bool QuanLyKhamBenh::XuLyMotBenhNhan(
     return true;
 }
 
-bool QuanLyKhamBenh::XuLyKhoa(
-    const std::string& khoa
+void QuanLyKhamBenh::XuLyKhoa(
+    const string& khoa
 ) {
     int khoaIndex = TimChiSoKhoa(khoa);
     if (khoaIndex < 0) {
-        std::cout << "Khoa khong hop le.\n";
-        return false;
+        cout << "Khoa khong hop le.\n";
+        return;
     }
 
-    std::time_t hienTai = ThoiGian::HienTai();
+    time_t hienTai = ThoiGian::HienTai();
 
-    std::cout << "\n========================================\n";
-    std::cout << "XU LY " << tenKhoaDep(khoa) << "\n";
-    std::cout << "Thoi gian hien tai: "
+    cout << "\n========================================\n";
+    cout << "XU LY " << tenKhoaDep(khoa) << "\n";
+    cout << "Thoi gian hien tai: "
               << ThoiGian::DinhDang(hienTai) << "\n";
 
-    // Mo phong 8% bac si ban dot xuat chi mot lan cho ca phien chay.
+    // Mô phỏng trường hợp bác sĩ bận đột xuất (lấy xs ví dụ là 8%)
     if (!DaMoPhongBanDotXuat) {
         QuanLyBacSiManager.MoPhongBanDotXuat(hienTai);
         DaMoPhongBanDotXuat = true;
@@ -303,20 +270,20 @@ bool QuanLyKhamBenh::XuLyKhoa(
         HangDoiTheoKhoa[khoaIndex];
 
     if (hangDoi.empty()) {
-        std::cout << "Hang doi dang rong.\n";
-        return true;
+        cout << "Hang doi dang rong.\n";
+        return;
     }
 
-    std::cout << "So benh nhan trong hang: "
+    cout << "So benh nhan trong hang: "
               << hangDoi.size() << "\n";
 
-    std::vector<BenhNhanKham> ketQuaKhoa;
+    vector<BenhNhanKham> ketQuaKhoa;
 
-    // Cuoi tuan: khoa thuong nghi -> chuyen BN sang cap cuu.
+    // Cuối tuần khoa thường nghỉ -> chuyển BN sang khoa cấp cứu
     if (khoa != "Khoa Cap cuu" &&
         ThoiGian::LaCuoiTuan(hienTai)) {
 
-        std::cout
+        cout
             << "Hom nay la cuoi tuan. "
             << "Benh nhan duoc chuyen sang Khoa Cap cuu.\n";
 
@@ -349,7 +316,7 @@ bool QuanLyKhamBenh::XuLyKhoa(
                 ketQuaKhoa.push_back(bn);
                 KetQuaTrongLanChay.push_back(bn);
 
-                std::cout
+                cout
                     << "\nBN checkin_id = "
                     << bn.CheckinId
                     << " -> "
@@ -361,18 +328,18 @@ bool QuanLyKhamBenh::XuLyKhoa(
             } else {
                 ++soCho;
 
-                std::cout
+                cout
                     << "\nBN checkin_id = "
                     << bn.CheckinId
                     << " chua xep duoc bac si.\n";
 
-                // Bao toan BN va tranh lap vo han.
+                // Bảo toàn BN, tránh lặp vô hạn
                 hangDoi.push(bn);
                 break;
             }
         }
 
-        std::cout
+        cout
             << "\nTong ket: "
             << soDaXuLy << " benh nhan da xep, "
             << soCho << " benh nhan dang cho.\n";
@@ -380,33 +347,30 @@ bool QuanLyKhamBenh::XuLyKhoa(
 
     if (!ketQuaKhoa.empty()) {
         if (Database.GhiKetQuaNhieu(ketQuaKhoa)) {
-            std::cout << "Da ghi " << ketQuaKhoa.size()
+            cout << "Da ghi " << ketQuaKhoa.size()
                       << " ket qua vao database.\n";
         } else {
-            std::cout << "Ghi ket qua vao database that bai.\n";
-            return false;
+            cout << "Ghi ket qua vao database that bai.\n";
         }
     }
-    return true;
 }
 
-bool QuanLyKhamBenh::XuLyTatCaKhoa() {
+void QuanLyKhamBenh::XuLyTatCaKhoa() {
     for (int i = 0; i < SO_KHOA; ++i) {
-        if (!XuLyKhoa(CAC_KHOA[i])) return false;
+        XuLyKhoa(CAC_KHOA[i]);
     }
-    return true;
 }
 
 void QuanLyKhamBenh::HienThiKetQua() const {
-    std::cout << "\n===== KET QUA TRONG PHIEN CHAY =====\n";
+    cout << "\n===== KET QUA TRONG PHIEN CHAY =====\n";
 
     if (KetQuaTrongLanChay.empty()) {
-        std::cout << "Chua co ket qua.\n";
+        cout << "Chua co ket qua.\n";
         return;
     }
 
     for (const BenhNhanKham& bn : KetQuaTrongLanChay) {
-        std::cout
+        cout
             << "Checkin: " << bn.CheckinId
             << " | BN: " << bn.PatientId
             << " | Khoa: " << bn.khoa

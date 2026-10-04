@@ -1,5 +1,6 @@
 #include "XuLyDatabase.h"
 #include <iostream>
+using namespace std;
 
 
 XuLyDatabase::~XuLyDatabase() {
@@ -14,7 +15,7 @@ bool XuLyDatabase::MoDatabase(const std::string& duongDan) {
             nullptr
         ) != SQLITE_OK) {
 
-        std::cerr << "Khong mo duoc database: " << duongDan << "\n";
+        cerr << "Khong mo duoc database: " << duongDan << "\n";
 
         if (Database) {
             sqlite3_close(Database);
@@ -34,16 +35,14 @@ void XuLyDatabase::DongDatabase() {
 }
 
 bool XuLyDatabase::LayTatCaBenhNhan(
-    std::vector<BenhNhanKham>& danhSach
+    vector<BenhNhanKham>& danhSach
 ) {
     if (!Database) return false;
 
     danhSach.clear();
 
-    // Chi co MỘT sqlite3_prepare_v2 / MỘT sqlite3_step loop.
-    // UNION ALL gom 10 bang queue thanh mot tap du lieu duy nhat.
-    // Tuyet doi khong WHERE va khong ORDER BY.
-    std::string sql =
+    // union all để gom 10 bảng thành một tập dữ liệu duy nhất
+    string sql =
         "SELECT retrieval_order, checkin_id, patient_id, department, "
         "checkin_time, base_priority, current_priority, last_update "
         "FROM queue_khoa_cap_cuu "
@@ -218,7 +217,7 @@ bool XuLyDatabase::GhiKetQua(const BenhNhanKham& bn) {
 }
 
 bool XuLyDatabase::GhiKetQuaNhieu(
-    const std::vector<BenhNhanKham>& DanhSach
+    const vector<BenhNhanKham>& DanhSach
 ) {
     if (!Database) return false;
     if (DanhSach.empty()) return true;

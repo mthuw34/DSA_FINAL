@@ -2,10 +2,9 @@
 #include <cstddef>
 #include <stdexcept>
 #include <utility>
+using namespace std;
 
-// ============================================================
-// Queue tu cai dat bang danh sach lien ket
-// ============================================================
+// Queue tự cài bằng link list
 template <typename T>
 class HangDoiTuCaiDat {
 private:
@@ -19,7 +18,7 @@ private:
 
     Node* head = nullptr;
     Node* tail = nullptr;
-    std::size_t count = 0;
+    size_t count = 0;
 
 public:
     HangDoiTuCaiDat() = default;
@@ -55,7 +54,7 @@ public:
         return head == nullptr;
     }
 
-    std::size_t size() const {
+    size_t size() const {
         return count;
     }
 
@@ -74,14 +73,14 @@ public:
 
     T& front() {
         if (empty()) {
-            throw std::out_of_range("Hang doi rong");
+            throw out_of_range("Hang doi rong");
         }
         return head->data;
     }
 
     const T& front() const {
         if (empty()) {
-            throw std::out_of_range("Hang doi rong");
+            throw out_of_range("Hang doi rong");
         }
         return head->data;
     }
@@ -110,21 +109,19 @@ public:
     }
 };
 
-// ============================================================
-// MinHeap tu cai dat bang mang dong
-// Compare(a,b) == true khi a nen dung truoc b
-// ============================================================
+// MinHeap tự cài bằng mảng động
+
 template <typename T, typename Compare>
 class MinHeapTuCaiDat {
 private:
     T* data = nullptr;
-    std::size_t count = 0;
-    std::size_t capacity = 0;
-    Compare compare;
+    size_t count = 0;
+    size_t capacity = 0;
+    Compare compare; // Compare(a,b) == true khi a nen dung truoc b
 
-    void resize(std::size_t newCapacity) {
+    void resize(size_t newCapacity) {
         T* newData = new T[newCapacity];
-        for (std::size_t i = 0; i < count; ++i) {
+        for (size_t i = 0; i < count; ++i) {
             newData[i] = data[i];
         }
         delete[] data;
@@ -132,24 +129,24 @@ private:
         capacity = newCapacity;
     }
 
-    void siftUp(std::size_t child) {
+    void siftUp(size_t child) {
         while (child > 0) {
-            std::size_t parent = (child - 1) / 2;
+            size_t parent = (child - 1) / 2;
 
             if (!compare(data[child], data[parent])) {
                 break;
             }
 
-            std::swap(data[child], data[parent]);
+            swap(data[child], data[parent]);
             child = parent;
         }
     }
 
-    void siftDown(std::size_t parent) {
+    void siftDown(size_t parent) {
         while (true) {
-            std::size_t left = parent * 2 + 1;
-            std::size_t right = parent * 2 + 2;
-            std::size_t best = parent;
+            size_t left = parent * 2 + 1;
+            size_t right = parent * 2 + 2;
+            size_t best = parent;
 
             if (left < count && compare(data[left], data[best])) {
                 best = left;
@@ -161,7 +158,7 @@ private:
 
             if (best == parent) break;
 
-            std::swap(data[parent], data[best]);
+            swap(data[parent], data[best]);
             parent = best;
         }
     }
@@ -181,7 +178,7 @@ public:
         return count == 0;
     }
 
-    std::size_t size() const {
+    size_t size() const {
         return count;
     }
 
@@ -197,7 +194,7 @@ public:
 
     const T& top() const {
         if (empty()) {
-            throw std::out_of_range("MinHeap rong");
+            throw out_of_range("MinHeap rong");
         }
         return data[0];
     }
