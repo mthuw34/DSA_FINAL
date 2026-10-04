@@ -7,6 +7,7 @@
 
 using namespace std;
 
+// Chuc nang: Lay du lieu TEXT tu ket qua truy van SQLite.
 static string getText(
     sqlite3_stmt* stmt,
     int column
@@ -20,6 +21,7 @@ static string getText(
         : "";
 }
 
+// Chuc nang: Khoi dong module DANG_KHAM va dong bo du lieu bac si da duoc xep.
 bool DangKhamManager::khoiDong(
     const string& sourcePath,
     const string& destinationPath
@@ -42,6 +44,7 @@ bool DangKhamManager::khoiDong(
     return true;
 }
 
+// Chuc nang: Hien thi danh sach benh nhan dang trong qua trinh kham.
 void DangKhamManager::hienThiDangKham()
 {
     sqlite3* db = database.get();
@@ -127,6 +130,7 @@ void DangKhamManager::hienThiDangKham()
     sqlite3_finalize(stmt);
 }
 
+// Chuc nang: Kiem tra va lay benh nhan theo check-in ID neu van dang kham.
 bool DangKhamManager::layPhienDangKham(
     int checkinId,
     int& patientId
@@ -170,6 +174,7 @@ bool DangKhamManager::layPhienDangKham(
     return found;
 }
 
+// Chuc nang: Nhap va luu chan doan, don thuoc va loi nhac cua bac si.
 void DangKhamManager::nhapChanDoan()
 {
     sqlite3* db = database.get();
@@ -301,6 +306,7 @@ void DangKhamManager::nhapChanDoan()
     sqlite3_finalize(stmt);
 }
 
+// Chuc nang: Ket thuc phien kham va ghi thoi gian ket thuc.
 void DangKhamManager::ketThucKham()
 {
     sqlite3* db = database.get();
@@ -376,6 +382,7 @@ void DangKhamManager::ketThucKham()
     sqlite3_finalize(stmt);
 }
 
+// Chuc nang: Hien thi va xu ly menu chinh cua module DANG_KHAM.
 void DangKhamManager::chayMenu()
 {
     while (true)
