@@ -2,14 +2,14 @@
 
 #include <string>
 #include <sqlite3.h>
-
+using namespace std;
 class DatabaseDangKham
 {
 private:
     sqlite3* db = nullptr;
 
     bool executeSql(
-        const std::string& sql,
+        const string& sql,
         const char* errorMessage
     );
 
@@ -32,8 +32,8 @@ public:
     ~DatabaseDangKham();
 
     bool mo(
-        const std::string& sourcePath,
-        const std::string& destinationPath
+        const string& sourcePath,
+        const string& destinationPath
     );
 
     bool taoCauTruc();

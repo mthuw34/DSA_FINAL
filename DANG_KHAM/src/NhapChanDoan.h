@@ -1,10 +1,9 @@
 #pragma once
-
 #include <string>
-
+using namespace std;
 void NhapChanDoan(
-    const std::string& idBenhNhan,
-    std::string& chanDoan,
-    std::string& donThuoc,
-    std::string& loiNhacBacSi
+    const string& idBenhNhan,
+    string& chanDoan,
+    string& donThuoc,
+    string& loiNhacBacSi
 );
