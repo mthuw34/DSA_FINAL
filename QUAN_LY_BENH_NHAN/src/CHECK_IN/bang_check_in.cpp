@@ -7,7 +7,7 @@
 
 using namespace std;
 
-// Chuc nang: Lay du lieu TEXT tu SQLite.
+// Lấy dữ liệu TEXT từ SQLite.
 static string getText(sqlite3_stmt* stmt, int column)
 {
     const unsigned char* text = sqlite3_column_text(stmt, column);
@@ -18,7 +18,7 @@ static string getText(sqlite3_stmt* stmt, int column)
     return reinterpret_cast<const char*>(text);
 }
 
-// Chuc nang: Chuyen ma muc do uu tien thanh ten de hien thi.
+// Chuyển mã mức độ ưu tiên thành tên để hiển thị.
 static string tenUuTien(int priority)
 {
     switch (priority)
@@ -32,7 +32,7 @@ static string tenUuTien(int priority)
     }
 }
 
-// Chuc nang: Hien thi danh sach benh nhan da check-in theo khoa va muc uu tien.
+// Hiển thị danh sách bệnh nhân đã check-in theo khoa và mức ưu tiên.
 void hienThiBangCheckIn(sqlite3* db)
 {
     const char* sql = R"(
@@ -148,7 +148,7 @@ void hienThiBangCheckIn(sqlite3* db)
     cout << "====================================================================\n";
 }
 
-// Chuc nang: Xoa toan bo check-in va reset ma check-in.
+// Xóa toàn bộ check-in và reset mã check-in.
 bool xoaToanBoCheckIn(sqlite3* db)
 {
     char* errorMessage = nullptr;
@@ -190,7 +190,7 @@ bool xoaToanBoCheckIn(sqlite3* db)
     return true;
 }
 
-// Chuc nang: Xoa mot check-in theo ma check-in.
+// Xóa một check-in theo mã check-in.
 bool xoaMotCheckIn(sqlite3* db, int checkinId)
 {
     if (checkinId <= 0)
