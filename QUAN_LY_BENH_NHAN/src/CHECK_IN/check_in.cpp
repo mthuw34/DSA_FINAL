@@ -10,7 +10,7 @@
 using namespace std;
 
 
-// Chuc nang: Lay du lieu TEXT tu SQLite.
+// Lấy dữ liệu TEXT từ SQLite.
 static string getText(
     sqlite3_stmt* stmt,
     int column
@@ -26,7 +26,7 @@ static string getText(
 }
 
 
-// Chuc nang: Doi muc uu tien tu so sang ten hien thi.
+// Đổi mức ưu tiên từ số sang tên hiển thị.
 static string getPriorityName(int priority)
 {
     switch (priority)
@@ -52,7 +52,7 @@ static string getPriorityName(int priority)
 }
 
 
-// Chuc nang: Thuc hien toan bo quy trinh check-in cho mot benh nhan.
+// Thực hiện toàn bộ quy trình check-in cho một bệnh nhân.
 bool checkInMotBenhNhan(sqlite3* db)
 {
     // =====================================
