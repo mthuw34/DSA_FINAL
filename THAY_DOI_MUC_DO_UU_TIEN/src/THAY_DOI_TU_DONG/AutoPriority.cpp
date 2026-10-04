@@ -1,6 +1,6 @@
 #include "AutoPriority.h"
 
-AutoPriorityHeap::AutoPriorityHeap(int initialCapacity)
+AutoPriorityHeap::AutoPriorityHeap(int initialCapacity) 
 {
     if (initialCapacity <= 0)
     {
@@ -9,7 +9,6 @@ AutoPriorityHeap::AutoPriorityHeap(int initialCapacity)
 
     size = 0;
     capacity = initialCapacity;
-
     heap = new AutoPriorityItem[capacity];
 }
 

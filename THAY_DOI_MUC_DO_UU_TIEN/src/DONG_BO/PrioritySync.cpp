@@ -109,7 +109,7 @@ bool PrioritySync::syncAll()
 
         sqlite3_reset(upsertStmt);
         sqlite3_clear_bindings(upsertStmt);
-    // gán dữ liệu
+        // gán dữ liệu
         sqlite3_bind_int(upsertStmt, 1, checkinId);
         sqlite3_bind_int(upsertStmt, 2, patientId);
         sqlite3_bind_text(upsertStmt, 3, department.c_str(), -1, SQLITE_TRANSIENT );
