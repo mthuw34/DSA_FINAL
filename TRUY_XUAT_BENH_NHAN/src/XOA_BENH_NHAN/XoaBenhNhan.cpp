@@ -1,4 +1,4 @@
-#include "../TRUY_XUAT/TruyXuat.h"
+#include "XoaBenhNhan.h"
 
 #include <fstream>
 #include <iostream>

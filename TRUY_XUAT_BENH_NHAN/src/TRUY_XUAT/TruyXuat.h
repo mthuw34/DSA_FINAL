@@ -61,8 +61,3 @@ public:
         const char* outputPath
     );
 };
-
-class XoaBenhNhan {
-public:
-    static bool xoaBenhNhan(int patientId);
-};

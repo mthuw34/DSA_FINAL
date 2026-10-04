@@ -1,4 +1,5 @@
 #include "TRUY_XUAT/TruyXuat.h"
+#include "XOA_BENH_NHAN/XoaBenhNhan.h"
 #include <iostream>
 #include <limits>
 
