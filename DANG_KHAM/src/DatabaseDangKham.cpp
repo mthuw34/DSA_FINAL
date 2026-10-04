@@ -3,7 +3,9 @@
 #include <filesystem>
 #include <iostream>
 
-static std::string getText(
+using namespace std;
+
+static string getText(
     sqlite3_stmt* stmt,
     int column
 )
@@ -22,7 +24,7 @@ DatabaseDangKham::~DatabaseDangKham()
 }
 
 bool DatabaseDangKham::executeSql(
-    const std::string& sql,
+    const string& sql,
     const char* errorMessage
 )
 {
@@ -39,7 +41,7 @@ bool DatabaseDangKham::executeSql(
         return true;
     }
 
-    std::cerr
+    cerr
         << errorMessage
         << ": "
         << (error ? error : sqlite3_errmsg(db))
@@ -54,9 +56,9 @@ bool DatabaseDangKham::columnExists(
     const char* column
 )
 {
-    const std::string sql =
+    const string sql =
         "PRAGMA table_info(" +
-        std::string(table) +
+        string(table) +
         ");";
 
     sqlite3_stmt* stmt = nullptr;
@@ -96,9 +98,9 @@ bool DatabaseDangKham::addColumnIfMissing(
     if (columnExists(table, column))
         return true;
 
-    const std::string sql =
+    const string sql =
         "ALTER TABLE " +
-        std::string(table) +
+        string(table) +
         " ADD COLUMN " +
         column +
         " " +
@@ -152,8 +154,8 @@ bool DatabaseDangKham::sourceTableExists(
 }
 
 bool DatabaseDangKham::mo(
-    const std::string& sourcePath,
-    const std::string& destinationPath
+    const string& sourcePath,
+    const string& destinationPath
 )
 {
     if (sqlite3_open_v2(
@@ -164,7 +166,7 @@ bool DatabaseDangKham::mo(
             nullptr
         ) != SQLITE_OK)
     {
-        std::cerr
+        cerr
             << "Khong mo duoc dangKham.db: "
             << (db ? sqlite3_errmsg(db) : "loi SQLite")
             << '\n';
@@ -175,8 +177,8 @@ bool DatabaseDangKham::mo(
 
     sqlite3_busy_timeout(db, 5000);
 
-    const std::string absoluteSource =
-        std::filesystem::absolute(sourcePath)
+    const string absoluteSource =
+        filesystem::absolute(sourcePath)
             .string();
 
     sqlite3_stmt* stmt = nullptr;
@@ -207,7 +209,7 @@ bool DatabaseDangKham::mo(
 
     if (result != SQLITE_DONE)
     {
-        std::cerr
+        cerr
             << "Loi lien ket truyXuat.db: "
             << sqlite3_errmsg(db)
             << '\n';
@@ -322,7 +324,7 @@ bool DatabaseDangKham::dongBoTuXepBacSi()
 {
     if (!sourceTableExists("ket_qua_kham"))
     {
-        std::cerr
+        cerr
             << "Chua co bang ket_qua_kham trong truyXuat.db.\n"
             << "Hay chay SAP_XEP_BAC_SI truoc.\n";
 
