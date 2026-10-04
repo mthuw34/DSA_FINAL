@@ -7,7 +7,7 @@
 
 using namespace std;
 
-// Chuc nang: Cho nguoi dung chon khoa kham.
+// Cho người dùng chọn khoa khám.
 string chonKhoa()
 {
     int luaChon;
@@ -61,7 +61,7 @@ string chonKhoa()
     }
 }
 
-// Chuc nang: Kiem tra khoa co dang nhan benh nhan theo thoi gian va muc uu tien.
+// Kiểm tra khoa có đang nhận bệnh nhân theo thời gian và mức ưu tiên.
 bool khoaDangHoatDong(
     const string& department,
     int priority,
