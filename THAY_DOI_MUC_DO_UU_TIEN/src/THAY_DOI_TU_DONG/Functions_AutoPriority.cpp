@@ -144,7 +144,14 @@ static bool getPriority(sqlite3* db, int checkinId, int& priority, string& lastU
 }
 
 // Cập nhật mức đọ ưu tiên tự động
-static bool updatePriority(sqlite3* db, int checkinId, int newPriority, time_t updateTime)
+static bool updatePriority(
+    sqlite3* db,
+    int checkinId,
+    int currentPriority,
+    const string& lastUpdate,
+    int newPriority,
+    time_t updateTime
+)
 {
     tm info = *localtime(&updateTime);
     char timeText[20];
@@ -165,9 +172,14 @@ static bool updatePriority(sqlite3* db, int checkinId, int newPriority, time_t u
             current_priority = ?,
             last_update = ?
 
-        WHERE checkin_id = ?;
+        WHERE
+            checkin_id = ?
+            AND current_priority = ?
+            AND last_update = ?;
 
     )";
+
+    sqlite3_busy_timeout(db, 5000);
 
     sqlite3_stmt* stmt = nullptr;
 
@@ -180,14 +192,26 @@ static bool updatePriority(sqlite3* db, int checkinId, int newPriority, time_t u
         ) != SQLITE_OK
     )
     {
+        cerr << "Loi chuan bi cap nhat uu tien tu dong: "
+             << sqlite3_errmsg(db) << '\n';
         return false;
     }
 
     sqlite3_bind_int(stmt, 1, newPriority);
     sqlite3_bind_text(stmt, 2, timeText, -1, SQLITE_TRANSIENT);
     sqlite3_bind_int(stmt, 3, checkinId);
+    sqlite3_bind_int(stmt, 4, currentPriority);
+    sqlite3_bind_text(stmt, 5, lastUpdate.c_str(), -1, SQLITE_TRANSIENT);
 
-    bool success = sqlite3_step(stmt) == SQLITE_DONE;
+    int result = sqlite3_step(stmt);
+    bool success = result == SQLITE_DONE && sqlite3_changes(db) == 1;
+
+    if (result != SQLITE_DONE)
+    {
+        cerr << "Loi cap nhat uu tien tu dong: "
+             << sqlite3_errmsg(db) << '\n';
+    }
+
     sqlite3_finalize(stmt);
 
     return success;
@@ -236,7 +260,14 @@ void processAuto(sqlite3* db, AutoPriorityHeap& heap)
         int newPriority = currentPriority - 1;
         time_t updateTime = item.nextBoostTime;
 
-        if (updatePriority(db, item.checkinId, newPriority, updateTime ) )
+        if (updatePriority(
+                db,
+                item.checkinId,
+                currentPriority,
+                lastUpdate,
+                newPriority,
+                updateTime
+            ))
         {
             cout<< "Checkin ID "
                 << item.checkinId

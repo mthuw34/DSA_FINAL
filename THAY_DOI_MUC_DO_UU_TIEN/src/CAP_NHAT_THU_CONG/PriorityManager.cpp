@@ -103,23 +103,19 @@ bool PriorityManager::updatePriority(int checkinId, int newPriority)
         cout << "Muc do uu tien moi giong muc hien tai.\n";
         return false;
     }
-    // CẬP NHẬT CURENT_PRIORITY VÀ RESET LAST_UPDATE
+    // Cập nhật mức ưu tiên nhưng giữ nguyên mốc thời gian đã tích lũy.
     const char* sql = R"(
 
         UPDATE priority_checkins
 
         SET
-            current_priority = ?,
-
-            last_update =
-                datetime(
-                    'now',
-                    'localtime'
-                )
+            current_priority = ?
 
         WHERE checkin_id = ?;
 
     )";
+
+    sqlite3_busy_timeout(db, 5000);
 
     sqlite3_stmt* stmt = nullptr;
 
