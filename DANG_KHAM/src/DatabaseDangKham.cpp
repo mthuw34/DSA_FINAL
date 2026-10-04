@@ -111,6 +111,46 @@ bool DatabaseDangKham::addColumnIfMissing(
     );
 }
 
+bool DatabaseDangKham::sourceTableExists(
+    const char* tableName
+)
+{
+    const char* sql = R"(
+        SELECT 1
+        FROM source.sqlite_master
+        WHERE type = 'table'
+          AND name = ?
+        LIMIT 1;
+    )";
+
+    sqlite3_stmt* stmt = nullptr;
+
+    if (sqlite3_prepare_v2(
+            db,
+            sql,
+            -1,
+            &stmt,
+            nullptr
+        ) != SQLITE_OK)
+    {
+        return false;
+    }
+
+    sqlite3_bind_text(
+        stmt,
+        1,
+        tableName,
+        -1,
+        SQLITE_TRANSIENT
+    );
+
+    const bool exists =
+        sqlite3_step(stmt) == SQLITE_ROW;
+
+    sqlite3_finalize(stmt);
+    return exists;
+}
+
 bool DatabaseDangKham::mo(
     const std::string& sourcePath,
     const std::string& destinationPath
@@ -187,7 +227,14 @@ bool DatabaseDangKham::taoCauTruc()
                     checkin_id INTEGER PRIMARY KEY,
                     patient_id INTEGER NOT NULL,
                     department TEXT NOT NULL,
-                    checkin_time TEXT NOT NULL
+                    doctor_id TEXT,
+                    doctor_name TEXT,
+                    start_time TEXT,
+                    end_time TEXT,
+                    chan_doan TEXT,
+                    don_thuoc TEXT,
+                    loi_nhac_bac_si TEXT,
+                    updated_at TEXT
                 );
             )",
             "Loi tao bang dang_kham"
@@ -252,6 +299,15 @@ bool DatabaseDangKham::taoCauTruc()
 
     if (!addColumnIfMissing(
             "dang_kham",
+            "loi_nhac_bac_si",
+            "TEXT"
+        ))
+    {
+        return false;
+    }
+
+    if (!addColumnIfMissing(
+            "dang_kham",
             "updated_at",
             "TEXT"
         ))
@@ -262,54 +318,49 @@ bool DatabaseDangKham::taoCauTruc()
     return true;
 }
 
-bool DatabaseDangKham::taoViewHangDoiNguon()
+bool DatabaseDangKham::dongBoTuXepBacSi()
 {
+    if (!sourceTableExists("ket_qua_kham"))
+    {
+        std::cerr
+            << "Chua co bang ket_qua_kham trong truyXuat.db.\n"
+            << "Hay chay SAP_XEP_BAC_SI truoc.\n";
+
+        return false;
+    }
+
     return executeSql(
         R"(
-            DROP VIEW IF EXISTS temp.hang_doi_nguon;
-
-            CREATE TEMP VIEW hang_doi_nguon AS
-
-            SELECT retrieval_order, checkin_id, patient_id, department, checkin_time
-            FROM source.queue_khoa_cap_cuu
-
-            UNION ALL
-            SELECT retrieval_order, checkin_id, patient_id, department, checkin_time
-            FROM source.queue_khoa_noi
-
-            UNION ALL
-            SELECT retrieval_order, checkin_id, patient_id, department, checkin_time
-            FROM source.queue_khoa_ngoai
-
-            UNION ALL
-            SELECT retrieval_order, checkin_id, patient_id, department, checkin_time
-            FROM source.queue_khoa_tim_mach
-
-            UNION ALL
-            SELECT retrieval_order, checkin_id, patient_id, department, checkin_time
-            FROM source.queue_khoa_nhi
-
-            UNION ALL
-            SELECT retrieval_order, checkin_id, patient_id, department, checkin_time
-            FROM source.queue_khoa_san
-
-            UNION ALL
-            SELECT retrieval_order, checkin_id, patient_id, department, checkin_time
-            FROM source.queue_khoa_tai_mui_hong
-
-            UNION ALL
-            SELECT retrieval_order, checkin_id, patient_id, department, checkin_time
-            FROM source.queue_khoa_mat
-
-            UNION ALL
-            SELECT retrieval_order, checkin_id, patient_id, department, checkin_time
-            FROM source.queue_khoa_da_lieu
-
-            UNION ALL
-            SELECT retrieval_order, checkin_id, patient_id, department, checkin_time
-            FROM source.queue_khoa_than_kinh;
+            INSERT INTO dang_kham (
+                checkin_id,
+                patient_id,
+                department,
+                doctor_id,
+                doctor_name,
+                start_time,
+                updated_at
+            )
+            SELECT
+                checkin_id,
+                patient_id,
+                khoa_bac_si,
+                doctor_id,
+                doctor_name,
+                start_time,
+                datetime('now', 'localtime')
+            FROM source.ket_qua_kham
+            WHERE Status = 'DA_XEP_BAC_SI'
+              AND datetime(start_time) <= datetime('now', 'localtime')
+            ON CONFLICT(checkin_id)
+            DO UPDATE SET
+                patient_id = excluded.patient_id,
+                department = excluded.department,
+                doctor_id = excluded.doctor_id,
+                doctor_name = excluded.doctor_name,
+                start_time = excluded.start_time
+            WHERE dang_kham.end_time IS NULL;
         )",
-        "Loi tao view hang doi"
+        "Loi dong bo benh nhan dang kham"
     );
 }
 
@@ -317,14 +368,6 @@ void DatabaseDangKham::dong()
 {
     if (db == nullptr)
         return;
-
-    sqlite3_exec(
-        db,
-        "DROP VIEW IF EXISTS temp.hang_doi_nguon;",
-        nullptr,
-        nullptr,
-        nullptr
-    );
 
     sqlite3_exec(
         db,
