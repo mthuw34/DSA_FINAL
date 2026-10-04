@@ -7,7 +7,7 @@
 
 using namespace std;
 
-// Chuc nang: Lay du lieu TEXT tu ket qua truy van SQLite.
+// Lấy dữ liệu TEXT từ kết quả truy vấn SQLite.
 static string getText(
     sqlite3_stmt* stmt,
     int column
@@ -21,7 +21,7 @@ static string getText(
         : "";
 }
 
-// Chuc nang: Khoi dong module DANG_KHAM va dong bo du lieu bac si da duoc xep.
+// Khởi động module DANG_KHAM và đồng bộ dữ liệu bác sĩ đã được xếp.
 bool DangKhamManager::khoiDong(
     const string& sourcePath,
     const string& destinationPath
@@ -44,7 +44,7 @@ bool DangKhamManager::khoiDong(
     return true;
 }
 
-// Chuc nang: Hien thi danh sach benh nhan dang trong qua trinh kham.
+// Hiển thị danh sách bệnh nhân đang trong quá trình khám.
 void DangKhamManager::hienThiDangKham()
 {
     sqlite3* db = database.get();
@@ -130,7 +130,7 @@ void DangKhamManager::hienThiDangKham()
     sqlite3_finalize(stmt);
 }
 
-// Chuc nang: Kiem tra va lay benh nhan theo check-in ID neu van dang kham.
+// Kiểm tra và lấy bệnh nhân theo check-in ID nếu vẫn đang khám.
 bool DangKhamManager::layPhienDangKham(
     int checkinId,
     int& patientId
@@ -174,7 +174,7 @@ bool DangKhamManager::layPhienDangKham(
     return found;
 }
 
-// Chuc nang: Nhap va luu chan doan, don thuoc va loi nhac cua bac si.
+// Nhập và lưu chẩn đoán, đơn thuốc và lời nhắc của bác sĩ.
 void DangKhamManager::nhapChanDoan()
 {
     sqlite3* db = database.get();
@@ -306,7 +306,7 @@ void DangKhamManager::nhapChanDoan()
     sqlite3_finalize(stmt);
 }
 
-// Chuc nang: Ket thuc phien kham va ghi thoi gian ket thuc.
+// Kết thúc phiên khám và ghi thời gian kết thúc.
 void DangKhamManager::ketThucKham()
 {
     sqlite3* db = database.get();
@@ -382,7 +382,7 @@ void DangKhamManager::ketThucKham()
     sqlite3_finalize(stmt);
 }
 
-// Chuc nang: Hien thi va xu ly menu chinh cua module DANG_KHAM.
+// Hiển thị và xử lý menu chính của module DANG_KHAM.
 void DangKhamManager::chayMenu()
 {
     while (true)
