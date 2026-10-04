@@ -41,7 +41,7 @@ const timeLabel = value => {
 };
 const patientName = id => state.patientMap?.get(id)?.name || `Bệnh nhân #${id}`;
 const empty = (title, description, symbol = 'queue') => `<div class="empty">${icon(symbol)}<strong>${escapeHtml(title)}</strong><p>${escapeHtml(description)}</p></div>`;
-const button = (action, label, id = '', style = 'secondary small') => `<button class="button ${style}" data-action="${action}"${id === '' ? '' : ` data-id="${Number(id)}"`}>${label}</button>`;
+const button = (action, label, id = '', style = 'secondary small') => `<button class="button ${style}" data-action="${action}"${id === '' ? '' : ` data-id="${escapeHtml(id)}"`}>${label}</button>`;
 const departmentOptions = (selected = '', all = true) => `${all ? '<option value="">Tất cả các khoa</option>' : ''}${state.data.departments.map(d => `<option value="${escapeHtml(d.name)}"${d.name === selected ? ' selected' : ''}>${escapeHtml(departmentLabel(d.name))}</option>`).join('')}`;
 const priorityOptions = selected => priorityNames.slice(1).map((name,i) => `<option value="${i+1}"${Number(selected) === i+1 ? ' selected' : ''}>${i+1} · ${name}</option>`).join('');
 
@@ -68,13 +68,13 @@ function setBusy(value) {
 }
 async function loadData() {
   const endpoints = {patients:'/api/patients', departments:'/api/departments', checkins:'/api/checkins', queue:'/api/queue', assignments:'/api/assignments', exams:'/api/exams?active=false', doctors:'/api/doctors'};
-  // Chỉ đọc khi mở trang/làm mới; các thao tác ghi luôn được người dùng bấm rõ ràng.
+  // Server đồng bộ nền; giao diện định kỳ tải dữ liệu mới.
   const entries = await Promise.all(Object.entries(endpoints).map(async ([name,url]) => [name,await api(url)]));
   state.data = Object.fromEntries(entries);
   state.patientMap = new Map(state.data.patients.map(p => [p.id,p]));
   state.loaded = true;
   $('#connection').className = 'connection';
-  $('#connection').innerHTML = '<span class="online-dot"></span> Server đã kết nối';
+  $('#connection').innerHTML = '<span class="online-dot"></span> Tự cập nhật mỗi 5 giây';
   $('#last-updated').textContent = `Cập nhật lúc ${new Date().toLocaleTimeString('vi-VN', {hour:'2-digit',minute:'2-digit'})}`;
   render();
 }
@@ -133,36 +133,39 @@ function dashboard() {
   const latest = [...d.checkins].sort((a,b) => b.checkin_id-a.checkin_id).slice(0,5);
   const stages = [['Tiếp nhận',d.checkins.length,'people'],['Đã phân bác sĩ',d.assignments.length,'calendar'],['Đang khám',active.length,'medical'],['Hoàn tất',completed.length,'check']];
   return `<section class="hero-strip"><div class="hero-copy"><span class="hero-kicker"><span class="online-dot"></span> KMIN HEALTH · HOSPITAL</span><h2>Chăm sóc tận tâm.<br><span>Điều phối thông minh.</span></h2><p>Một không gian kết nối bệnh nhân, bác sĩ và từng lượt khám.<br>Chào mừng bạn đến với trung tâm điều phối KMIN HEALTH.</p><div class="hero-actions"><button class="button primary" data-action="checkin">Tiếp nhận bệnh nhân ${icon('arrow')}</button><a href="#assignments" class="hero-link">Xem lịch khám <span>↗</span></a></div><div class="hero-facts"><span>${number(d.departments.length)} chuyên khoa</span><span>${number(d.doctors.length)} bác sĩ</span></div></div><div class="hero-art" aria-hidden="true"><div class="art-orbit orbit-one"></div><div class="art-orbit orbit-two"></div><div class="art-cross">${icon('medical')}</div><div class="art-tag"><span class="art-tag-icon">${icon('check')}</span><span>KMIN HEALTH<small>Kết nối sức khỏe</small></span></div><svg class="art-pulse" viewBox="0 0 320 80" fill="none"><path d="M0 42h80l14-15 14 28 19-47 21 63 16-29h156" stroke="currentColor" stroke-width="2"/></svg></div></section>
-    <div class="section-caption"><div><span class="eyebrow">BỨC TRANH TỔNG QUAN</span><h2>Hoạt động bệnh viện</h2></div><span class="live-label"><span class="online-dot"></span> Dữ liệu tại lần cập nhật gần nhất</span></div>
+    <div class="section-caption"><div><span class="eyebrow">BỨC TRANH TỔNG QUAN</span><h2>Hoạt động bệnh viện</h2></div><span class="live-label"><span class="online-dot"></span> Tự cập nhật mỗi 5 giây</span></div>
     <div class="stats-grid">${stats.map(([label,value,note,symbol,color],i) => `<article class="stat-card stat-${i}"><div class="stat-top"><span class="stat-icon ${color}">${icon(symbol)}</span><span class="stat-label">${label}</span></div><div class="stat-value">${number(value)}</div><div class="stat-note"><span class="dot"></span>${note}</div></article>`).join('')}</div>
     <section class="flow-summary" aria-label="Số lượng lượt khám theo trạng thái"><div class="flow-intro">${icon('queue')}<span>Luồng điều phối<small>Tổng số theo trạng thái</small></span></div>${stages.map(([label,count,symbol],i) => `<div class="flow-stage"><span class="flow-symbol">${icon(symbol)}</span><div><strong>${number(count)}</strong><small>${label}</small></div>${i < stages.length-1 ? '<span class="flow-arrow">→</span>' : ''}</div>`).join('')}</section>
-    <div class="dashboard-grid"><div><section class="panel"><div class="panel-header"><div><h2>Hàng đợi khám bệnh</h2><p>Sắp theo khoa và mức độ ưu tiên</p></div><a class="text-button" href="#queue">Xem tất cả ${icon('arrow')}</a></div>${table(['BỆNH NHÂN','KHOA','ƯU TIÊN','GIỜ TIẾP NHẬN'],d.queue.slice(0,6).map(r => queueRow(r,false)),'Hàng đợi đang trống','Tiếp nhận bệnh nhân hoặc đồng bộ để cập nhật hàng đợi.')}</section>
+    <div class="dashboard-grid"><div><section class="panel"><div class="panel-header"><div><h2>Hàng đợi khám bệnh</h2><p>Sắp theo khoa và mức độ ưu tiên</p></div><a class="text-button" href="#queue">Xem tất cả ${icon('arrow')}</a></div>${table(['BỆNH NHÂN','KHOA','ƯU TIÊN','GIỜ TIẾP NHẬN'],d.queue.slice(0,6).map(r => queueRow(r,false)),'Hàng đợi đang trống','Bệnh nhân xuất hiện tự động sau khi check-in.')}</section>
     <section class="panel"><div class="panel-header"><div><h2>Tiếp nhận gần đây</h2><p>Các phiếu check-in mới nhất</p></div><span class="badge gray">${number(d.checkins.length)} phiếu</span></div>${table(['BỆNH NHÂN','KHOA','ƯU TIÊN','GIỜ TIẾP NHẬN'],latest.map(r => [person(patientName(r.patient_id),`Mã phiếu #${r.checkin_id}`),escapeHtml(departmentLabel(r.department)),priorityBadge(r.priority),escapeHtml(timeLabel(r.checkin_time))]),'Chưa có lượt tiếp nhận','Bắt đầu bằng cách thêm một bệnh nhân và check-in.','people')}</section></div>
-    <div class="dashboard-side"><section class="panel"><div class="panel-header"><div><h2>Thao tác nhanh</h2><p>Điều phối trong một bước</p></div></div><div class="panel-body quick-actions"><button class="quick-action" data-action="new-patient">${icon('people')}Thêm bệnh nhân</button><button class="quick-action" data-action="checkin">${icon('medical')}Tiếp nhận</button><button class="quick-action" data-action="schedule">${icon('calendar')}Phân bác sĩ</button><button class="quick-action" data-action="sync">${icon('refresh')}Đồng bộ lượt khám</button></div></section>
+    <div class="dashboard-side"><section class="panel"><div class="panel-header"><div><h2>Thao tác nhanh</h2><p>Điều phối trong một bước</p></div></div><div class="panel-body quick-actions"><button class="quick-action" data-action="new-patient">${icon('people')}Thêm bệnh nhân</button><button class="quick-action" data-action="checkin">${icon('medical')}Tiếp nhận</button><button class="quick-action" data-action="schedule">${icon('calendar')}Phân bác sĩ</button></div></section>
     <section class="panel"><div class="panel-header"><div><h2>Trạng thái các khoa</h2><p>Khả năng tiếp nhận tại thời điểm cập nhật</p></div></div><div class="panel-body">${d.departments.map(dept => `<div class="department-row"><span class="dept-icon">${icon('medical')}</span><div><strong>${escapeHtml(departmentLabel(dept.name))}</strong><small>${dept.name === 'Khoa Cap cuu' ? 'Tiếp nhận 24/7' : '07:30–10:00 · 13:00–15:00'}</small></div>${badge(dept.accepting_checkins ? 'Tiếp nhận' : 'Ngoài giờ',dept.accepting_checkins ? 'green' : 'gray')}</div>`).join('')}</div></section></div></div>`;
 }
 function renderList() {
   const d = state.data;
   if (state.view === 'patients') {
-    const records = filter(d.patients,p => [p.name,p.phone,p.id,p.birth_date]);
     const checked = new Set(d.checkins.map(r => r.patient_id));
-    return toolbar('Tìm tên, mã bệnh nhân, số điện thoại…',false) + `<section class="panel"><div class="panel-header"><h2>Hồ sơ bệnh nhân</h2><span class="result-count">${number(records.length)} hồ sơ</span></div>${pager(records,p => [person(p.name,`BN-${String(p.id).padStart(4,'0')}`),escapeHtml(p.birth_date),`${p.age} tuổi`,escapeHtml(p.gender || '—'),escapeHtml(p.phone || '—'),checked.has(p.id) ? badge('Đã tiếp nhận','green') : badge('Chưa tiếp nhận','gray'),`<div class="row-actions">${button('edit-patient','Sửa',p.id)}${checked.has(p.id) ? '' : button('checkin','Check-in',p.id,'primary small')}${checked.has(p.id) ? '' : button('delete-patient','Xóa',p.id,'danger small')}</div>`],['BỆNH NHÂN','NGÀY SINH','TUỔI','GIỚI TÍNH','ĐIỆN THOẠI','TRẠNG THÁI','THAO TÁC'],'Không tìm thấy bệnh nhân','Thêm hồ sơ mới hoặc thử từ khóa khác.')}</section>`;
+    const records = filter(d.patients.filter(p => !checked.has(p.id)),p => [p.name,p.phone,p.id,p.birth_date]);
+    return toolbar('Tìm tên, mã bệnh nhân, số điện thoại…',false) + `<section class="panel"><div class="panel-header"><h2>Hồ sơ chờ check-in</h2><span class="result-count">${number(records.length)} hồ sơ</span></div>${pager(records,p => [person(p.name,`BN-${String(p.id).padStart(4,'0')}`),escapeHtml(p.birth_date),`${p.age} tuổi`,escapeHtml(p.gender || '—'),escapeHtml(p.phone || '—'),checked.has(p.id) ? badge('Đã tiếp nhận','green') : badge('Chưa tiếp nhận','gray'),`<div class="row-actions">${button('edit-patient','Sửa',p.id)}${checked.has(p.id) ? '' : button('checkin','Check-in',p.id,'primary small')}${checked.has(p.id) ? '' : button('delete-patient','Xóa',p.id,'danger small')}</div>`],['BỆNH NHÂN','NGÀY SINH','TUỔI','GIỚI TÍNH','ĐIỆN THOẠI','TRẠNG THÁI','THAO TÁC'],'Không tìm thấy bệnh nhân','Thêm hồ sơ mới hoặc thử từ khóa khác.')}</section>`;
   }
   if (state.view === 'queue') {
     const records = filter(d.queue,r => [patientName(r.patient_id),r.patient_id,r.checkin_id]);
-    return toolbar('Tìm tên hoặc mã phiếu…') + `<section class="panel"><div class="panel-header"><div><h2>Danh sách chờ khám</h2><p>Ưu tiên 1 cao nhất · ưu tiên 5 thấp nhất</p></div><div class="row-actions">${button('sync',`${icon('refresh')} Đồng bộ`,'','secondary')}${button('schedule','Phân bác sĩ','','primary')}</div></div>${pager(records,r => queueRow(r),['BỆNH NHÂN','KHOA','ƯU TIÊN','GIỜ TIẾP NHẬN','THAO TÁC'],'Chưa có bệnh nhân chờ khám','Bấm Đồng bộ sau khi tiếp nhận để cập nhật danh sách.')}</section>`;
+    return toolbar('Tìm tên hoặc mã phiếu…') + `<section class="panel"><div class="panel-header"><div><h2>Danh sách chờ khám</h2><p>Ưu tiên 1 cao nhất · ưu tiên 5 thấp nhất</p></div><div class="row-actions">${button('schedule','Phân bác sĩ','','primary')}</div></div>${pager(records,r => queueRow(r),['BỆNH NHÂN','KHOA','ƯU TIÊN','GIỜ TIẾP NHẬN','THAO TÁC'],'Chưa có bệnh nhân chờ khám','Bệnh nhân đã check-in tự động chuyển vào đây.')}</section>`;
   }
   if (state.view === 'assignments') {
     const records = filter(d.assignments,r => [patientName(r.patient_id),r.doctor_name,r.doctor_id,r.checkin_id]);
-    return toolbar('Tìm bệnh nhân, bác sĩ, mã phiếu…') + `<section class="panel"><div class="panel-header"><div><h2>Lịch phân bác sĩ</h2><p>Lịch đã lưu được giữ lại khi phân thêm lượt khám</p></div>${button('schedule','Phân bác sĩ','','primary')}</div><div class="schedule-summary">${icon('clock')}Giờ kết thúc dưới đây là giờ dự kiến. Đồng bộ để nhận các ca đã đến giờ khám.</div>${pager(records,r => [person(patientName(r.patient_id),`Mã phiếu #${r.checkin_id}`),escapeHtml(departmentLabel(r.department)),person(r.doctor_name,r.doctor_id),escapeHtml(timeLabel(r.start_time)),`${r.duration_minutes} phút`,escapeHtml(timeLabel(r.planned_end_time)),examStatus(r.checkin_id)],['BỆNH NHÂN','KHOA','BÁC SĨ','BẮT ĐẦU','THỜI LƯỢNG','KẾT THÚC DỰ KIẾN','TRẠNG THÁI'],'Chưa có lịch khám','Bấm Phân bác sĩ để sắp xếp các bệnh nhân đang chờ.')}</section>`;
+    return toolbar('Tìm bệnh nhân, bác sĩ, mã phiếu…') + `<section class="panel"><div class="panel-header"><div><h2>Lịch phân bác sĩ</h2><p>Lịch đã lưu được giữ lại khi phân thêm lượt khám</p></div>${button('schedule','Phân bác sĩ','','primary')}</div><div class="schedule-summary">${icon('clock')}Giờ kết thúc là dự kiến. Ca tới giờ được tự động nhận khi bác sĩ trống.</div>${pager(records,r => [person(patientName(r.patient_id),`Mã phiếu #${r.checkin_id}`),escapeHtml(departmentLabel(r.department)),person(r.doctor_name,r.doctor_id),escapeHtml(timeLabel(r.start_time)),`${r.duration_minutes} phút`,escapeHtml(timeLabel(r.planned_end_time)),examStatus(r.checkin_id)],['BỆNH NHÂN','KHOA','BÁC SĨ','BẮT ĐẦU','THỜI LƯỢNG','KẾT THÚC DỰ KIẾN','TRẠNG THÁI'],'Chưa có lịch khám','Bấm Phân bác sĩ để sắp xếp các bệnh nhân đang chờ.')}</section>`;
   }
   if (state.view === 'exams') {
     const records = filter(d.exams.filter(e => state.examMode === 'all' || (state.examMode === 'completed' ? e.end_time : !e.end_time)),r => [patientName(r.patientId ?? r.patient_id),r.doctor_name,r.checkin_id]);
     const mode = `<select id="exam-mode" aria-label="Lọc trạng thái khám"><option value="active"${state.examMode === 'active' ? ' selected' : ''}>Đang khám</option><option value="completed"${state.examMode === 'completed' ? ' selected' : ''}>Đã hoàn tất</option><option value="all"${state.examMode === 'all' ? ' selected' : ''}>Tất cả lượt khám</option></select>`;
-    return toolbar('Tìm bệnh nhân, bác sĩ, mã phiếu…',true,mode) + `<section class="panel"><div class="panel-header"><div><h2>Theo dõi lượt khám</h2><p>Ca đã được phân sẽ xuất hiện khi tới giờ và được đồng bộ</p></div>${button('sync',`${icon('refresh')} Đồng bộ`,'','secondary')}</div>${pager(records,r => [person(patientName(r.patient_id),`Mã phiếu #${r.checkin_id}`),escapeHtml(departmentLabel(r.department)),person(r.doctor_name,r.doctor_id),escapeHtml(timeLabel(r.start_time)),badge(r.end_time ? 'Đã hoàn tất' : 'Đang khám',r.end_time ? 'gray' : 'blue'),`<div class="row-actions">${button('exam-detail','Chi tiết',r.checkin_id)}${r.end_time ? '' : button('diagnosis','Chẩn đoán',r.checkin_id,'primary small')}${r.end_time ? '' : button('finish','Kết thúc',r.checkin_id)}</div>`],['BỆNH NHÂN','KHOA','BÁC SĨ','BẮT ĐẦU','TRẠNG THÁI','THAO TÁC'],'Chưa có lượt khám phù hợp','Bấm Đồng bộ hoặc chọn trạng thái khác để xem lịch sử.')}</section>`;
+    return toolbar('Tìm bệnh nhân, bác sĩ, mã phiếu…',true,mode) + `<section class="panel"><div class="panel-header"><div><h2>Theo dõi lượt khám</h2><p>Ca tới giờ tự động xuất hiện khi bác sĩ trống</p></div></div>${pager(records,r => [person(patientName(r.patient_id),`Mã phiếu #${r.checkin_id}`),escapeHtml(departmentLabel(r.department)),person(r.doctor_name,r.doctor_id),escapeHtml(timeLabel(r.start_time)),badge(r.end_time ? 'Đã hoàn tất' : 'Đang khám',r.end_time ? 'gray' : 'blue'),`<div class="row-actions">${button('exam-detail','Chi tiết',r.checkin_id)}${r.end_time ? '' : button('diagnosis','Chẩn đoán',r.checkin_id,'primary small')}${r.end_time ? '' : button('finish','Kết thúc',r.checkin_id)}</div>`],['BỆNH NHÂN','KHOA','BÁC SĨ','BẮT ĐẦU','TRẠNG THÁI','THAO TÁC'],'Chưa có lượt khám phù hợp','Các ca tới giờ tự cập nhật. Chọn trạng thái khác để xem lịch sử.')}</section>`;
   }
   const records = filter(d.doctors,r => [r.name,r.id,r.department]);
-  return toolbar('Tìm tên hoặc mã bác sĩ…') + `<section class="panel"><div class="panel-header"><h2>Đội ngũ bác sĩ</h2><span class="result-count">${number(records.length)} bác sĩ</span></div>${pager(records,r => [person(r.name,r.id),escapeHtml(departmentLabel(r.department)),`${r.experience_years} năm`],['BÁC SĨ','CHUYÊN KHOA','KINH NGHIỆM'],'Không tìm thấy bác sĩ','Thử thay đổi khoa hoặc từ khóa tìm kiếm.')}</section>`;
+  return toolbar('Tìm tên hoặc mã bác sĩ…') + `<section class="panel"><div class="panel-header"><h2>Đội ngũ bác sĩ</h2><span class="result-count">${number(records.length)} bác sĩ</span></div>${pager(records,r => [person(r.name,r.id),escapeHtml(departmentLabel(r.department)),`${r.experience_years} năm`,doctorStatus(r),r.busy ? escapeHtml(`${r.busy_reason} · Đến ${timeLabel(r.busy_until)}`) : '—',`<div class="row-actions">${button('doctor-status','Ca trực',r.id)}${button(r.busy ? 'doctor-resume' : 'doctor-busy',r.busy ? 'Hết bận' : 'Bận đột xuất',r.id)}</div>`],['BÁC SĨ','CHUYÊN KHOA','KINH NGHIỆM','TRẠNG THÁI','BẬN ĐỘT XUẤT','THAO TÁC'],'Không tìm thấy bác sĩ','Thử thay đổi khoa hoặc từ khóa tìm kiếm.')}</section>`;
+}
+function doctorStatus(d) {
+  return badge(({examining:'Đang khám',busy:'Bận đột xuất',on_duty:'Đang trong ca trực',off_duty:'Ngoài ca / nghỉ'})[d.status] || 'Chưa cập nhật', ({examining:'blue',busy:'orange',on_duty:'green',off_duty:'gray'})[d.status] || 'gray');
 }
 function examStatus(id) {
   const exam = state.data.exams.find(e => e.checkin_id === id);
@@ -211,8 +214,16 @@ function openModal(type, id) {
     html = `<p class="form-info">${escapeHtml(patientName(r.patient_id))} · Phiếu #${id}</p><label class="field">Mức độ ưu tiên mới<select name="priority">${priorityOptions(r.current_priority)}</select></label>`;
   } else if (type === 'schedule') {
     title = 'Phân bác sĩ cho hàng đợi';
-    html = `<p class="form-info">Hệ thống sắp xếp bác sĩ theo khoa, thứ tự ưu tiên và lịch trống. Các lịch đã lưu được giữ nguyên.</p><label class="field">Phạm vi phân bác sĩ<select name="department">${departmentOptions(state.department)}</select></label><p class="form-note">Thời lượng khám dự kiến được mô phỏng từ 10–30 phút.</p>`;
+    html = `<p class="form-info">Phân theo thứ tự ưu tiên và lịch trống.</p><label class="field">Cách phân lịch<select name="schedule_mode" id="schedule-mode"><option value="department">Phân một khoa</option><option value="doctor">Phân theo bác sĩ</option></select></label><label class="field" id="schedule-department-field">Khoa khám<select name="department">${departmentOptions(state.department || state.data.departments[0]?.name,false)}</select></label><label class="field" id="schedule-doctor-field" hidden>Bác sĩ<select name="doctor_id">${state.data.doctors.filter(d => !d.busy && d.status !== 'examining' && d.duty_mode !== 'off_duty').map(d => `<option value="${escapeHtml(d.id)}">${escapeHtml(d.name)} · ${escapeHtml(d.id)} · ${escapeHtml(departmentLabel(d.department))}</option>`).join('')}</select></label><p class="form-note">Thời lượng dự kiến 10–30 phút. Bác sĩ ngoài giờ nhận lịch trong ca tiếp theo. Bác sĩ bận, nghỉ hoặc đang khám không nhận lịch mới.</p>`;
     $('#modal-submit').textContent = 'Phân bác sĩ';
+  } else if (['doctor-status','doctor-busy','doctor-resume'].includes(type)) {
+    const d = state.data.doctors.find(d => d.id === id);
+    if (!d) return;
+    title = type === 'doctor-status' ? 'Cập nhật ca trực' : type === 'doctor-busy' ? 'Báo bận đột xuất' : 'Kết thúc bận đột xuất';
+    html = `<p class="form-info">${escapeHtml(d.name)} · ${escapeHtml(departmentLabel(d.department))}</p>`;
+    if (type === 'doctor-status') html += `<label class="field">Ca trực<select name="duty_mode">${[['auto','Tự động theo lịch ca'],['on_duty','Đang trong ca trực'],['off_duty','Nghỉ / ngoài ca']].map(([value,label]) => `<option value="${value}"${d.duty_mode === value ? ' selected' : ''}>${label}</option>`).join('')}</select></label>`;
+    if (type === 'doctor-busy') html += `<div class="form-grid">${field('Bận trong (phút) *','busy_minutes',30,'number','required min="1" max="1440" step="1"')}${field('Lý do *','busy_reason','','text','required maxlength="500"',true)}</div>`;
+    html += `<p class="form-note">Báo bận hoặc nghỉ ca đưa lịch chưa bắt đầu về hàng đợi để phân lại. Ca đang khám được giữ nguyên. Thời gian bận tự hết khi tới hạn; có thể chọn Hết bận sớm.</p>`;
   } else if (type === 'diagnosis' || type === 'exam-detail') {
     const e = state.data.exams.find(e => e.checkin_id === id);
     if (!e) return;
@@ -272,12 +283,20 @@ $('#modal-form').addEventListener('submit', async event => {
     await mutate(() => api(`/api/patients${type === 'edit-patient' ? '/'+id : ''}`,type === 'edit-patient' ? 'PATCH' : 'POST',data), type === 'edit-patient' ? 'Đã cập nhật hồ sơ bệnh nhân.' : 'Đã tạo hồ sơ. Bạn có thể chọn Check-in để tiếp nhận bệnh nhân.');
   } else if (type === 'checkin') {
     data.patient_id = Number(data.patient_id); data.priority = Number(data.priority); data.transfer_to_emergency = data.transfer_to_emergency === 'on';
-    // Check-in là thao tác ghi riêng; nếu đồng bộ lỗi vẫn báo chính xác phiếu đã lưu.
-    await mutate(() => api('/api/checkins','POST',data), result => `Đã tiếp nhận bệnh nhân · Phiếu #${result.checkin_id}. Bấm Đồng bộ để cập nhật hàng đợi.`);
+    await mutate(async () => { const result = await api('/api/checkins','POST',data); location.hash = '#queue'; changeView(); return result; }, result => result.sync_pending ? `Đã tiếp nhận · Phiếu #${result.checkin_id}. Hàng đợi đang tự cập nhật.` : `Đã chuyển bệnh nhân vào Hàng đợi · Phiếu #${result.checkin_id}.`);
   } else if (type === 'priority') {
     await mutate(() => api(`/api/checkins/${id}/priority`,'PATCH',{priority:Number(data.priority)}),'Đã cập nhật mức độ ưu tiên.');
   } else if (type === 'schedule') {
-    await mutate(() => api('/api/assignments','POST',{department:data.department}), r => `Đã phân bác sĩ cho ${r.assigned_count} lượt khám. Bấm Đồng bộ để cập nhật các ca đến giờ khám.`);
+    const payload = data.schedule_mode === 'doctor' ? {doctor_id:data.doctor_id} : {department:data.department};
+    if (data.schedule_mode === 'doctor' && !data.doctor_id) {
+      $('#form-error').textContent = 'Chưa có bác sĩ phù hợp để phân lịch. Hãy cập nhật ca trực hoặc chọn phân theo khoa.';
+      $('#form-error').hidden = false;
+      return;
+    }
+    await mutate(() => api('/api/assignments','POST',payload), r => `Đã phân bác sĩ cho ${r.assigned_count} lượt khám. Ca tới giờ tự cập nhật.`);
+  } else if (['doctor-status','doctor-busy','doctor-resume'].includes(type)) {
+    const payload = type === 'doctor-status' ? {duty_mode:data.duty_mode} : type === 'doctor-resume' ? {busy_minutes:0} : {busy_minutes:Number(data.busy_minutes),busy_reason:data.busy_reason.trim()};
+    await mutate(() => api(`/api/doctors/${encodeURIComponent(id)}/status`,'PATCH',payload), r => `Đã cập nhật trạng thái bác sĩ.${r.returned_to_queue ? ` ${r.returned_to_queue} lịch chưa bắt đầu đã về hàng đợi.` : ''}`);
   } else if (type === 'diagnosis') {
     await mutate(() => api(`/api/exams/${id}/diagnosis`,'PATCH',data),'Đã lưu chẩn đoán và thông tin điều trị.');
   } else if (type === 'delete-patient') {
@@ -294,9 +313,8 @@ document.addEventListener('click', event => {
   if (state.busy) return;
   if (action === 'refresh') { refresh(); return; }
   if (action === 'close-modal') { closeModal(); return; }
-  if (action === 'sync') { mutate(() => api('/api/queue/sync','POST'),'Đã đồng bộ hàng đợi và các lượt khám đến giờ.',false); return; }
   if (action === 'prev' || action === 'next') { state.page += action === 'next' ? 1 : -1; render(); return; }
-  openModal(action,Number(target.dataset.id) || undefined);
+  openModal(action,action.startsWith('doctor-') ? target.dataset.id : Number(target.dataset.id) || undefined);
 });
 document.addEventListener('input', event => {
   if (event.target.id === 'search') { state.search = event.target.value; state.page = 1; render(); }
@@ -313,6 +331,10 @@ document.addEventListener('change', event => {
   if (event.target.id === 'department-filter') { state.department = event.target.value; state.page = 1; render(); }
   if (event.target.id === 'exam-mode') { state.examMode = event.target.value; state.page = 1; render(); }
   if (event.target.id === 'checkin-department') updateDepartmentReason();
+  if (event.target.id === 'schedule-mode') {
+    $('#schedule-department-field').hidden = event.target.value === 'doctor';
+    $('#schedule-doctor-field').hidden = event.target.value !== 'doctor';
+  }
 });
 $('#modal').addEventListener('cancel', event => { if (state.busy) event.preventDefault(); else state.modal = null; });
 $('#modal').addEventListener('click', event => { if (event.target === $('#modal')) { const rect = $('#modal').getBoundingClientRect(); if (event.clientX < rect.left || event.clientX > rect.right || event.clientY < rect.top || event.clientY > rect.bottom) closeModal(); } });
@@ -321,3 +343,16 @@ $('#refresh-button').innerHTML = `${icon('refresh')} Làm mới`;
 $('#header-date').textContent = new Date().toLocaleDateString('vi-VN',{day:'2-digit',month:'long',year:'numeric'});
 changeView();
 refresh();
+
+// Giữ biểu mẫu đang nhập và tránh tải nền chồng thao tác lưu.
+async function autoRefresh() {
+  if (state.busy || state.modal || document.hidden) return;
+  setBusy(true);
+  try { await loadData(); }
+  catch {
+    $('#connection').className = 'connection offline';
+    $('#connection').innerHTML = '<span class="online-dot"></span> Mất kết nối · đang tự thử lại';
+  } finally { setBusy(false); }
+}
+setInterval(autoRefresh, 5000);
+document.addEventListener('visibilitychange', () => { if (!document.hidden) autoRefresh(); });

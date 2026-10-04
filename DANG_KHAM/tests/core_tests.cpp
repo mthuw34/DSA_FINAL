@@ -13,6 +13,7 @@ int main() {
     auto assignment = [](int id, const char* start, const char* end) {
         ExamAssignment record;
         record.session.checkinId = id; record.session.patientId = id + 100;
+        record.session.doctorId = "BS" + std::to_string(id);
         record.session.startTime = start; record.plannedEnd = end;
         record.status = "DA_XEP_BAC_SI";
         return record;
@@ -36,10 +37,17 @@ int main() {
     completed.endTime = "2026-10-04 09:59:00";
     std::vector<ExamSession> existing{overrun, completed};
     auto changes = ExamCore::synchronizationChanges(assignments, existing, now);
-    assert(changes.size() == 2 && changes[0].checkinId == 1 && changes[1].checkinId == 2);
+    assert(changes.size() == 4 && changes[0].checkinId == 1 && changes[1].checkinId == 2);
+    assert(changes[2].checkinId == 4 && changes[3].checkinId == 6); // Nhận cả ca bị trễ.
     assert(changes[1].diagnosis == overrun.diagnosis && changes[1].prescription == overrun.prescription);
     assert(changes[1].reminder == overrun.reminder && changes[1].checkinTime == overrun.checkinTime);
     assert(!changes[1].endTime);
+    auto sameDoctor = assignments[0];
+    sameDoctor.session.checkinId = 10;
+    sameDoctor.session.doctorId = overrun.doctorId;
+    assert(ExamCore::synchronizationChanges({sameDoctor}, existing, now).empty());
+    sameDoctor.session.doctorId = assignments[0].session.doctorId;
+    assert(ExamCore::synchronizationChanges({assignments[0], sameDoctor}, {}, now).size() == 1);
     existing.push_back(changes[0]);
     const auto active = ExamCore::activeSessions(existing);
     assert(active.size() == 2 && active[0].checkinId == 2 && active[1].checkinId == 1);

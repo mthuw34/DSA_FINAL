@@ -2,6 +2,8 @@
 #include <cmath>
 #include <filesystem>
 #include <memory>
+#include <algorithm>
+#include "../SAP_XEP_BAC_SI/src/THOI_GIAN/ThoiGian.h"
 #include "../QUAN_LY_BENH_NHAN/src/HospitalPersistence.h"
 #include "../QUAN_LY_BENH_NHAN/src/patient_validation.h"
 #include "../QUAN_LY_BENH_NHAN/src/CHECK_IN/khoa.h"
@@ -116,6 +118,9 @@ WebService::WebService() {
         std::filesystem::create_directories("TRUY_XUAT_BENH_NHAN/db");
         require(DBTaoBang::taoBangTruyXuat(), 500, "Khong tao duoc bang hang doi");
         open(retrieval, retrievalPath);
+        execute(retrieval, R"(CREATE TABLE IF NOT EXISTS doctor_state (
+            doctor_id TEXT PRIMARY KEY, duty_mode TEXT NOT NULL DEFAULT 'auto',
+            busy_until TEXT, busy_reason TEXT NOT NULL DEFAULT '');)");
         execute(retrieval, R"(CREATE TABLE IF NOT EXISTS ket_qua_kham (
             id INTEGER PRIMARY KEY AUTOINCREMENT, checkin_id INTEGER NOT NULL UNIQUE,
             patient_id INTEGER NOT NULL, khoa_benh_nhan TEXT NOT NULL, khoa_bac_si TEXT NOT NULL,
@@ -237,7 +242,10 @@ Json WebService::checkIn(const Json& data) {
     auto* saved = PatientCore::findCheckIn(records, checkinId);
     require(saved != nullptr, 500, "Khong tim thay phieu check-in");
     Json result = checkInJson(*saved);
-    tx.commit(); return result;
+    tx.commit();
+    // Phiếu đã lưu là nguồn chính; tác vụ nền sẽ thử lại nếu đồng bộ tạm lỗi.
+    try { syncExams(); } catch (const std::exception&) { result["sync_pending"] = true; }
+    return result;
 }
 Json WebService::listCheckIns() {
     std::vector<CheckInRecord> records;
@@ -291,10 +299,74 @@ Json WebService::changePriority(int id, const Json& data) {
 Json WebService::listDoctors() {
     QuanLyBacSi manager;
     require(manager.DocCSV(doctorsPath), 500, "Khong doc duoc CSV bac si");
+    Json saved = Json::object();
+    auto stmt = prepare(retrieval, "SELECT doctor_id,duty_mode,busy_until,busy_reason FROM doctor_state;");
+    int rc;
+    while ((rc = sqlite3_step(stmt.get())) == SQLITE_ROW)
+        saved[HospitalPersistence::text(stmt.get(), 0)] = {
+            {"duty_mode",HospitalPersistence::text(stmt.get(), 1)},
+            {"busy_until",HospitalPersistence::text(stmt.get(), 2)},
+            {"busy_reason",HospitalPersistence::text(stmt.get(), 3)}};
+    require(rc == SQLITE_DONE, 500, "Khong doc duoc trang thai bac si");
+    const auto now = time(nullptr);
+    auto active = listExams(true);
     Json result = Json::array();
-    for (const auto& d : manager.LayDanhSach())
-        result.push_back({{"id",d.id},{"name",d.name},{"department",d.khoaChuyenMon},{"experience_years",d.ExpYears}});
+    int index = 0;
+    for (const auto& d : manager.LayDanhSach()) {
+        const auto settings = saved.value(d.id, Json::object());
+        const auto mode = settings.value("duty_mode", "auto");
+        const auto until = settings.value("busy_until", "");
+        time_t busyEnd = 0;
+        const bool busy = ExamCore::parseTime(until, busyEnd) && busyEnd > now;
+        const bool duty = mode == "on_duty" || (mode == "auto" &&
+            (d.khoaChuyenMon == "Khoa Cap cuu" ? ThoiGian::DangTrucCapCuu(now, index % 2) : ThoiGian::DangTrongCaThuong(now)));
+        bool examining = false;
+        for (const auto& e : active) if (e["doctor_id"] == d.id) examining = true;
+        result.push_back({{"id",d.id},{"name",d.name},{"department",d.khoaChuyenMon},
+            {"experience_years",d.ExpYears},{"duty_mode",mode},{"on_duty",duty},
+            {"busy",busy},{"busy_until",busy ? Json(until) : Json(nullptr)},
+            {"busy_reason",busy ? settings.value("busy_reason", "") : ""},
+            {"status",examining ? "examining" : busy ? "busy" : duty ? "on_duty" : "off_duty"}});
+        ++index;
+    }
     return result;
+}
+Json WebService::updateDoctor(const std::string& id, const Json& data) {
+    auto doctors = listDoctors();
+    auto found = std::find_if(doctors.begin(), doctors.end(), [&](const Json& d) { return d["id"] == id; });
+    require(found != doctors.end(), 404, "Khong tim thay bac si");
+    require(data.contains("duty_mode") || data.contains("busy_minutes"), 400, "Thieu trang thai can cap nhat");
+    const auto mode = data.contains("duty_mode") ? stringField(data, "duty_mode", true) : (*found)["duty_mode"].get<std::string>();
+    require(mode == "auto" || mode == "on_duty" || mode == "off_duty", 400, "Trang thai ca truc khong hop le");
+    auto until = (*found)["busy_until"].is_string() ? (*found)["busy_until"].get<std::string>() : "";
+    auto reason = (*found)["busy_reason"].get<std::string>();
+    if (data.contains("busy_minutes")) {
+        const auto minutes = intField(data, "busy_minutes", 0, 1440);
+        until = minutes ? ThoiGian::DinhDang(time(nullptr) + minutes * 60) : "";
+        reason = minutes ? stringField(data, "busy_reason", true) : "";
+    }
+    std::vector<ExamSession> sessions;
+    require(exams.docDanhSach(sessions), 500, "Khong doc duoc ca kham");
+    Transaction tx(retrieval);
+    auto stmt = prepare(retrieval, "INSERT INTO doctor_state(doctor_id,duty_mode,busy_until,busy_reason) VALUES(?,?,?,?) "
+        "ON CONFLICT(doctor_id) DO UPDATE SET duty_mode=excluded.duty_mode,busy_until=excluded.busy_until,busy_reason=excluded.busy_reason;");
+    bindText(stmt.get(), 1, id); bindText(stmt.get(), 2, mode); bindText(stmt.get(), 3, until); bindText(stmt.get(), 4, reason);
+    require(sqlite3_step(stmt.get()) == SQLITE_DONE, 500, "Khong luu duoc trang thai bac si");
+    int returned = 0;
+    if (!until.empty() || mode == "off_duty") {
+        auto remove = prepare(retrieval, "DELETE FROM ket_qua_kham WHERE checkin_id=?;");
+        for (const auto& appointment : assignments()) {
+            if (appointment.DoctorId != id) continue;
+            bool started = false;
+            for (const auto& session : sessions) if (session.checkinId == appointment.CheckinId) started = true;
+            if (started) continue;
+            sqlite3_bind_int(remove.get(), 1, appointment.CheckinId);
+            require(sqlite3_step(remove.get()) == SQLITE_DONE, 500, "Khong tra duoc ca ve hang doi");
+            sqlite3_reset(remove.get()); sqlite3_clear_bindings(remove.get()); ++returned;
+        }
+    }
+    tx.commit();
+    return {{"doctor_id",id},{"returned_to_queue",returned}};
 }
 std::vector<BenhNhanKham> WebService::assignments() {
     auto stmt = prepare(retrieval, "SELECT checkin_id,patient_id,khoa_benh_nhan,khoa_bac_si,doctor_id,doctor_name,start_time,exam_duration,end_time,Status,Note FROM ket_qua_kham;");
@@ -321,21 +393,43 @@ Json WebService::listAssignments() {
 }
 Json WebService::schedule(const Json& data) {
     auto department = stringField(data, "department");
+    const auto doctorId = stringField(data, "doctor_id", data.contains("doctor_id"));
     require(department.empty() || PatientCore::departmentOrder(department) != 99, 400, "Khoa khong hop le");
+    std::vector<std::string> allowed, duty;
+    bool doctorFound = doctorId.empty();
+    for (const auto& doctor : listDoctors()) {
+        const auto id = doctor["id"].get<std::string>();
+        if (!doctorId.empty() && doctorId != id) continue;
+        if (!doctorId.empty()) {
+            doctorFound = true;
+            require(department.empty() || department == doctor["department"], 400, "Bac si khong thuoc khoa da chon");
+            department = doctor["department"].get<std::string>();
+            require(!doctor["busy"].get<bool>() && doctor["status"] != "examining" && doctor["duty_mode"] != "off_duty",
+                409, "Bac si dang ban, dang kham hoac da nghi ca");
+        }
+        if (doctor["busy"].get<bool>() || doctor["status"] == "examining" || doctor["duty_mode"] == "off_duty") continue;
+        allowed.push_back(id);
+        if (doctor["duty_mode"] == "on_duty") duty.push_back(id);
+    }
+    require(doctorFound, 404, "Khong tim thay bac si");
     syncPriority();
     QuanLyHangDoi queueManager;
     require(queueManager.taiVaXuLyBenhNhan(), 500, "Khong dong bo duoc hang doi");
     QuanLyKhamBenh manager;
-    require(manager.KhoiDongWeb(retrievalPath, doctorsPath, assignments()), 500, "Khong khoi dong duoc phan bac si");
+    require(manager.KhoiDongWeb(retrievalPath, doctorsPath, assignments(), allowed, duty), 500, "Khong khoi dong duoc phan bac si");
     require(department.empty() ? manager.XuLyTatCaKhoa() : manager.XuLyKhoa(department),
         500, "Phan bac si that bai; kiem tra lich da luu truoc khi thu lai");
+    syncExams();
     return {{"assigned_count",manager.LayKetQua().size()},{"assignments",listAssignments()}};
 }
 Json WebService::syncExams() {
     syncPriority();
     QuanLyHangDoi manager;
     require(manager.taiVaXuLyBenhNhan(), 500, "Khong dong bo duoc hang doi");
-    require(exams.dongBoTuXepBacSi(), 500, "Khong dong bo duoc ca kham");
+    std::vector<std::string> blocked;
+    for (const auto& doctor : listDoctors())
+        if (doctor["busy"].get<bool>() || doctor["duty_mode"] == "off_duty") blocked.push_back(doctor["id"]);
+    require(exams.dongBoTuXepBacSi(blocked), 500, "Khong dong bo duoc ca kham");
     return {{"queue",queue()},{"active_exams",listExams(true)}};
 }
 Json WebService::listExams(bool activeOnly) {

@@ -5,6 +5,8 @@
 #include <fstream>
 #include <sstream>
 #include <cstdlib>
+#include <thread>
+#include <condition_variable>
 #include "WebService.h"
 
 using hospital_web::Json;
@@ -116,6 +118,10 @@ void registerRoutes(HospitalApp& app, WebService& service) {
         return handle(service, [&] { return service.changePriority(id, body(req)); });
     });
     CROW_ROUTE(app, "/api/doctors")([&] { return handle(service, [&] { return service.listDoctors(); }); });
+    CROW_ROUTE(app, "/api/doctors/<string>/status").methods(crow::HTTPMethod::Patch)
+    ([&](const crow::request& req, std::string id) {
+        return handle(service, [&] { return service.updateDoctor(id, body(req)); });
+    });
     CROW_ROUTE(app, "/api/assignments").methods(crow::HTTPMethod::Get, crow::HTTPMethod::Post)
     ([&](const crow::request& req) {
         return handle(service, [&] {
@@ -170,8 +176,32 @@ int main(int argc, char** argv) {
             app.get_middleware<AccessControl>().expected = "Basic " + crow::utility::base64encode(credentials, credentials.size());
         }
         registerRoutes(app, service);
+        service.syncExams();
+        std::mutex timerMutex;
+        std::condition_variable timerWake;
+        bool stopped = false;
+        std::thread synchronizer([&] {
+            std::unique_lock<std::mutex> timerLock(timerMutex);
+            while (!timerWake.wait_for(timerLock, std::chrono::seconds(5), [&] { return stopped; })) {
+                timerLock.unlock();
+                try {
+                    std::lock_guard<std::mutex> lock(service.mutex);
+                    service.syncExams();
+                } catch (const std::exception& error) {
+                    std::cerr << "Automatic sync: " << error.what() << '\n';
+                }
+                timerLock.lock();
+            }
+        });
+        const auto stopSync = [&] {
+            { std::lock_guard<std::mutex> lock(timerMutex); stopped = true; }
+            timerWake.notify_one();
+            synchronizer.join();
+        };
         std::cout << "Hospital API: http://" << bindAddress << ':' << port << '\n';
-        app.bindaddr(bindAddress).port(static_cast<uint16_t>(port)).concurrency(2).run();
+        try { app.bindaddr(bindAddress).port(static_cast<uint16_t>(port)).concurrency(2).run(); }
+        catch (...) { stopSync(); throw; }
+        stopSync();
     } catch (const std::exception& error) {
         std::cerr << error.what() << '\n'; return 1;
     }

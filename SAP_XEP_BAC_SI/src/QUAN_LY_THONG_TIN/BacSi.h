@@ -22,4 +22,5 @@ struct BacSi {
     time_t TamNghiDen = 0;
 
     bool DangLamViec = false;
+    bool TrucThuCong = false;
 };

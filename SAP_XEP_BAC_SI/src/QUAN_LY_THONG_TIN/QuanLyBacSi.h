@@ -22,7 +22,7 @@ public:
 
     vector<int> LayBacSiTheoKhoa(const string& khoa) const;
 
-    void KhoiTaoLich(time_t HienTai);
+    void KhoiTaoLich(time_t HienTai, bool onDinh = false);
 
     bool CoBacSiDangTruc(const string& khoa, time_t thoiDiem) const;
 

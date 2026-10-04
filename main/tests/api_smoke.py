@@ -112,7 +112,7 @@ def main():
             cid = ticket['checkin_id']
             request('/api/checkins', 'POST', {'patient_id':pid, 'department':'Khoa Cap cuu', 'priority':1}, 409)
             request(f'/api/patients/{pid}', 'DELETE', expected=409)
-            request('/api/queue/sync', 'POST')
+            # Check-in appears in queue immediately without an explicit sync.
             assert request('/api/queue')[0]['checkin_id'] == cid
             request(f'/api/checkins/{cid}/priority', 'PATCH', {'priority':2})
             request(f'/api/checkins/{cid}/priority', 'PATCH', {'priority':2})
@@ -166,6 +166,67 @@ def main():
             assert booked[0]['checkin_id'] != booked[1]['checkin_id']
             if booked[0]['doctor_id'] == booked[1]['doctor_id']:
                 assert booked[1]['start_time'] >= booked[0]['planned_end_time']
+            # Real doctor availability, chosen-doctor scheduling and pending cancellation.
+            did = next(d['id'] for d in request('/api/doctors')
+                       if d['department'] == 'Khoa Cap cuu' and d['id'] not in {a['doctor_id'] for a in booked})
+            endpoint = f'/api/doctors/{did}/status'
+            request('/api/doctors/unknown/status', 'PATCH', {'busy_minutes':30,'busy_reason':'Meeting'}, 404)
+            request(endpoint, 'PATCH', {'duty_mode':'invalid'}, 400)
+            request(endpoint, 'PATCH', {'busy_minutes':-1}, 400)
+            request(endpoint, 'PATCH', {'busy_minutes':30,'busy_reason':' '}, 400)
+            request(endpoint, 'PATCH', {'duty_mode':'on_duty'})
+            request('/api/assignments', 'POST', {'doctor_id':did,'department':'Khoa Noi'}, 400)
+            request('/api/assignments', 'POST', {'doctor_id':'unknown'}, 404)
+            request('/api/assignments', 'POST', {'doctor_id':''}, 400)
+            test_ids=[]
+            for i in range(2):
+                person=request('/api/patients','POST',{'name':f'Doctor test {i}','birth_date':'2000-01-01'},201)
+                test_ids.append(request('/api/checkins','POST',{'patient_id':person['id'],'department':'Khoa Cap cuu','priority':1},201)['checkin_id'])
+            result=request('/api/assignments','POST',{'doctor_id':did})
+            selected=[a for a in result['assignments'] if a['checkin_id'] in test_ids]
+            assert len(selected)==2 and all(a['doctor_id']==did for a in selected)
+            assert selected[1]['start_time'] >= selected[0]['planned_end_time']
+            active=[e for e in request('/api/exams') if e['doctor_id']==did]
+            assert len(active)==1
+            request('/api/assignments','POST',{'doctor_id':did},409)
+            result=request(endpoint,'PATCH',{'busy_minutes':30,'busy_reason':'Meeting'})
+            assert result['returned_to_queue']==1
+            assert any(q['checkin_id']==selected[1]['checkin_id'] for q in request('/api/queue'))
+            assert any(e['checkin_id']==active[0]['checkin_id'] for e in request('/api/exams'))
+            doctor=next(d for d in request('/api/doctors') if d['id']==did)
+            assert doctor['busy'] and doctor['status']=='examining'
+            request(f"/api/exams/{active[0]['checkin_id']}/finish",'POST')
+            assert next(d for d in request('/api/doctors') if d['id']==did)['status']=='busy'
+            process.terminate()
+            process.wait(timeout=10)
+            process=start()
+            ready()
+            assert next(d for d in request('/api/doctors') if d['id']==did)['busy']
+            request('/api/assignments','POST',{'doctor_id':did},409)
+            request(endpoint,'PATCH',{'busy_minutes':0})
+            assert not next(d for d in request('/api/doctors') if d['id']==did)['busy']
+            request(endpoint,'PATCH',{'duty_mode':'off_duty'})
+            request('/api/assignments','POST',{'doctor_id':did},409)
+            request(endpoint,'PATCH',{'duty_mode':'on_duty'})
+            # Future appointment becomes active via background sync, even after planned end.
+            with closing(sqlite3.connect(sandbox / 'TRUY_XUAT_BENH_NHAN/db/truyXuat.db')) as db:
+                db.execute("UPDATE ket_qua_kham SET end_time=datetime('now','localtime') WHERE checkin_id=?", (active[0]['checkin_id'],))
+                db.commit()
+            request('/api/assignments','POST',{'doctor_id':did})
+            late=selected[1]['checkin_id']
+            # Remove the newly admitted exam to simulate a server offline during appointment.
+            with closing(sqlite3.connect(sandbox / 'DANG_KHAM/db/dangKham.db')) as db:
+                db.execute('DELETE FROM dang_kham WHERE checkin_id=?',(late,))
+                db.commit()
+            with closing(sqlite3.connect(sandbox / 'TRUY_XUAT_BENH_NHAN/db/truyXuat.db')) as db:
+                db.execute("UPDATE ket_qua_kham SET start_time=datetime('now','localtime','-30 minutes'), end_time=datetime('now','localtime','-1 minute') WHERE checkin_id=?",(late,))
+                db.execute("UPDATE doctor_state SET busy_until=datetime('now','localtime','-1 minute') WHERE doctor_id=?",(did,))
+                db.commit()
+            deadline=time.monotonic()+12
+            while not any(e['checkin_id']==late for e in request('/api/exams')):
+                assert time.monotonic()<deadline, 'Background sync did not admit due exam'
+                time.sleep(.2)
+            assert not next(d for d in request('/api/doctors') if d['id']==did)['busy']
             removable = request('/api/patients', 'POST', {'name':'Delete', 'birth_date':'2000-01-01'}, 201)
             request(f"/api/patients/{removable['id']}", 'DELETE')
             request(f"/api/patients/{removable['id']}", expected=404)
@@ -203,7 +264,7 @@ def main():
                 rejected = subprocess.run([str(EXE),str(sandbox)], env=environment,
                                           capture_output=True, timeout=10)
                 assert rejected.returncode == 1, variables
-            print('PASS: API validation, CRUD, queue, scheduling/restart, diagnosis, concurrency, password protection')
+            print('PASS: API validation, CRUD, immediate queue, chosen doctor, busy/duty persistence, pending cancellation, background admission, diagnosis, concurrency, password protection')
         finally:
             if process.poll() is None:
                 process.terminate()

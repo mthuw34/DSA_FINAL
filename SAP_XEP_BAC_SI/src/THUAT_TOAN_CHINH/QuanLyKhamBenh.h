@@ -19,6 +19,9 @@ private:
 
     vector<BenhNhanKham> KetQuaTrongLanChay;
     bool DaMoPhongBanDotXuat = false;
+    bool WebMode = false;
+    vector<string> BacSiChoPhep;
+    vector<int> CheckinDaPhan;
 
     int TimChiSoKhoa(const string& khoa) const;
     void NapHangDoiTuDatabase();
@@ -39,6 +42,10 @@ private:
     );
 
 public:
+    bool KhoiDongWeb(const string& database, const string& csv,
+        const vector<BenhNhanKham>& daPhan, const vector<string>& choPhep,
+        const vector<string>& dangTruc);
+    const vector<BenhNhanKham>& LayKetQua() const { return KetQuaTrongLanChay; }
     bool KhoiDong(
         const string& duongDanDatabase,
         const string& duongDanCSV
@@ -46,9 +53,9 @@ public:
 
     void InDanhSachBacSiTheoKhoa(const string& khoa) const;
 
-    void XuLyKhoa(const string& khoa);
+    bool XuLyKhoa(const string& khoa);
 
-    void XuLyTatCaKhoa();
+    bool XuLyTatCaKhoa();
 
     void HienThiKetQua() const;
 };

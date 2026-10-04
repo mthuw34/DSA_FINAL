@@ -40,6 +40,7 @@ public:
     Json queue();
     Json changePriority(int id, const Json& data);
     Json listDoctors();
+    Json updateDoctor(const std::string& id, const Json& data);
     Json schedule(const Json& data);
     Json listAssignments();
     Json syncExams();

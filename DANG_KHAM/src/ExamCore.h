@@ -86,7 +86,18 @@ inline std::vector<ExamSession> synchronizationChanges(
         std::size_t position;
         const bool found = ids.find(assignment.session.checkinId, position);
         if (found && existing[position].endTime) continue;
-        if (!found && (!parseTime(assignment.plannedEnd, end) || end <= now)) continue;
+        if (!found && (!parseTime(assignment.plannedEnd, end) || end <= start)) continue;
+        // Ca tới giờ vẫn được nhận khi server khởi động trễ; một bác sĩ chỉ khám một ca.
+        if (!found) {
+            bool occupied = false;
+            for (const auto& session : existing)
+                if (!session.endTime && session.doctorId && !session.doctorId->empty() &&
+                    session.doctorId == assignment.session.doctorId) occupied = true;
+            for (const auto& session : changes)
+                if (!session.endTime && session.doctorId && !session.doctorId->empty() &&
+                    session.doctorId == assignment.session.doctorId) occupied = true;
+            if (occupied) continue;
+        }
         ExamSession result = found ? existing[position] : ExamSession{};
         result.checkinId = assignment.session.checkinId;
         result.patientId = assignment.session.patientId;

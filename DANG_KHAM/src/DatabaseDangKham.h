@@ -41,7 +41,7 @@ public:
 
     bool taoCauTruc();
 
-    bool dongBoTuXepBacSi();
+    bool dongBoTuXepBacSi(const std::vector<std::string>& blockedDoctors = {});
 
     bool docDanhSach(std::vector<ExamSession>& records);
     bool luuChanDoan(int checkinId, const std::string& diagnosis,

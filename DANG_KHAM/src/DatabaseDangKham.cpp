@@ -2,6 +2,7 @@
 
 #include <filesystem>
 #include <iostream>
+#include <algorithm>
 
 using namespace std;
 
@@ -389,7 +390,7 @@ bool DatabaseDangKham::docDanhSach(vector<ExamSession>& records) {
 }
 
 // Nhận thay đổi do tầng C++ đã tính và ghi từng bản ghi trong một giao dịch.
-bool DatabaseDangKham::dongBoTuXepBacSi() {
+bool DatabaseDangKham::dongBoTuXepBacSi(const vector<string>& blockedDoctors) {
     if (!sourceTableExists("ket_qua_kham")) {
         cerr << "Chua co bang ket_qua_kham trong truyXuat.db. Hay chay SAP_XEP_BAC_SI truoc.\n";
         return false;
@@ -398,6 +399,13 @@ bool DatabaseDangKham::dongBoTuXepBacSi() {
     vector<ExamAssignment> assignments;
     vector<ExamSession> existing;
     bool success = loadAssignments(db, assignments) && docDanhSach(existing);
+    assignments.erase(remove_if(assignments.begin(), assignments.end(), [&](const ExamAssignment& a) {
+        return !ExamCore::findActive(existing, a.session.checkinId) && a.session.doctorId &&
+            find(blockedDoctors.begin(), blockedDoctors.end(), *a.session.doctorId) != blockedDoctors.end();
+    }), assignments.end());
+    stable_sort(assignments.begin(), assignments.end(), [](const ExamAssignment& a, const ExamAssignment& b) {
+        return ExamCore::startsBefore(a.session, b.session);
+    });
     sqlite3_stmt* insert = nullptr;
     sqlite3_stmt* update = nullptr;
     const char* insertSql = "INSERT INTO dang_kham (checkin_id, patient_id, department, checkin_time, "

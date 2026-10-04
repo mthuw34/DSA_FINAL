@@ -25,9 +25,16 @@ Không cần cài Node/npm để chạy giao diện. Có thể chọn thư mục
 ```
 
 Nếu server cũ đang chạy, bấm Ctrl+C trong terminal đó, build lại rồi chạy lại server.
-Sau check-in, bấm **Đồng bộ** ở Hàng đợi hoặc Tổng quan. Tiếp theo bấm **Phân bác sĩ**;
-đồng bộ lần nữa khi ca đã tới giờ để cập nhật mục Đang khám.
-Nút Làm mới chỉ tải lại dữ liệu, không phân bác sĩ hoặc nhận ca tự động.
+Sau check-in, bệnh nhân tự xuất hiện ở **Hàng đợi** và rời danh sách **Hồ sơ chờ check-in**.
+Hồ sơ gốc vẫn được lưu để tra cứu trong lượt khám. Server tự đồng bộ mỗi 5 giây,
+kể cả khi đóng trình duyệt; giao diện tự tải dữ liệu mỗi 5 giây khi không mở biểu mẫu.
+Trong **Lịch khám → Phân bác sĩ**, chọn **Phân một khoa** hoặc **Phân theo bác sĩ**.
+Ca tới giờ được tự nhận khi bác sĩ trống; bác sĩ chỉ khám một ca cùng lúc.
+Trong **Bác sĩ**, trạng thái gồm Đang khám, Đang trong ca trực, Ngoài ca/nghỉ và Bận đột xuất.
+**Ca trực** cho chọn tự động theo lịch, đang trực thủ công hoặc nghỉ ca.
+**Bận đột xuất** nhận số phút (1–1440) và lý do; tự hết khi tới hạn hoặc bấm **Hết bận**.
+Báo bận/nghỉ trả các lịch chưa bắt đầu về hàng đợi để phân lại, giữ ca đang khám.
+Trạng thái được lưu trong SQLite và giữ sau khi khởi động lại server.
 Trong Đang khám, chọn **Đã hoàn tất** để xem lịch sử và thông tin điều trị đã lưu.
 
 Server tự tạo thư mục/bảng còn thiếu và bổ sung height/weight/bmi cho database cũ.
@@ -57,6 +64,7 @@ Sai dữ liệu trả 400, không tìm thấy trả 404, xung đột nghiệp v�
 | GET | `/api/queue` | Hàng chờ theo ưu tiên hiện tại; loại ca đã phân bác sĩ |
 | PATCH | `/api/checkins/{id}/priority` | Đổi ưu tiên của ca chưa phân bác sĩ |
 | GET | `/api/doctors` | Bác sĩ từ CSV |
+| PATCH | `/api/doctors/{id}/status` | Cập nhật ca trực hoặc bận đột xuất |
 | GET | `/api/assignments` | Lịch phân bác sĩ đã lưu |
 | POST | `/api/assignments` | Phân bác sĩ một khoa hoặc tất cả |
 | POST | `/api/exams/sync` | Như queue/sync; nhận các ca đã tới giờ khám |
@@ -101,16 +109,22 @@ if (active.some(exam => exam.checkin_id === ticket.checkin_id)) {
 }
 ```
 
-GET không ghi dữ liệu. Sau check-in, gọi POST queue/sync để cập nhật hàng đợi.
+GET không ghi dữ liệu. Check-in tự đồng bộ hàng đợi; tác vụ nền thử lại nếu tạm lỗi.
 PATCH ưu tiên cập nhật priority.db; POST assignments luôn đồng bộ queue trước khi phân.
-POST assignments nhận `{}` để phân tất cả khoa. Gọi lại không phân lại ca đã lưu;
+POST assignments nhận `{department: "Khoa Noi"}` để phân một khoa,
+`{doctor_id: "BS001"}` để phân cho một bác sĩ (tự lấy khoa của bác sĩ), hoặc `{}` để phân tất cả khoa.
+PATCH trạng thái nhận `{duty_mode: "auto" | "on_duty" | "off_duty"}` và/hoặc
+`{busy_minutes: 30, busy_reason: "Họp gấp"}`. Gửi `{busy_minutes: 0}` để hết bận sớm.
+Bác sĩ bận/nghỉ/đang khám không nhận lịch mới. Bác sĩ tự động ngoài giờ có thể nhận lịch trong ca tiếp theo.
+Gọi lại không phân lại ca đã lưu;
 lịch bận bác sĩ được khôi phục từ các ca trước để tránh chồng lịch.
-Thuật toán phân bác sĩ vẫn mô phỏng thời lượng 10–30 phút và bác sĩ bận đột xuất như module cũ.
+Thuật toán web mô phỏng thời lượng 10–30 phút; bận đột xuất do người dùng khai báo.
+Pha trực cấp cứu web ổn định theo thứ tự CSV, không đổi ngẫu nhiên khi phân lại.
 
 Check-in thường tuân theo giờ của `khoa.cpp`; cấp cứu nhận 24/7.
 Ngoài giờ, ưu tiên 1–2 có thể gửi `transfer_to_emergency: true` để chuyển cấp cứu.
 Mỗi bệnh nhân vẫn chỉ có một check-in theo schema hiện tại. Ca được nhận vào đang khám
-chỉ khi giờ bắt đầu đã tới và chưa qua giờ kết thúc dự kiến; ca đã nhận chỉ kết thúc
+chỉ khi giờ bắt đầu đã tới và bác sĩ chưa khám ca khác, kể cả server khởi động trễ; ca đã nhận chỉ kết thúc
 khi gọi API finish. Giờ dùng timezone của máy chạy server, nên cấu hình máy theo giờ Việt Nam.
 Tăng ưu tiên tự động theo thời gian chưa được chạy nền bởi server này.
 Không chạy chương trình CLI phân bác sĩ song song với server vì CLI cũ không khôi phục lịch đã lưu.

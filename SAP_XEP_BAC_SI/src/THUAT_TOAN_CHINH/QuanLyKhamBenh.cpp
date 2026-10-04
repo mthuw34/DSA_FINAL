@@ -4,6 +4,7 @@
 #include <random>
 #include <algorithm>
 #include <chrono>
+#include "../../../DANG_KHAM/src/ExamCore.h"
 using namespace std;
 
 namespace {
@@ -95,6 +96,7 @@ void QuanLyKhamBenh::NapHangDoiTuDatabase() {
     int soNap = 0;
 
     for (const BenhNhanKham& bn : tatCaBenhNhan) {
+        if (find(CheckinDaPhan.begin(), CheckinDaPhan.end(), bn.CheckinId) != CheckinDaPhan.end()) continue;
         int index = TimChiSoKhoa(bn.khoa);
 
         if (index < 0) {
@@ -160,6 +162,8 @@ bool QuanLyKhamBenh::TimBacSiTotNhat(
         QuanLyBacSiManager.LayBacSiTheoKhoa(khoa);
 
     for (int index : danhSach) {
+        if (WebMode && find(BacSiChoPhep.begin(), BacSiChoPhep.end(),
+                QuanLyBacSiManager.LayBacSi(index).id) == BacSiChoPhep.end()) continue;
         time_t thoiDiemNhan = 0;
 
         if (QuanLyBacSiManager.TinhThoiDiemNhanBenhNhan(
@@ -209,7 +213,7 @@ bool QuanLyKhamBenh::XuLyMotBenhNhan(
     BacSi& bs = QuanLyBacSiManager.LayBacSi(bacSiIndex);
     time_t ketThuc = batDau + thoiLuong * 60;
 
-    if (khoaThucTe != "Khoa Cap cuu" &&
+    if (!bs.TrucThuCong && khoaThucTe != "Khoa Cap cuu" &&
         !ThoiGian::DuThoiGianKhamKhoaThuong(
             batDau,
             thoiLuong
@@ -244,13 +248,13 @@ bool QuanLyKhamBenh::XuLyMotBenhNhan(
     return true;
 }
 
-void QuanLyKhamBenh::XuLyKhoa(
+bool QuanLyKhamBenh::XuLyKhoa(
     const string& khoa
 ) {
     int khoaIndex = TimChiSoKhoa(khoa);
     if (khoaIndex < 0) {
         cout << "Khoa khong hop le.\n";
-        return;
+        return false;
     }
 
     time_t hienTai = ThoiGian::HienTai();
@@ -261,7 +265,7 @@ void QuanLyKhamBenh::XuLyKhoa(
               << ThoiGian::DinhDang(hienTai) << "\n";
 
     // Mô phỏng trường hợp bác sĩ bận đột xuất (lấy xs ví dụ là 8%)
-    if (!DaMoPhongBanDotXuat) {
+    if (!WebMode && !DaMoPhongBanDotXuat) {
         QuanLyBacSiManager.MoPhongBanDotXuat(hienTai);
         DaMoPhongBanDotXuat = true;
     }
@@ -271,7 +275,7 @@ void QuanLyKhamBenh::XuLyKhoa(
 
     if (hangDoi.empty()) {
         cout << "Hang doi dang rong.\n";
-        return;
+        return true;
     }
 
     cout << "So benh nhan trong hang: "
@@ -280,7 +284,7 @@ void QuanLyKhamBenh::XuLyKhoa(
     vector<BenhNhanKham> ketQuaKhoa;
 
     // Cuối tuần khoa thường nghỉ -> chuyển BN sang khoa cấp cứu
-    if (khoa != "Khoa Cap cuu" &&
+    if (!WebMode && khoa != "Khoa Cap cuu" &&
         ThoiGian::LaCuoiTuan(hienTai)) {
 
         cout
@@ -351,14 +355,42 @@ void QuanLyKhamBenh::XuLyKhoa(
                       << " ket qua vao database.\n";
         } else {
             cout << "Ghi ket qua vao database that bai.\n";
+            return false;
         }
     }
+    return true;
 }
 
-void QuanLyKhamBenh::XuLyTatCaKhoa() {
+bool QuanLyKhamBenh::XuLyTatCaKhoa() {
     for (int i = 0; i < SO_KHOA; ++i) {
-        XuLyKhoa(CAC_KHOA[i]);
+        if (!XuLyKhoa(CAC_KHOA[i])) return false;
     }
+    return true;
+}
+
+bool QuanLyKhamBenh::KhoiDongWeb(const string& database, const string& csv,
+    const vector<BenhNhanKham>& daPhan, const vector<string>& choPhep,
+    const vector<string>& dangTruc) {
+    if (!QuanLyBacSiManager.DocCSV(csv) || !Database.MoDatabase(database)) return false;
+    WebMode = true;
+    BacSiChoPhep = choPhep;
+    const auto now = ThoiGian::HienTai();
+    QuanLyBacSiManager.KhoiTaoLich(now, true);
+    for (int i = 0; i < static_cast<int>(QuanLyBacSiManager.LayDanhSach().size()); ++i) {
+        auto& doctor = QuanLyBacSiManager.LayBacSi(i);
+        if (find(dangTruc.begin(), dangTruc.end(), doctor.id) != dangTruc.end()) {
+            doctor.TrucThuCong = true;
+            doctor.ThoiGianRanh = now;
+        }
+        for (const auto& appointment : daPhan) {
+            time_t end;
+            if (appointment.DoctorId == doctor.id && ExamCore::parseTime(appointment.EndTime, end))
+                doctor.ThoiGianRanh = max(doctor.ThoiGianRanh, end);
+        }
+    }
+    for (const auto& appointment : daPhan) CheckinDaPhan.push_back(appointment.CheckinId);
+    NapHangDoiTuDatabase();
+    return true;
 }
 
 void QuanLyKhamBenh::HienThiKetQua() const {

@@ -50,6 +50,8 @@ bool QuanLyBacSi::DocCSV(const string& duongDan) {
     int stt = 1;
 
     while (getline(file, line)) {
+        if (!line.empty() && line.back() == '\r') line.pop_back();
+        if (dongDau && line.compare(0, 3, "\xEF\xBB\xBF") == 0) line.erase(0, 3);
         if (line.empty()) continue;
 
         vector<string> cot = tachCSV(line);
@@ -110,7 +112,7 @@ vector<int> QuanLyBacSi::LayBacSiTheoKhoa(
     return result;
 }
 
-void QuanLyBacSi::KhoiTaoLich(time_t hienTai) {
+void QuanLyBacSi::KhoiTaoLich(time_t hienTai, bool onDinh) {
     NgayBatDauTrucCapCuu.assign(DanhSach.size(), 0);
 
     mt19937 gen(
@@ -122,7 +124,7 @@ void QuanLyBacSi::KhoiTaoLich(time_t hienTai) {
 
     for (int i = 0; i < static_cast<int>(DanhSach.size()); ++i) {
         if (DanhSach[i].khoaChuyenMon == "Khoa Cap cuu") {
-            NgayBatDauTrucCapCuu[i] = randomPha(gen);
+            NgayBatDauTrucCapCuu[i] = onDinh ? i % 2 : randomPha(gen);
         }
 
         DanhSach[i].TamNghiDen = 0;
@@ -185,6 +187,7 @@ bool QuanLyBacSi::TinhThoiDiemNhanBenhNhan(
     time_t t = hienTai;
     if (bs.ThoiGianRanh > t) t = bs.ThoiGianRanh;
     if (bs.TamNghiDen > t) t = bs.TamNghiDen;
+    if (bs.TrucThuCong) { batDau = t; return true; }
 
     if (khoa == "Khoa Cap cuu") {
         if (!ThoiGian::DangTrucCapCuu(
