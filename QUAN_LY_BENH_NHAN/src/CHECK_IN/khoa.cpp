@@ -5,37 +5,39 @@
 
 #include "khoa.h"
 
-std::string chonKhoa()
+using namespace std;
+
+string chonKhoa()
 {
     int luaChon;
 
     while (true)
     {
-        std::cout << "\n";
-        std::cout << "============================\n";
-        std::cout << "          CHON KHOA\n";
-        std::cout << "============================\n";
+        cout << "\n";
+        cout << "============================\n";
+        cout << "          CHON KHOA\n";
+        cout << "============================\n";
 
-        std::cout << "1. Khoa Cap cuu\n";
-        std::cout << "2. Khoa Noi\n";
-        std::cout << "3. Khoa Ngoai\n";
-        std::cout << "4. Khoa Tim mach\n";
-        std::cout << "5. Khoa Nhi\n";
-        std::cout << "6. Khoa San\n";
-        std::cout << "7. Khoa Tai Mui Hong\n";
-        std::cout << "8. Khoa Mat\n";
-        std::cout << "9. Khoa Da lieu\n";
-        std::cout << "10. Khoa Than kinh\n";
+        cout << "1. Khoa Cap cuu\n";
+        cout << "2. Khoa Noi\n";
+        cout << "3. Khoa Ngoai\n";
+        cout << "4. Khoa Tim mach\n";
+        cout << "5. Khoa Nhi\n";
+        cout << "6. Khoa San\n";
+        cout << "7. Khoa Tai Mui Hong\n";
+        cout << "8. Khoa Mat\n";
+        cout << "9. Khoa Da lieu\n";
+        cout << "10. Khoa Than kinh\n";
 
-        std::cout << "\nNhap khoa (1-10): ";
-        if (!(std::cin >> luaChon))
+        cout << "\nNhap khoa (1-10): ";
+        if (!(cin >> luaChon))
         {
-            if (std::cin.eof() || std::cin.bad())
+            if (cin.eof() || cin.bad())
                 return "";
 
-            std::cin.clear();
-            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
-            std::cout << "Lua chon khong hop le!\n";
+            cin.clear();
+            cin.ignore(numeric_limits<streamsize>::max(), '\n');
+            cout << "Lua chon khong hop le!\n";
             continue;
         }
 
@@ -53,23 +55,23 @@ std::string chonKhoa()
             case 10: return "Khoa Than kinh";
 
             default:
-                std::cout << "Lua chon khong hop le!\n";
+                cout << "Lua chon khong hop le!\n";
         }
     }
 }
 
 bool khoaDangHoatDong(
-    const std::string& department,
+    const string& department,
     int priority,
-    std::string& lyDo
+    string& lyDo
 )
 {
     // ===============================
     // LAY GIO THUC TE CUA MAY
     // ===============================
-    std::time_t now = std::time(nullptr);
+    time_t now = time(nullptr);
 
-    std::tm localTime{};
+    tm localTime{};
 
 #ifdef _WIN32
     localtime_s(&localTime, &now);
@@ -83,17 +85,17 @@ bool khoaDangHoatDong(
     int hienTai = hour * 60 + minute;
 
     // In ra de debug
-    std::cout << "\nGio thuc te hien tai: ";
+    cout << "\nGio thuc te hien tai: ";
 
     if (hour < 10)
-        std::cout << "0";
+        cout << "0";
 
-    std::cout << hour << ":";
+    cout << hour << ":";
 
     if (minute < 10)
-        std::cout << "0";
+        cout << "0";
 
-    std::cout << minute << '\n';
+    cout << minute << '\n';
 
 
     // ===============================

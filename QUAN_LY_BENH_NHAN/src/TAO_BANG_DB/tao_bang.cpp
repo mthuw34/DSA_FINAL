@@ -2,7 +2,9 @@
 #include <string>
 #include <sqlite3.h>
 
-static bool executeSql(sqlite3* db, const std::string& sql, const char* message)
+using namespace std;
+
+static bool executeSql(sqlite3* db, const string& sql, const char* message)
 {
     char* error = nullptr;
     const int result = sqlite3_exec(db, sql.c_str(), nullptr, nullptr, &error);
@@ -10,7 +12,7 @@ static bool executeSql(sqlite3* db, const std::string& sql, const char* message)
     if (result == SQLITE_OK)
         return true;
 
-    std::cerr << message << ": "
+    cerr << message << ": "
               << (error ? error : sqlite3_errmsg(db))
               << '\n';
 
@@ -20,7 +22,7 @@ static bool executeSql(sqlite3* db, const std::string& sql, const char* message)
 
 static bool columnExists(sqlite3* db, const char* table, const char* column)
 {
-    const std::string sql = "PRAGMA table_info(" + std::string(table) + ");";
+    const string sql = "PRAGMA table_info(" + string(table) + ");";
     sqlite3_stmt* stmt = nullptr;
 
     if (sqlite3_prepare_v2(db, sql.c_str(), -1, &stmt, nullptr) != SQLITE_OK)
@@ -33,7 +35,7 @@ static bool columnExists(sqlite3* db, const char* table, const char* column)
         const unsigned char* name = sqlite3_column_text(stmt, 1);
 
         if (name != nullptr &&
-            std::string(reinterpret_cast<const char*>(name)) == column)
+            string(reinterpret_cast<const char*>(name)) == column)
         {
             found = true;
             break;
@@ -54,8 +56,8 @@ static bool addColumnIfMissing(
     if (columnExists(db, table, column))
         return true;
 
-    const std::string sql =
-        "ALTER TABLE " + std::string(table) +
+    const string sql =
+        "ALTER TABLE " + string(table) +
         " ADD COLUMN " + column + " " + definition + ";";
 
     return executeSql(db, sql, "Loi bo sung cot");
@@ -67,7 +69,7 @@ int main()
 
     if (sqlite3_open("QUAN_LY_BENH_NHAN/db/hospital.db", &db) != SQLITE_OK)
     {
-        std::cerr << "Khong mo duoc database: "
+        cerr << "Khong mo duoc database: "
                   << (db ? sqlite3_errmsg(db) : "loi SQLite")
                   << '\n';
 
@@ -160,8 +162,8 @@ int main()
         return 1;
     }
 
-    std::cout << "Tao/kiem tra bang patients thanh cong\n";
-    std::cout << "Tao/kiem tra bang checkins thanh cong\n";
+    cout << "Tao/kiem tra bang patients thanh cong\n";
+    cout << "Tao/kiem tra bang checkins thanh cong\n";
 
     sqlite3_close(db);
     return 0;

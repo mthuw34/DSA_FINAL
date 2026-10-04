@@ -2,30 +2,41 @@
 
 #include <iostream>
 
+using namespace std;
+
 void NhapChanDoan(
-    const std::string& idBenhNhan,
-    std::string& chanDoan,
-    std::string& donThuoc
+    const string& idBenhNhan,
+    string& chanDoan,
+    string& donThuoc,
+    string& loiNhacBacSi
 )
 {
-    std::cout
+    cout
         << "\nBenh nhan ID: "
         << idBenhNhan
         << '\n';
 
-    std::cout
+    cout
         << "Chan doan cua benh nhan: ";
 
-    std::getline(
-        std::cin >> std::ws,
+    getline(
+        cin >> ws,
         chanDoan
     );
 
-    std::cout
+    cout
         << "Don thuoc cua benh nhan: ";
 
-    std::getline(
-        std::cin,
+    getline(
+        cin,
         donThuoc
+    );
+
+    cout
+        << "Loi nhac cua bac si: ";
+
+    getline(
+        cin,
+        loiNhacBacSi
     );
 }

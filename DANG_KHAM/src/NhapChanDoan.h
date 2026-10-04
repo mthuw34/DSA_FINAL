@@ -5,5 +5,6 @@
 void NhapChanDoan(
     const std::string& idBenhNhan,
     std::string& chanDoan,
-    std::string& donThuoc
+    std::string& donThuoc,
+    std::string& loiNhacBacSi
 );

@@ -24,6 +24,10 @@ private:
         const char* definition
     );
 
+    bool sourceTableExists(
+        const char* tableName
+    );
+
 public:
     ~DatabaseDangKham();
 
@@ -34,7 +38,7 @@ public:
 
     bool taoCauTruc();
 
-    bool taoViewHangDoiNguon();
+    bool dongBoTuXepBacSi();
 
     void dong();
 
