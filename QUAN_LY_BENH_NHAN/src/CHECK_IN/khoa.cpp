@@ -114,14 +114,14 @@ bool khoaDangHoatDong(
     const int SANG_BAT_DAU = 7 * 60 + 30;
     // 07:30
 
-    const int SANG_KET_THUC = 11 * 60 + 30;
-    // 11:30
+    const int SANG_KET_THUC = 10 * 60;
+    // 10:00
 
     const int CHIEU_BAT_DAU = 13 * 60;
     // 13:00
 
-    const int CHIEU_KET_THUC = 16 * 60 + 30;
-    // 16:30
+    const int CHIEU_KET_THUC = 15 * 60;
+    // 15:00
 
 
     // ===============================
@@ -133,7 +133,7 @@ bool khoaDangHoatDong(
     )
     {
         lyDo =
-            "Khoa dang trong gio lam viec buoi sang.";
+            "Khoa dang nhan check-in buoi sang 07:30 - 10:00.";
 
         return true;
     }
@@ -150,13 +150,13 @@ bool khoaDangHoatDong(
         if (priority <= 2)
         {
             lyDo =
-                "Khoa dang nghi trua. "
+                "Ngoai gio nhan check-in (07:30 - 10:00 va 13:00 - 15:00). "
                 "Benh nhan uu tien cao nen chuyen sang Khoa Cap cuu.";
         }
         else
         {
             lyDo =
-                "Khoa dang nghi trua 11:30 - 13:00. "
+                "Ngoai gio nhan check-in (07:30 - 10:00 va 13:00 - 15:00). "
                 "Khong nhan check-in.";
         }
 
@@ -173,7 +173,7 @@ bool khoaDangHoatDong(
     )
     {
         lyDo =
-            "Khoa dang trong gio lam viec buoi chieu.";
+            "Khoa dang nhan check-in buoi chieu 13:00 - 15:00.";
 
         return true;
     }
@@ -185,13 +185,13 @@ bool khoaDangHoatDong(
     if (priority <= 2)
     {
         lyDo =
-            "Khoa da het gio lam viec. "
+            "Ngoai gio nhan check-in (07:30 - 10:00 va 13:00 - 15:00). "
             "Benh nhan uu tien cao nen chuyen sang Khoa Cap cuu.";
     }
     else
     {
         lyDo =
-            "Khoa da het gio lam viec. "
+            "Ngoai gio nhan check-in (07:30 - 10:00 va 13:00 - 15:00). "
             "Khong nhan check-in.";
     }
 
