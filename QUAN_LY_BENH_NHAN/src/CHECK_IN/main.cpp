@@ -114,7 +114,7 @@ int main(int argc, char* argv[])
         return 1;
     }
 
-    // Rang buoc tai database de hai phien khong the check-in trung.
+    // Ràng buộc toàn vẹn khi lưu; việc tìm và kiểm tra trùng được thực hiện bằng C++.
     if (sqlite3_exec(db,
             "CREATE UNIQUE INDEX IF NOT EXISTS ux_checkins_patient_id "
             "ON checkins(patient_id);",

@@ -2,6 +2,7 @@
 #include <string>
 #include <sqlite3.h>
 #include "../patient_validation.h"
+#include "../HospitalPersistence.h"
 
 using namespace std;
 
@@ -30,6 +31,21 @@ int main() {
         sqlite3_close(db);
         return 1;
     }
+    vector<Patient> patients;
+    vector<CheckInRecord> checkIns;
+    if (!HospitalPersistence::loadPatients(db, patients) ||
+        !HospitalPersistence::loadCheckIns(db, checkIns)) { sqlite3_close(db); return 1; }
+    const auto ids = PatientCore::indexPatients(patients);
+    size_t position;
+    if (!ids.find(to_string(id), position)) {
+        cout << "Khong tim thay benh nhan co ID = " << id << '\n';
+        sqlite3_close(db); return 0;
+    }
+    if (PatientCore::latestCheckIn(checkIns, id)) {
+        cerr << "Xoa that bai: benh nhan dang check-in.\n";
+        sqlite3_close(db); return 1;
+    }
+    // Ghi thao tác xóa đã được quyết định ở tầng xử lý trong bộ nhớ.
     sqlite3_stmt* stmt = nullptr;
     if (sqlite3_prepare_v2(db, "DELETE FROM patients WHERE id = ?;", -1, &stmt, nullptr) != SQLITE_OK) {
         cerr << "Loi SQL: " << sqlite3_errmsg(db) << '\n';

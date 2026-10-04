@@ -1,6 +1,7 @@
 #include "NhapChanDoan.h"
 
 #include <iostream>
+#include <limits>
 
 using namespace std;
 
@@ -20,10 +21,8 @@ void NhapChanDoan(
     cout
         << "Chan doan cua benh nhan: ";
 
-    getline(
-        cin >> ws,
-        chanDoan
-    );
+    cin.ignore(numeric_limits<streamsize>::max(), '\n');
+    getline(cin, chanDoan);
 
     cout
         << "Don thuoc cua benh nhan: ";

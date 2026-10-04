@@ -2,14 +2,14 @@
 
 #include <string>
 #include <sqlite3.h>
-using namespace std;
+#include "ExamCore.h"
 class DatabaseDangKham
 {
 private:
     sqlite3* db = nullptr;
 
     bool executeSql(
-        const string& sql,
+        const std::string& sql,
         const char* errorMessage
     );
 
@@ -29,16 +29,24 @@ private:
     );
 
 public:
+    DatabaseDangKham() = default;
+    DatabaseDangKham(const DatabaseDangKham&) = delete;
+    DatabaseDangKham& operator=(const DatabaseDangKham&) = delete;
     ~DatabaseDangKham();
 
     bool mo(
-        const string& sourcePath,
-        const string& destinationPath
+        const std::string& sourcePath,
+        const std::string& destinationPath
     );
 
     bool taoCauTruc();
 
     bool dongBoTuXepBacSi();
+
+    bool docDanhSach(std::vector<ExamSession>& records);
+    bool luuChanDoan(int checkinId, const std::string& diagnosis,
+                    const std::string& prescription, const std::string& reminder);
+    bool ketThucPhien(int checkinId);
 
     void dong();
 

@@ -26,6 +26,10 @@ inline int ageFromBirthDate(const std::string& value)
     if (!today) throw std::runtime_error("Khong doc duoc ngay hien tai");
     const int currentYear = today->tm_year + 1900;
     const int currentMonth = today->tm_mon + 1;
+    if (year > currentYear ||
+        (year == currentYear && (month > currentMonth ||
+         (month == currentMonth && day > today->tm_mday))))
+        throw std::invalid_argument("Ngay sinh o tuong lai");
     const int age = currentYear - year -
         (currentMonth < month || (currentMonth == month && today->tm_mday < day));
     if (age < 0) throw std::invalid_argument("Ngay sinh o tuong lai");

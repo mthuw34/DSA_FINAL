@@ -4,6 +4,7 @@
 #include <vector>
 #include <sqlite3.h>
 #include "../patient_validation.h"
+#include "../HospitalPersistence.h"
 
 using namespace std;
 
@@ -75,9 +76,7 @@ int main()
     const char* sql =
         "INSERT INTO patients "
         "(name, birth_date, age, gender, hometown, address, phone) "
-        "SELECT ?1, ?2, ?3, ?4, ?5, ?6, ?7 WHERE NOT EXISTS ("
-        "SELECT 1 FROM patients WHERE name = ?1 AND birth_date = ?2 "
-        "AND gender IS ?4 AND hometown IS ?5 AND address IS ?6 AND phone IS ?7);";
+        "VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7);";
 
     sqlite3_stmt* stmt = nullptr;
 
@@ -97,21 +96,21 @@ int main()
         return 1;
     }
 
-    // Serialize imports so repeated/concurrent imports cannot duplicate records.
+    // Khóa ghi khi nạp dữ liệu và kiểm tra trùng bằng bảng băm trong bộ nhớ.
     if (sqlite3_exec(db, "BEGIN IMMEDIATE;", nullptr, nullptr, nullptr) != SQLITE_OK) {
         cerr << sqlite3_errmsg(db) << '\n';
         sqlite3_finalize(stmt);
         sqlite3_close(db);
         return 1;
     }
-    if (sqlite3_exec(db, "CREATE INDEX IF NOT EXISTS ix_patients_import ON patients(name, birth_date, phone);",
-                     nullptr, nullptr, nullptr) != SQLITE_OK) {
-        cerr << sqlite3_errmsg(db) << '\n';
+    vector<Patient> existing;
+    PatientCore::HashIndex identities;
+    if (!HospitalPersistence::loadPatients(db, existing)) {
         sqlite3_exec(db, "ROLLBACK;", nullptr, nullptr, nullptr);
-        sqlite3_finalize(stmt);
-        sqlite3_close(db);
-        return 1;
+        sqlite3_finalize(stmt); sqlite3_close(db); return 1;
     }
+    for (size_t i = 0; i < existing.size(); ++i)
+        identities.put(PatientCore::importKey(existing[i]), i);
 
     string line;
 
@@ -166,6 +165,14 @@ int main()
             string address   = data[5];
             string phone     = data[6];
 
+            Patient candidate;
+            candidate.name = name; candidate.birthDate = birthDate;
+            candidate.gender = gender; candidate.hometown = hometown;
+            candidate.address = address; candidate.phone = phone;
+            const string identity = PatientCore::importKey(candidate);
+            size_t position;
+            if (identities.find(identity, position)) { ++skipped; continue; }
+
             sqlite3_bind_text(
                 stmt, 1,
                 name.c_str(),
@@ -215,8 +222,8 @@ int main()
 
             if (sqlite3_step(stmt) == SQLITE_DONE)
             {
-                if (sqlite3_changes(db) > 0) ++success;
-                else ++skipped;
+                identities.put(identity, static_cast<size_t>(success));
+                ++success;
             }
             else
             {
