@@ -3,39 +3,119 @@
 #include <string>
 #include <sqlite3.h>
 
-// Chay tu thu muc goc du an, hoac truyen duong dan nguon va dich.
+static bool executeSql(
+    sqlite3* db,
+    const std::string& sql,
+    const char* errorMessage
+)
+{
+    char* error = nullptr;
+
+    if (sqlite3_exec(
+            db,
+            sql.c_str(),
+            nullptr,
+            nullptr,
+            &error
+        ) == SQLITE_OK)
+    {
+        return true;
+    }
+
+    std::cerr << errorMessage << ": "
+              << (error ? error : sqlite3_errmsg(db))
+              << '\n';
+
+    sqlite3_free(error);
+    return false;
+}
+
+static bool tableExists(
+    sqlite3* db,
+    const char* databaseName,
+    const char* tableName
+)
+{
+    const std::string sql =
+        "SELECT 1 FROM " + std::string(databaseName) +
+        ".sqlite_master WHERE type = 'table' AND name = ? LIMIT 1;";
+
+    sqlite3_stmt* stmt = nullptr;
+
+    if (sqlite3_prepare_v2(
+            db,
+            sql.c_str(),
+            -1,
+            &stmt,
+            nullptr
+        ) != SQLITE_OK)
+    {
+        return false;
+    }
+
+    sqlite3_bind_text(
+        stmt,
+        1,
+        tableName,
+        -1,
+        SQLITE_TRANSIENT
+    );
+
+    const bool exists =
+        sqlite3_step(stmt) == SQLITE_ROW;
+
+    sqlite3_finalize(stmt);
+    return exists;
+}
+
 int main(int argc, char* argv[])
 {
     if (argc != 1 && argc != 3)
     {
-        std::cerr << "Cach dung: DangKham.exe [truyXuat.db dangKham.db]\n";
+        std::cerr
+            << "Cach dung: DangKham.exe "
+            << "[truyXuat.db dangKham.db]\n";
+
         return 1;
     }
 
     const std::filesystem::path source =
-        argc == 3 ? argv[1] : "TRUY_XUAT_BENH_NHAN/db/truyXuat.db";
+        argc == 3
+            ? argv[1]
+            : "TRUY_XUAT_BENH_NHAN/db/truyXuat.db";
 
     const std::filesystem::path destination =
-        argc == 3 ? argv[2] : "DANG_KHAM/db/dangKham.db";
+        argc == 3
+            ? argv[2]
+            : "DANG_KHAM/db/dangKham.db";
 
     try
     {
         if (!std::filesystem::is_regular_file(source))
         {
-            std::cerr << "Khong tim thay database nguon: "
-                      << source << '\n';
+            std::cerr
+                << "Khong tim thay database nguon: "
+                << source
+                << '\n';
+
             return 1;
         }
 
         if (std::filesystem::exists(destination) &&
             std::filesystem::equivalent(source, destination))
         {
-            std::cerr << "Database nguon va dich phai khac nhau.\n";
+            std::cerr
+                << "Database nguon va dich phai khac nhau.\n";
+
             return 1;
         }
 
         if (!destination.parent_path().empty())
-            std::filesystem::create_directories(destination.parent_path());
+        {
+            std::filesystem::create_directories(
+                destination.parent_path()
+            );
+        }
     }
     catch (const std::filesystem::filesystem_error& error)
     {
@@ -44,7 +124,9 @@ int main(int argc, char* argv[])
     }
 
     sqlite3* db = nullptr;
-    const std::string destinationText = destination.string();
+
+    const std::string destinationText =
+        destination.string();
 
     if (sqlite3_open_v2(
             destinationText.c_str(),
@@ -53,9 +135,10 @@ int main(int argc, char* argv[])
             nullptr
         ) != SQLITE_OK)
     {
-        std::cerr << "Loi mo database: "
-                  << (db ? sqlite3_errmsg(db) : "loi SQLite")
-                  << '\n';
+        std::cerr
+            << "Loi mo database: "
+            << (db ? sqlite3_errmsg(db) : "loi SQLite")
+            << '\n';
 
         if (db != nullptr)
             sqlite3_close(db);
@@ -65,10 +148,12 @@ int main(int argc, char* argv[])
 
     sqlite3_busy_timeout(db, 5000);
 
-    // Mo database nguon chi doc.
+    // Gan truyXuat.db vao ket noi hien tai o che do chi doc.
     std::string sourceUri = "file:";
+
     const std::string absoluteSource =
-        std::filesystem::absolute(source).generic_string();
+        std::filesystem::absolute(source)
+            .generic_string();
 
     for (char c : absoluteSource)
     {
@@ -80,20 +165,20 @@ int main(int argc, char* argv[])
 
     sourceUri += "?mode=ro";
 
-    sqlite3_stmt* attach = nullptr;
+    sqlite3_stmt* attachStmt = nullptr;
 
     int result = sqlite3_prepare_v2(
         db,
         "ATTACH DATABASE ? AS source;",
         -1,
-        &attach,
+        &attachStmt,
         nullptr
     );
 
     if (result == SQLITE_OK)
     {
         result = sqlite3_bind_text(
-            attach,
+            attachStmt,
             1,
             sourceUri.c_str(),
             -1,
@@ -102,117 +187,156 @@ int main(int argc, char* argv[])
     }
 
     if (result == SQLITE_OK)
-        result = sqlite3_step(attach);
+        result = sqlite3_step(attachStmt);
 
-    sqlite3_finalize(attach);
+    sqlite3_finalize(attachStmt);
 
     if (result != SQLITE_DONE)
     {
-        std::cerr << "Loi doc database nguon: "
-                  << sqlite3_errmsg(db)
-                  << '\n';
+        std::cerr
+            << "Loi lien ket truyXuat.db: "
+            << sqlite3_errmsg(db)
+            << '\n';
 
         sqlite3_close(db);
         return 1;
     }
 
-    const char* tables[] = {
-        "queue_khoa_cap_cuu",
-        "queue_khoa_noi",
-        "queue_khoa_ngoai",
-        "queue_khoa_tim_mach",
-        "queue_khoa_nhi",
-        "queue_khoa_san",
-        "queue_khoa_tai_mui_hong",
-        "queue_khoa_mat",
-        "queue_khoa_da_lieu",
-        "queue_khoa_than_kinh"
-    };
-
-    auto execute = [db](const std::string& sql)
+    // DANG_KHAM chi lay ket qua sau khi SAP_XEP_BAC_SI
+    // da phan bac si va tao bang ket_qua_kham.
+    if (!tableExists(
+            db,
+            "source",
+            "ket_qua_kham"
+        ))
     {
-        char* error = nullptr;
+        std::cerr
+            << "Chua co bang ket_qua_kham trong truyXuat.db.\n"
+            << "Hay chay SAP_XEP_BAC_SI truoc khi cap nhat DANG_KHAM.\n";
 
-        if (sqlite3_exec(
-                db,
-                sql.c_str(),
-                nullptr,
-                nullptr,
-                &error
-            ) == SQLITE_OK)
-        {
-            return true;
-        }
+        sqlite3_exec(
+            db,
+            "DETACH DATABASE source;",
+            nullptr,
+            nullptr,
+            nullptr
+        );
 
-        std::cerr << "Loi SQL: "
-                  << (error ? error : sqlite3_errmsg(db))
-                  << '\n';
+        sqlite3_close(db);
+        return 1;
+    }
 
-        sqlite3_free(error);
-        return false;
-    };
+    bool success =
+        executeSql(
+            db,
+            "BEGIN IMMEDIATE;",
+            "Khong bat dau duoc giao dich"
+        );
 
-    bool success = execute("BEGIN IMMEDIATE;");
-    int total = 0;
-
-    for (const char* table : tables)
+    if (success)
     {
-        if (!success)
-            break;
-
-        const std::string name = table;
-
-        // DangKham chi can thong tin co ban cua benh nhan dang cho/kham.
-        success = execute(
-            "DROP TABLE IF EXISTS main." + name + ";"
+        success = executeSql(
+            db,
+            R"(
+                CREATE TABLE IF NOT EXISTS dang_kham (
+                    checkin_id INTEGER PRIMARY KEY,
+                    patient_id INTEGER NOT NULL,
+                    department TEXT NOT NULL,
+                    doctor_id TEXT NOT NULL,
+                    doctor_name TEXT NOT NULL,
+                    start_time TEXT NOT NULL,
+                    end_time TEXT NOT NULL
+                );
+            )",
+            "Loi tao bang dang_kham"
         );
-
-        if (!success)
-            break;
-
-        success = execute(
-            "CREATE TABLE main." + name + R"( (
-                retrieval_order INTEGER PRIMARY KEY,
-                checkin_id INTEGER NOT NULL UNIQUE,
-                patient_id INTEGER NOT NULL,
-                department TEXT NOT NULL,
-                checkin_time TEXT NOT NULL
-            );)"
-        );
-
-        if (!success)
-            break;
-
-        success = execute(
-            "INSERT INTO main." + name +
-            " (retrieval_order, checkin_id, patient_id, department, checkin_time) "
-            "SELECT retrieval_order, checkin_id, patient_id, department, checkin_time "
-            "FROM source." + name +
-            " ORDER BY retrieval_order;"
-        );
-
-        if (success)
-            total += sqlite3_changes(db);
     }
 
     if (success)
-        success = execute("DROP TABLE IF EXISTS main.dang_kham;");
+    {
+        success = executeSql(
+            db,
+            "DELETE FROM dang_kham;",
+            "Loi xoa snapshot dang_kham cu"
+        );
+    }
 
     if (success)
-        success = execute("COMMIT;");
-    else
-        execute("ROLLBACK;");
+    {
+        success = executeSql(
+            db,
+            R"(
+                INSERT INTO dang_kham (
+                    checkin_id,
+                    patient_id,
+                    department,
+                    doctor_id,
+                    doctor_name,
+                    start_time,
+                    end_time
+                )
+                SELECT
+                    checkin_id,
+                    patient_id,
+                    khoa_bac_si,
+                    doctor_id,
+                    doctor_name,
+                    start_time,
+                    end_time
+                FROM source.ket_qua_kham
+                WHERE Status = 'DA_XEP_BAC_SI'
+                  AND datetime(start_time) <= datetime('now', 'localtime')
+                  AND datetime(end_time) > datetime('now', 'localtime')
+                ORDER BY
+                    datetime(start_time) ASC,
+                    checkin_id ASC;
+            )",
+            "Loi cap nhat danh sach dang kham"
+        );
+    }
 
-    sqlite3_exec(db, "DETACH DATABASE source;", nullptr, nullptr, nullptr);
+    const int total =
+        success
+            ? sqlite3_changes(db)
+            : 0;
+
+    if (success)
+    {
+        success = executeSql(
+            db,
+            "COMMIT;",
+            "Khong commit duoc giao dich"
+        );
+    }
+    else
+    {
+        sqlite3_exec(
+            db,
+            "ROLLBACK;",
+            nullptr,
+            nullptr,
+            nullptr
+        );
+    }
+
+    sqlite3_exec(
+        db,
+        "DETACH DATABASE source;",
+        nullptr,
+        nullptr,
+        nullptr
+    );
+
     sqlite3_close(db);
 
     if (!success)
         return 1;
 
     std::cout
-        << "Da cap nhat 10 bang theo khoa: "
+        << "Da lien ket DANG_KHAM voi ket_qua_kham.\n"
+        << "So benh nhan dang kham hien tai: "
         << total
-        << " dong, moi bang 5 cot.\n"
+        << '\n'
         << "Database: "
         << destination
         << '\n';
