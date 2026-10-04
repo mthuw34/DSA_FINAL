@@ -148,7 +148,7 @@ void hienThiBangCheckIn(sqlite3* db)
     cout << "====================================================================\n";
 }
 
-// Xóa toàn bộ check-in và reset mã check-in.
+// Xóa toàn bộ check-in, giữ bộ đếm để mã mới không trùng với lịch sử khám.
 bool xoaToanBoCheckIn(sqlite3* db)
 {
     char* errorMessage = nullptr;
@@ -157,9 +157,6 @@ bool xoaToanBoCheckIn(sqlite3* db)
         BEGIN IMMEDIATE;
 
         DELETE FROM checkins;
-
-        DELETE FROM sqlite_sequence
-        WHERE name = 'checkins';
 
         COMMIT;
     )";
@@ -185,7 +182,7 @@ bool xoaToanBoCheckIn(sqlite3* db)
     }
 
     cout << "\nDa xoa toan bo du lieu trong bang checkins.\n";
-    cout << "Ma check-in da duoc reset ve 1.\n";
+    cout << "Ma check-in moi se tiep tuc tang de khong trung lich su kham.\n";
 
     return true;
 }

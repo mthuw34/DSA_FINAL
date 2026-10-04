@@ -88,7 +88,8 @@ void DangKhamManager::hienThiDangKham()
 
     int count = 0;
 
-    while (sqlite3_step(stmt) == SQLITE_ROW)
+    int result = SQLITE_ROW;
+    while ((result = sqlite3_step(stmt)) == SQLITE_ROW)
     {
         ++count;
 
@@ -121,7 +122,9 @@ void DangKhamManager::hienThiDangKham()
             << '\n';
     }
 
-    if (count == 0)
+    if (result != SQLITE_DONE)
+        cerr << "Loi doc danh sach dang kham: " << sqlite3_errmsg(db) << '\n';
+    else if (count == 0)
     {
         cout
             << "Khong co benh nhan nao dang kham.\n";
@@ -223,7 +226,7 @@ void DangKhamManager::nhapChanDoan()
         loiNhacBacSi
     );
 
-    if (chanDoan.empty())
+    if (!cin || chanDoan.find_first_not_of(" \t\r\n") == string::npos)
     {
         cout
             << "Chan doan khong duoc de trong.\n";
@@ -420,6 +423,10 @@ void DangKhamManager::chayMenu()
 
         if (choice == 0)
             break;
+
+        // Nhận ca vừa bắt đầu khi chương trình đang mở.
+        if (choice >= 1 && choice <= 3 && !database.dongBoTuXepBacSi())
+            continue;
 
         if (choice == 1)
             hienThiDangKham();

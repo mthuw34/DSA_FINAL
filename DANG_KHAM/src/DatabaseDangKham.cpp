@@ -236,6 +236,7 @@ bool DatabaseDangKham::taoCauTruc()
                     checkin_id INTEGER PRIMARY KEY,
                     patient_id INTEGER NOT NULL,
                     department TEXT NOT NULL,
+                    checkin_time TEXT NOT NULL,
                     doctor_id TEXT,
                     doctor_name TEXT,
                     start_time TEXT,
@@ -247,6 +248,15 @@ bool DatabaseDangKham::taoCauTruc()
                 );
             )",
             "Loi tao bang dang_kham"
+        ))
+    {
+        return false;
+    }
+
+    if (!addColumnIfMissing(
+            "dang_kham",
+            "checkin_time",
+            "TEXT"
         ))
     {
         return false;
@@ -324,7 +334,13 @@ bool DatabaseDangKham::taoCauTruc()
         return false;
     }
 
-    return true;
+    // ket_qua_kham chỉ có giờ bắt đầu khám; dùng làm mốc thay thế
+    // cho bản ghi cũ thiếu giờ check-in, không sửa giờ đã được lưu.
+    return executeSql(
+        "UPDATE dang_kham SET checkin_time = start_time "
+        "WHERE checkin_time IS NULL;",
+        "Loi bo sung thoi gian check-in"
+    );
 }
 
 // Nhận kết quả phân bác sĩ và đồng bộ vào dangKham.db.
@@ -345,6 +361,7 @@ bool DatabaseDangKham::dongBoTuXepBacSi()
                 checkin_id,
                 patient_id,
                 department,
+                checkin_time,
                 doctor_id,
                 doctor_name,
                 start_time,
@@ -354,6 +371,7 @@ bool DatabaseDangKham::dongBoTuXepBacSi()
                 checkin_id,
                 patient_id,
                 khoa_bac_si,
+                start_time,
                 doctor_id,
                 doctor_name,
                 start_time,
@@ -361,6 +379,13 @@ bool DatabaseDangKham::dongBoTuXepBacSi()
             FROM source.ket_qua_kham
             WHERE Status = 'DA_XEP_BAC_SI'
               AND datetime(start_time) <= datetime('now', 'localtime')
+              -- Chỉ nhận ca mới trong lịch dự kiến. Ca đã nhận vẫn chờ
+              -- bác sĩ kết thúc thực tế, không tự ghi end_time.
+              AND (datetime(end_time) > datetime('now', 'localtime')
+                   OR EXISTS (
+                       SELECT 1 FROM dang_kham
+                       WHERE dang_kham.checkin_id = source.ket_qua_kham.checkin_id
+                   ))
             ON CONFLICT(checkin_id)
             DO UPDATE SET
                 patient_id = excluded.patient_id,

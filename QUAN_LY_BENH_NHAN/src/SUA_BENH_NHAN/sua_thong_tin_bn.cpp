@@ -13,6 +13,7 @@ int main() {
     if (sqlite3_open("QUAN_LY_BENH_NHAN/db/hospital.db", &db) != SQLITE_OK) {
         cout << "Khong mo duoc database: "
              << sqlite3_errmsg(db) << endl;
+        sqlite3_close(db);
         return 1;
     }
 
@@ -59,13 +60,17 @@ int main() {
 
     sqlite3_bind_int(selectStmt, 1, id);
 
-    if (sqlite3_step(selectStmt) != SQLITE_ROW) {
-        cout << "Khong tim thay benh nhan co ID = "
-             << id << endl;
+    const int selectResult = sqlite3_step(selectStmt);
+    if (selectResult != SQLITE_ROW) {
+        if (selectResult != SQLITE_DONE)
+            cerr << "Loi doc benh nhan: " << sqlite3_errmsg(db) << '\n';
+        else
+            cout << "Khong tim thay benh nhan co ID = "
+                 << id << endl;
 
         sqlite3_finalize(selectStmt);
         sqlite3_close(db);
-        return 0;
+        return selectResult == SQLITE_DONE ? 0 : 1;
     }
 
     auto getText = [&](int column) -> string {
@@ -160,6 +165,12 @@ int main() {
     // 3. UPDATE database
     // =============================
 
+    if (!cin) {
+        cerr << "Nhap thong tin chua hoan tat; da huy cap nhat.\n";
+        sqlite3_close(db);
+        return 1;
+    }
+
     try {
         oldAge = ageFromBirthDate(oldBirthDate);
     } catch (const std::exception& error) {
@@ -250,7 +261,9 @@ int main() {
         id
     );
 
-    if (sqlite3_step(updateStmt) == SQLITE_DONE) {
+    const int updateResult = sqlite3_step(updateStmt);
+    const bool updated = updateResult == SQLITE_DONE && sqlite3_changes(db) > 0;
+    if (updated) {
 
         cout << "\nCap nhat thong tin thanh cong!"
              << endl;
@@ -270,5 +283,5 @@ int main() {
     sqlite3_finalize(updateStmt);
     sqlite3_close(db);
 
-    return 0;
+    return updated ? 0 : 1;
 }

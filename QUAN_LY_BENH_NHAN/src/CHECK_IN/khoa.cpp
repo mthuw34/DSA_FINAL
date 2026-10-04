@@ -76,10 +76,14 @@ bool khoaDangHoatDong(
     tm localTime{};
 
 #ifdef _WIN32
-    localtime_s(&localTime, &now);
+    if (localtime_s(&localTime, &now) != 0)
 #else
-    localtime_r(&now, &localTime);
+    if (localtime_r(&now, &localTime) == nullptr)
 #endif
+    {
+        lyDo = "Khong doc duoc gio hien tai; khong the check-in.";
+        return false;
+    }
 
     int hour = localTime.tm_hour;
     int minute = localTime.tm_min;
@@ -112,7 +116,7 @@ bool khoaDangHoatDong(
 
 
     // ===============================
-    // GIO LAM VIEC KHOA THUONG
+    // Giờ nhận check-in mới của khoa thường, không phải giờ kết thúc khám.
     // ===============================
 
     const int SANG_BAT_DAU = 7 * 60 + 30;
