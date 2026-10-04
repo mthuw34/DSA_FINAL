@@ -4,6 +4,7 @@
 
 using namespace std;
 
+// Chuc nang: Nhap chan doan, don thuoc va loi nhac cua bac si tu ban phim.
 void NhapChanDoan(
     const string& idBenhNhan,
     string& chanDoan,
