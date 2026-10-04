@@ -6,6 +6,7 @@
 
 using namespace std;
 
+// Chuc nang: Tim va cap nhat thong tin benh nhan theo ID.
 int main() {
     sqlite3* db = nullptr;
 
