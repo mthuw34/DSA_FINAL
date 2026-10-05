@@ -165,8 +165,11 @@ Json WebService::savePatient(const Json& data, int id) {
     updateText("hometown", p.hometown); updateText("address", p.address);
     const char* nullableFields[] = {"gender", "hometown", "address", "phone"};
     for (int i = 0; i < 4; ++i) if (data.contains(nullableFields[i])) p.nullFields &= ~(1u << i);
-    try { p.age = ageFromBirthDate(p.birthDate); }
-    catch (const std::invalid_argument& e) { throw ApiError(400, e.what()); }
+    try {
+        p.birthDate = normalizeBirthDate(p.birthDate);
+        p.age = ageFromBirthDate(p.birthDate);
+    } catch (const std::invalid_argument& e) { throw ApiError(400, e.what()); }
+    require(validPhone(p.phone), 400, "So dien thoai phai bat dau bang 0 va du 10 chu so");
     auto measure = [&](const char* key, double& value, double maximum) {
         if (!data.contains(key)) return;
         require(data[key].is_number(), 400, std::string(key) + " phai la so");
