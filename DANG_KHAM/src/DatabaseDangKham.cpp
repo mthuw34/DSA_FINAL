@@ -341,7 +341,8 @@ bool DatabaseDangKham::taoCauTruc()
                     doctor_id TEXT PRIMARY KEY,
                     duty_mode TEXT NOT NULL DEFAULT 'auto',
                     busy_until TEXT,
-                    busy_reason TEXT NOT NULL DEFAULT ''
+                    busy_reason TEXT NOT NULL DEFAULT '',
+                    overtime_until TEXT
                 );
             )",
             "Loi tao bang trang thai bac si"
@@ -349,6 +350,8 @@ bool DatabaseDangKham::taoCauTruc()
     {
         return false;
     }
+
+    if (!addColumnIfMissing("doctor_state", "overtime_until", "TEXT")) return false;
 
     if (!addColumnIfMissing(
             "dang_kham",
