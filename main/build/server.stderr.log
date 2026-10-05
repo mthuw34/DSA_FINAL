@@ -1,0 +1,330 @@
+(2026-10-04 15:01:57) [INFO    ] Crow/master server is running at http://127.0.0.1:18080 using 2 threads
+(2026-10-04 15:01:57) [INFO    ] Call `app.loglevel(crow::LogLevel::Warning)` to hide Info level logs.
+(2026-10-04 15:02:13) [INFO    ] Request: 127.0.0.1:56484 0x21168966fb0 HTTP/1.1 GET /
+(2026-10-04 15:02:13) [INFO    ] Response: 0x21168966fb0 / 200 0
+(2026-10-04 15:02:13) [INFO    ] Request: 127.0.0.1:56484 0x21168966fb0 HTTP/1.1 GET /api/health
+(2026-10-04 15:02:13) [INFO    ] Response: 0x21168966fb0 /api/health 200 0
+(2026-10-04 15:02:23) [INFO    ] Request: 127.0.0.1:56488 0x21168968d80 HTTP/1.1 GET /api/patients
+(2026-10-04 15:02:25) [INFO    ] Response: 0x21168968d80 /api/patients 200 0
+(2026-10-04 15:02:26) [INFO    ] Request: 127.0.0.1:56488 0x21168968d80 HTTP/1.1 GET /api/departments
+(2026-10-04 15:02:26) [INFO    ] Response: 0x21168968d80 /api/departments 200 0
+(2026-10-04 15:02:26) [INFO    ] Request: 127.0.0.1:56488 0x21168968d80 HTTP/1.1 GET /api/checkins
+(2026-10-04 15:02:26) [INFO    ] Response: 0x21168968d80 /api/checkins 200 0
+(2026-10-04 15:02:26) [INFO    ] Request: 127.0.0.1:56488 0x21168968d80 HTTP/1.1 GET /api/queue
+(2026-10-04 15:02:26) [INFO    ] Response: 0x21168968d80 /api/queue 200 0
+(2026-10-04 15:02:26) [INFO    ] Request: 127.0.0.1:56488 0x21168968d80 HTTP/1.1 GET /api/assignments
+(2026-10-04 15:02:26) [INFO    ] Response: 0x21168968d80 /api/assignments 200 0
+(2026-10-04 15:02:26) [INFO    ] Request: 127.0.0.1:56488 0x21168968d80 HTTP/1.1 GET /api/exams
+(2026-10-04 15:02:26) [INFO    ] Response: 0x21168968d80 /api/exams?active=false 200 0
+(2026-10-04 15:02:26) [INFO    ] Request: 127.0.0.1:56488 0x21168968d80 HTTP/1.1 GET /api/doctors
+(2026-10-04 15:02:26) [INFO    ] Response: 0x21168968d80 /api/doctors 200 0
+(2026-10-04 15:02:55) [INFO    ] Request: 127.0.0.1:53871 0x21168966fb0 HTTP/1.1 GET /
+(2026-10-04 15:02:55) [INFO    ] Response: 0x21168966fb0 / 200 0
+(2026-10-04 15:02:55) [INFO    ] Request: 127.0.0.1:53871 0x21168966fb0 HTTP/1.1 GET /assets/app.css
+(2026-10-04 15:02:55) [INFO    ] Response: 0x21168966fb0 /assets/app.css 200 0
+(2026-10-04 15:02:55) [INFO    ] Request: 127.0.0.1:63706 0x21168968d80 HTTP/1.1 GET /assets/app.js
+(2026-10-04 15:02:55) [INFO    ] Response: 0x21168968d80 /assets/app.js 200 0
+(2026-10-04 15:02:56) [INFO    ] Request: 127.0.0.1:63706 0x21168968d80 HTTP/1.1 GET /api/patients
+(2026-10-04 15:02:57) [INFO    ] Response: 0x21168968d80 /api/patients 200 0
+(2026-10-04 15:02:57) [INFO    ] Request: 127.0.0.1:53871 0x21168966fb0 HTTP/1.1 GET /api/departments
+(2026-10-04 15:02:57) [INFO    ] Response: 0x21168966fb0 /api/departments 200 0
+(2026-10-04 15:02:57) [INFO    ] Request: 127.0.0.1:63706 0x21168968d80 HTTP/1.1 GET /api/doctors
+(2026-10-04 15:02:57) [INFO    ] Response: 0x21168968d80 /api/doctors 200 0
+(2026-10-04 15:02:57) [INFO    ] Request: 127.0.0.1:60756 0x211689792d0 HTTP/1.1 GET /api/checkins
+(2026-10-04 15:02:57) [INFO    ] Response: 0x211689792d0 /api/checkins 200 0
+(2026-10-04 15:02:57) [INFO    ] Request: 127.0.0.1:53781 0x21168b4f2b0 HTTP/1.1 GET /api/queue
+(2026-10-04 15:02:57) [INFO    ] Response: 0x21168b4f2b0 /api/queue 200 0
+(2026-10-04 15:02:57) [INFO    ] Request: 127.0.0.1:56235 0x2116a605030 HTTP/1.1 GET /api/assignments
+(2026-10-04 15:02:57) [INFO    ] Response: 0x2116a605030 /api/assignments 200 0
+(2026-10-04 15:02:57) [INFO    ] Request: 127.0.0.1:55326 0x211689872a0 HTTP/1.1 GET /api/exams
+(2026-10-04 15:02:57) [INFO    ] Response: 0x211689872a0 /api/exams?active=false 200 0
+(2026-10-04 15:06:58) [INFO    ] Request: 127.0.0.1:56270 0x21168a4b020 HTTP/1.1 POST /api/assignments
+(2026-10-04 15:06:58) [INFO    ] Response: 0x21168a4b020 /api/assignments 200 0
+(2026-10-04 15:06:58) [INFO    ] Request: 127.0.0.1:56270 0x21168a4b020 HTTP/1.1 GET /api/patients
+(2026-10-04 15:06:59) [INFO    ] Response: 0x21168a4b020 /api/patients 200 0
+(2026-10-04 15:06:59) [INFO    ] Request: 127.0.0.1:49787 0x21168968d80 HTTP/1.1 GET /api/departments
+(2026-10-04 15:06:59) [INFO    ] Response: 0x21168968d80 /api/departments 200 0
+(2026-10-04 15:06:59) [INFO    ] Request: 127.0.0.1:54405 0x21168966fb0 HTTP/1.1 GET /api/checkins
+(2026-10-04 15:06:59) [INFO    ] Response: 0x21168966fb0 /api/checkins 200 0
+(2026-10-04 15:06:59) [INFO    ] Request: 127.0.0.1:54503 0x211689872a0 HTTP/1.1 GET /api/queue
+(2026-10-04 15:06:59) [INFO    ] Response: 0x211689872a0 /api/queue 200 0
+(2026-10-04 15:06:59) [INFO    ] Request: 127.0.0.1:63478 0x211689792d0 HTTP/1.1 GET /api/assignments
+(2026-10-04 15:06:59) [INFO    ] Response: 0x211689792d0 /api/assignments 200 0
+(2026-10-04 15:06:59) [INFO    ] Request: 127.0.0.1:55053 0x2116a620030 HTTP/1.1 GET /api/exams
+(2026-10-04 15:06:59) [INFO    ] Response: 0x2116a620030 /api/exams?active=false 200 0
+(2026-10-04 15:06:59) [INFO    ] Request: 127.0.0.1:49787 0x21168968d80 HTTP/1.1 GET /api/doctors
+(2026-10-04 15:06:59) [INFO    ] Response: 0x21168968d80 /api/doctors 200 0
+(2026-10-04 15:08:02) [INFO    ] Request: 127.0.0.1:60737 0x2116897dbc0 HTTP/1.1 GET /api/patients
+(2026-10-04 15:08:03) [INFO    ] Response: 0x2116897dbc0 /api/patients 200 0
+(2026-10-04 15:08:03) [INFO    ] Request: 127.0.0.1:53610 0x21168968d80 HTTP/1.1 GET /api/departments
+(2026-10-04 15:08:03) [INFO    ] Response: 0x21168968d80 /api/departments 200 0
+(2026-10-04 15:08:03) [INFO    ] Request: 127.0.0.1:55192 0x21168966fb0 HTTP/1.1 GET /api/checkins
+(2026-10-04 15:08:03) [INFO    ] Response: 0x21168966fb0 /api/checkins 200 0
+(2026-10-04 15:08:03) [INFO    ] Request: 127.0.0.1:60450 0x211689792d0 HTTP/1.1 GET /api/queue
+(2026-10-04 15:08:03) [INFO    ] Response: 0x211689792d0 /api/queue 200 0
+(2026-10-04 15:08:03) [INFO    ] Request: 127.0.0.1:53224 0x211689872a0 HTTP/1.1 GET /api/assignments
+(2026-10-04 15:08:03) [INFO    ] Response: 0x211689872a0 /api/assignments 200 0
+(2026-10-04 15:08:03) [INFO    ] Request: 127.0.0.1:53231 0x211689aaa60 HTTP/1.1 GET /api/exams
+(2026-10-04 15:08:03) [INFO    ] Response: 0x211689aaa60 /api/exams?active=false 200 0
+(2026-10-04 15:08:03) [INFO    ] Request: 127.0.0.1:53610 0x21168968d80 HTTP/1.1 GET /api/doctors
+(2026-10-04 15:08:03) [INFO    ] Response: 0x21168968d80 /api/doctors 200 0
+(2026-10-04 15:08:27) [INFO    ] Request: 127.0.0.1:55676 0x2116896cdf0 HTTP/1.1 POST /api/checkins
+(2026-10-04 15:08:28) [INFO    ] Response: 0x2116896cdf0 /api/checkins 201 0
+(2026-10-04 15:08:28) [INFO    ] Request: 127.0.0.1:55676 0x2116896cdf0 HTTP/1.1 GET /api/patients
+(2026-10-04 15:08:29) [INFO    ] Response: 0x2116896cdf0 /api/patients 200 0
+(2026-10-04 15:08:29) [INFO    ] Request: 127.0.0.1:49948 0x21168968d80 HTTP/1.1 GET /api/departments
+(2026-10-04 15:08:29) [INFO    ] Response: 0x21168968d80 /api/departments 200 0
+(2026-10-04 15:08:29) [INFO    ] Request: 127.0.0.1:63332 0x211689aaa60 HTTP/1.1 GET /api/checkins
+(2026-10-04 15:08:29) [INFO    ] Response: 0x211689aaa60 /api/checkins 200 0
+(2026-10-04 15:08:29) [INFO    ] Request: 127.0.0.1:65477 0x21168966fb0 HTTP/1.1 GET /api/queue
+(2026-10-04 15:08:29) [INFO    ] Response: 0x21168966fb0 /api/queue 200 0
+(2026-10-04 15:08:29) [INFO    ] Request: 127.0.0.1:54928 0x21168b25130 HTTP/1.1 GET /api/assignments
+(2026-10-04 15:08:29) [INFO    ] Response: 0x21168b25130 /api/assignments 200 0
+(2026-10-04 15:08:29) [INFO    ] Request: 127.0.0.1:57285 0x2116897dbc0 HTTP/1.1 GET /api/exams
+(2026-10-04 15:08:29) [INFO    ] Response: 0x2116897dbc0 /api/exams?active=false 200 0
+(2026-10-04 15:08:29) [INFO    ] Request: 127.0.0.1:49948 0x21168968d80 HTTP/1.1 GET /api/doctors
+(2026-10-04 15:08:29) [INFO    ] Response: 0x21168968d80 /api/doctors 200 0
+(2026-10-04 15:08:50) [INFO    ] Request: 127.0.0.1:55910 0x211689872a0 HTTP/1.1 POST /api/assignments
+(2026-10-04 15:08:50) [INFO    ] Response: 0x211689872a0 /api/assignments 200 0
+(2026-10-04 15:08:50) [INFO    ] Request: 127.0.0.1:55910 0x211689872a0 HTTP/1.1 GET /api/patients
+(2026-10-04 15:08:52) [INFO    ] Response: 0x211689872a0 /api/patients 200 0
+(2026-10-04 15:08:52) [INFO    ] Request: 127.0.0.1:52069 0x21168968d80 HTTP/1.1 GET /api/departments
+(2026-10-04 15:08:52) [INFO    ] Response: 0x21168968d80 /api/departments 200 0
+(2026-10-04 15:08:52) [INFO    ] Request: 127.0.0.1:62151 0x21168966fb0 HTTP/1.1 GET /api/checkins
+(2026-10-04 15:08:52) [INFO    ] Response: 0x21168966fb0 /api/checkins 200 0
+(2026-10-04 15:08:52) [INFO    ] Request: 127.0.0.1:65055 0x21168993e40 HTTP/1.1 GET /api/queue
+(2026-10-04 15:08:52) [INFO    ] Response: 0x21168993e40 /api/queue 200 0
+(2026-10-04 15:08:52) [INFO    ] Request: 127.0.0.1:57107 0x2116a991050 HTTP/1.1 GET /api/assignments
+(2026-10-04 15:08:52) [INFO    ] Response: 0x2116a991050 /api/assignments 200 0
+(2026-10-04 15:08:52) [INFO    ] Request: 127.0.0.1:60278 0x211689a7e60 HTTP/1.1 GET /api/exams
+(2026-10-04 15:08:52) [INFO    ] Response: 0x211689a7e60 /api/exams?active=false 200 0
+(2026-10-04 15:08:52) [INFO    ] Request: 127.0.0.1:52069 0x21168968d80 HTTP/1.1 GET /api/doctors
+(2026-10-04 15:08:52) [INFO    ] Response: 0x21168968d80 /api/doctors 200 0
+(2026-10-04 15:09:04) [INFO    ] Request: 127.0.0.1:59431 0x21168b4e930 HTTP/1.1 POST /api/assignments
+(2026-10-04 15:09:05) [INFO    ] Response: 0x21168b4e930 /api/assignments 200 0
+(2026-10-04 15:09:05) [INFO    ] Request: 127.0.0.1:59431 0x21168b4e930 HTTP/1.1 GET /api/patients
+(2026-10-04 15:09:06) [INFO    ] Response: 0x21168b4e930 /api/patients 200 0
+(2026-10-04 15:09:06) [INFO    ] Request: 127.0.0.1:61388 0x21168968d80 HTTP/1.1 GET /api/departments
+(2026-10-04 15:09:06) [INFO    ] Response: 0x21168968d80 /api/departments 200 0
+(2026-10-04 15:09:06) [INFO    ] Request: 127.0.0.1:60544 0x2116a991050 HTTP/1.1 GET /api/checkins
+(2026-10-04 15:09:06) [INFO    ] Response: 0x2116a991050 /api/checkins 200 0
+(2026-10-04 15:09:06) [INFO    ] Request: 127.0.0.1:56191 0x21169294030 HTTP/1.1 GET /api/queue
+(2026-10-04 15:09:06) [INFO    ] Response: 0x21169294030 /api/queue 200 0
+(2026-10-04 15:09:06) [INFO    ] Request: 127.0.0.1:63674 0x2116897dbc0 HTTP/1.1 GET /api/assignments
+(2026-10-04 15:09:06) [INFO    ] Response: 0x2116897dbc0 /api/assignments 200 0
+(2026-10-04 15:09:06) [INFO    ] Request: 127.0.0.1:60914 0x211689792d0 HTTP/1.1 GET /api/exams
+(2026-10-04 15:09:06) [INFO    ] Response: 0x211689792d0 /api/exams?active=false 200 0
+(2026-10-04 15:09:06) [INFO    ] Request: 127.0.0.1:61388 0x21168968d80 HTTP/1.1 GET /api/doctors
+(2026-10-04 15:09:06) [INFO    ] Response: 0x21168968d80 /api/doctors 200 0
+(2026-10-04 15:09:17) [INFO    ] Request: 127.0.0.1:62087 0x21168a4b020 HTTP/1.1 GET /api/patients
+(2026-10-04 15:09:18) [INFO    ] Response: 0x21168a4b020 /api/patients 200 0
+(2026-10-04 15:09:18) [INFO    ] Request: 127.0.0.1:63702 0x21168968d80 HTTP/1.1 GET /api/departments
+(2026-10-04 15:09:18) [INFO    ] Response: 0x21168968d80 /api/departments 200 0
+(2026-10-04 15:09:18) [INFO    ] Request: 127.0.0.1:64074 0x2116897dbc0 HTTP/1.1 GET /api/checkins
+(2026-10-04 15:09:19) [INFO    ] Response: 0x2116897dbc0 /api/checkins 200 0
+(2026-10-04 15:09:19) [INFO    ] Request: 127.0.0.1:63374 0x21168966fb0 HTTP/1.1 GET /api/queue
+(2026-10-04 15:09:19) [INFO    ] Response: 0x21168966fb0 /api/queue 200 0
+(2026-10-04 15:09:19) [INFO    ] Request: 127.0.0.1:60216 0x21168b4e550 HTTP/1.1 GET /api/assignments
+(2026-10-04 15:09:19) [INFO    ] Response: 0x21168b4e550 /api/assignments 200 0
+(2026-10-04 15:09:19) [INFO    ] Request: 127.0.0.1:64609 0x211689a7e60 HTTP/1.1 GET /api/exams
+(2026-10-04 15:09:19) [INFO    ] Response: 0x211689a7e60 /api/exams?active=false 200 0
+(2026-10-04 15:09:19) [INFO    ] Request: 127.0.0.1:63702 0x21168968d80 HTTP/1.1 GET /api/doctors
+(2026-10-04 15:09:19) [INFO    ] Response: 0x21168968d80 /api/doctors 200 0
+(2026-10-04 15:09:22) [INFO    ] Request: 127.0.0.1:63702 0x21168968d80 HTTP/1.1 POST /api/queue/sync
+(2026-10-04 15:09:22) [INFO    ] Response: 0x21168968d80 /api/queue/sync 200 0
+(2026-10-04 15:09:22) [INFO    ] Request: 127.0.0.1:63702 0x21168968d80 HTTP/1.1 GET /api/patients
+(2026-10-04 15:09:24) [INFO    ] Response: 0x21168968d80 /api/patients 200 0
+(2026-10-04 15:09:24) [INFO    ] Request: 127.0.0.1:64609 0x211689a7e60 HTTP/1.1 GET /api/departments
+(2026-10-04 15:09:24) [INFO    ] Response: 0x211689a7e60 /api/departments 200 0
+(2026-10-04 15:09:24) [INFO    ] Request: 127.0.0.1:60216 0x21168b4e550 HTTP/1.1 GET /api/checkins
+(2026-10-04 15:09:24) [INFO    ] Response: 0x21168b4e550 /api/checkins 200 0
+(2026-10-04 15:09:24) [INFO    ] Request: 127.0.0.1:63374 0x21168966fb0 HTTP/1.1 GET /api/queue
+(2026-10-04 15:09:24) [INFO    ] Response: 0x21168966fb0 /api/queue 200 0
+(2026-10-04 15:09:24) [INFO    ] Request: 127.0.0.1:64074 0x2116897dbc0 HTTP/1.1 GET /api/assignments
+(2026-10-04 15:09:24) [INFO    ] Response: 0x2116897dbc0 /api/assignments 200 0
+(2026-10-04 15:09:24) [INFO    ] Request: 127.0.0.1:62087 0x21168a4b020 HTTP/1.1 GET /api/exams
+(2026-10-04 15:09:24) [INFO    ] Response: 0x21168a4b020 /api/exams?active=false 200 0
+(2026-10-04 15:09:24) [INFO    ] Request: 127.0.0.1:64609 0x211689a7e60 HTTP/1.1 GET /api/doctors
+(2026-10-04 15:09:24) [INFO    ] Response: 0x211689a7e60 /api/doctors 200 0
+(2026-10-04 15:10:04) [INFO    ] Request: 127.0.0.1:65243 0x211689792d0 HTTP/1.1 PATCH /api/exams/3/diagnosis
+(2026-10-04 15:10:04) [INFO    ] Response: 0x211689792d0 /api/exams/3/diagnosis 200 0
+(2026-10-04 15:10:04) [INFO    ] Request: 127.0.0.1:65243 0x211689792d0 HTTP/1.1 GET /api/patients
+(2026-10-04 15:10:06) [INFO    ] Response: 0x211689792d0 /api/patients 200 0
+(2026-10-04 15:10:06) [INFO    ] Request: 127.0.0.1:56009 0x21168966fb0 HTTP/1.1 GET /api/departments
+(2026-10-04 15:10:06) [INFO    ] Response: 0x21168966fb0 /api/departments 200 0
+(2026-10-04 15:10:06) [INFO    ] Request: 127.0.0.1:50792 0x21168968d80 HTTP/1.1 GET /api/checkins
+(2026-10-04 15:10:06) [INFO    ] Response: 0x21168968d80 /api/checkins 200 0
+(2026-10-04 15:10:06) [INFO    ] Request: 127.0.0.1:62051 0x21168b4e550 HTTP/1.1 GET /api/queue
+(2026-10-04 15:10:06) [INFO    ] Response: 0x21168b4e550 /api/queue 200 0
+(2026-10-04 15:10:06) [INFO    ] Request: 127.0.0.1:61845 0x211689a7e60 HTTP/1.1 GET /api/assignments
+(2026-10-04 15:10:06) [INFO    ] Response: 0x211689a7e60 /api/assignments 200 0
+(2026-10-04 15:10:06) [INFO    ] Request: 127.0.0.1:56970 0x2116897dbc0 HTTP/1.1 GET /api/exams
+(2026-10-04 15:10:06) [INFO    ] Response: 0x2116897dbc0 /api/exams?active=false 200 0
+(2026-10-04 15:10:06) [INFO    ] Request: 127.0.0.1:65243 0x211689792d0 HTTP/1.1 GET /api/doctors
+(2026-10-04 15:10:06) [INFO    ] Response: 0x211689792d0 /api/doctors 200 0
+(2026-10-04 15:10:17) [INFO    ] Request: 127.0.0.1:59515 0x21168b47120 HTTP/1.1 POST /api/exams/3/finish
+(2026-10-04 15:10:17) [INFO    ] Response: 0x21168b47120 /api/exams/3/finish 200 0
+(2026-10-04 15:10:17) [INFO    ] Request: 127.0.0.1:59515 0x21168b47120 HTTP/1.1 GET /api/patients
+(2026-10-04 15:10:19) [INFO    ] Response: 0x21168b47120 /api/patients 200 0
+(2026-10-04 15:10:19) [INFO    ] Request: 127.0.0.1:51551 0x21168968d80 HTTP/1.1 GET /api/departments
+(2026-10-04 15:10:19) [INFO    ] Response: 0x21168968d80 /api/departments 200 0
+(2026-10-04 15:10:19) [INFO    ] Request: 127.0.0.1:59691 0x21168966fb0 HTTP/1.1 GET /api/checkins
+(2026-10-04 15:10:19) [INFO    ] Response: 0x21168966fb0 /api/checkins 200 0
+(2026-10-04 15:10:19) [INFO    ] Request: 127.0.0.1:64069 0x21168b4e550 HTTP/1.1 GET /api/queue
+(2026-10-04 15:10:19) [INFO    ] Response: 0x21168b4e550 /api/queue 200 0
+(2026-10-04 15:10:19) [INFO    ] Request: 127.0.0.1:54855 0x211689a7e60 HTTP/1.1 GET /api/assignments
+(2026-10-04 15:10:19) [INFO    ] Response: 0x211689a7e60 /api/assignments 200 0
+(2026-10-04 15:10:19) [INFO    ] Request: 127.0.0.1:58992 0x211689792d0 HTTP/1.1 GET /api/exams
+(2026-10-04 15:10:19) [INFO    ] Response: 0x211689792d0 /api/exams?active=false 200 0
+(2026-10-04 15:10:19) [INFO    ] Request: 127.0.0.1:51551 0x21168968d80 HTTP/1.1 GET /api/doctors
+(2026-10-04 15:10:19) [INFO    ] Response: 0x21168968d80 /api/doctors 200 0
+(2026-10-04 15:11:14) [INFO    ] Request: 127.0.0.1:53835 0x2116897dbc0 HTTP/1.1 POST /api/checkins
+(2026-10-04 15:11:15) [INFO    ] Response: 0x2116897dbc0 /api/checkins 201 0
+(2026-10-04 15:11:15) [INFO    ] Request: 127.0.0.1:53835 0x2116897dbc0 HTTP/1.1 GET /api/patients
+(2026-10-04 15:11:16) [INFO    ] Response: 0x2116897dbc0 /api/patients 200 0
+(2026-10-04 15:11:16) [INFO    ] Request: 127.0.0.1:63728 0x21168968d80 HTTP/1.1 GET /api/departments
+(2026-10-04 15:11:16) [INFO    ] Response: 0x21168968d80 /api/departments 200 0
+(2026-10-04 15:11:16) [INFO    ] Request: 127.0.0.1:58407 0x211689792d0 HTTP/1.1 GET /api/checkins
+(2026-10-04 15:11:16) [INFO    ] Response: 0x211689792d0 /api/checkins 200 0
+(2026-10-04 15:11:16) [INFO    ] Request: 127.0.0.1:49510 0x21168966fb0 HTTP/1.1 GET /api/queue
+(2026-10-04 15:11:16) [INFO    ] Response: 0x21168966fb0 /api/queue 200 0
+(2026-10-04 15:11:16) [INFO    ] Request: 127.0.0.1:63067 0x21168b4e550 HTTP/1.1 GET /api/assignments
+(2026-10-04 15:11:16) [INFO    ] Response: 0x21168b4e550 /api/assignments 200 0
+(2026-10-04 15:11:16) [INFO    ] Request: 127.0.0.1:51598 0x2116b94d050 HTTP/1.1 GET /api/exams
+(2026-10-04 15:11:16) [INFO    ] Response: 0x2116b94d050 /api/exams?active=false 200 0
+(2026-10-04 15:11:16) [INFO    ] Request: 127.0.0.1:53835 0x2116897dbc0 HTTP/1.1 GET /api/doctors
+(2026-10-04 15:11:16) [INFO    ] Response: 0x2116897dbc0 /api/doctors 200 0
+(2026-10-04 15:11:19) [INFO    ] Request: 127.0.0.1:53835 0x2116897dbc0 HTTP/1.1 POST /api/queue/sync
+(2026-10-04 15:11:20) [INFO    ] Response: 0x2116897dbc0 /api/queue/sync 200 0
+(2026-10-04 15:11:20) [INFO    ] Request: 127.0.0.1:53835 0x2116897dbc0 HTTP/1.1 GET /api/patients
+(2026-10-04 15:11:21) [INFO    ] Response: 0x2116897dbc0 /api/patients 200 0
+(2026-10-04 15:11:21) [INFO    ] Request: 127.0.0.1:51598 0x2116b94d050 HTTP/1.1 GET /api/departments
+(2026-10-04 15:11:21) [INFO    ] Response: 0x2116b94d050 /api/departments 200 0
+(2026-10-04 15:11:21) [INFO    ] Request: 127.0.0.1:63067 0x21168b4e550 HTTP/1.1 GET /api/checkins
+(2026-10-04 15:11:21) [INFO    ] Response: 0x21168b4e550 /api/checkins 200 0
+(2026-10-04 15:11:21) [INFO    ] Request: 127.0.0.1:49510 0x21168966fb0 HTTP/1.1 GET /api/queue
+(2026-10-04 15:11:21) [INFO    ] Response: 0x21168966fb0 /api/queue 200 0
+(2026-10-04 15:11:21) [INFO    ] Request: 127.0.0.1:58407 0x211689792d0 HTTP/1.1 GET /api/assignments
+(2026-10-04 15:11:21) [INFO    ] Response: 0x211689792d0 /api/assignments 200 0
+(2026-10-04 15:11:21) [INFO    ] Request: 127.0.0.1:63728 0x21168968d80 HTTP/1.1 GET /api/exams
+(2026-10-04 15:11:21) [INFO    ] Response: 0x21168968d80 /api/exams?active=false 200 0
+(2026-10-04 15:11:21) [INFO    ] Request: 127.0.0.1:51598 0x2116b94d050 HTTP/1.1 GET /api/doctors
+(2026-10-04 15:11:21) [INFO    ] Response: 0x2116b94d050 /api/doctors 200 0
+(2026-10-04 15:11:25) [INFO    ] Request: 127.0.0.1:51598 0x2116b94d050 HTTP/1.1 PATCH /api/checkins/302/priority
+(2026-10-04 15:11:26) [INFO    ] Response: 0x2116b94d050 /api/checkins/302/priority 200 0
+(2026-10-04 15:11:26) [INFO    ] Request: 127.0.0.1:51598 0x2116b94d050 HTTP/1.1 GET /api/patients
+(2026-10-04 15:11:27) [INFO    ] Response: 0x2116b94d050 /api/patients 200 0
+(2026-10-04 15:11:27) [INFO    ] Request: 127.0.0.1:63728 0x21168968d80 HTTP/1.1 GET /api/departments
+(2026-10-04 15:11:27) [INFO    ] Response: 0x21168968d80 /api/departments 200 0
+(2026-10-04 15:11:27) [INFO    ] Request: 127.0.0.1:58407 0x211689792d0 HTTP/1.1 GET /api/checkins
+(2026-10-04 15:11:27) [INFO    ] Response: 0x211689792d0 /api/checkins 200 0
+(2026-10-04 15:11:27) [INFO    ] Request: 127.0.0.1:49510 0x21168966fb0 HTTP/1.1 GET /api/queue
+(2026-10-04 15:11:27) [INFO    ] Response: 0x21168966fb0 /api/queue 200 0
+(2026-10-04 15:11:27) [INFO    ] Request: 127.0.0.1:63067 0x21168b4e550 HTTP/1.1 GET /api/assignments
+(2026-10-04 15:11:27) [INFO    ] Response: 0x21168b4e550 /api/assignments 200 0
+(2026-10-04 15:11:27) [INFO    ] Request: 127.0.0.1:53835 0x2116897dbc0 HTTP/1.1 GET /api/exams
+(2026-10-04 15:11:27) [INFO    ] Response: 0x2116897dbc0 /api/exams?active=false 200 0
+(2026-10-04 15:11:27) [INFO    ] Request: 127.0.0.1:51598 0x2116b94d050 HTTP/1.1 GET /api/doctors
+(2026-10-04 15:11:27) [INFO    ] Response: 0x2116b94d050 /api/doctors 200 0
+(2026-10-04 15:12:41) [INFO    ] Request: 127.0.0.1:55569 0x21168ac2050 HTTP/1.1 PATCH /api/checkins/302/priority
+(2026-10-04 15:12:41) [INFO    ] Response: 0x21168ac2050 /api/checkins/302/priority 200 0
+(2026-10-04 15:12:41) [INFO    ] Request: 127.0.0.1:55569 0x21168ac2050 HTTP/1.1 GET /api/patients
+(2026-10-04 15:12:42) [INFO    ] Response: 0x21168ac2050 /api/patients 200 0
+(2026-10-04 15:12:42) [INFO    ] Request: 127.0.0.1:54815 0x2116897dbc0 HTTP/1.1 GET /api/departments
+(2026-10-04 15:12:42) [INFO    ] Response: 0x2116897dbc0 /api/departments 200 0
+(2026-10-04 15:12:42) [INFO    ] Request: 127.0.0.1:64311 0x21168966fb0 HTTP/1.1 GET /api/checkins
+(2026-10-04 15:12:43) [INFO    ] Response: 0x21168966fb0 /api/checkins 200 0
+(2026-10-04 15:12:43) [INFO    ] Request: 127.0.0.1:51997 0x21168968d80 HTTP/1.1 GET /api/queue
+(2026-10-04 15:12:43) [INFO    ] Response: 0x21168968d80 /api/queue 200 0
+(2026-10-04 15:12:43) [INFO    ] Request: 127.0.0.1:54651 0x21168b4e550 HTTP/1.1 GET /api/assignments
+(2026-10-04 15:12:43) [INFO    ] Response: 0x21168b4e550 /api/assignments 200 0
+(2026-10-04 15:12:43) [INFO    ] Request: 127.0.0.1:58741 0x211689a7e60 HTTP/1.1 GET /api/exams
+(2026-10-04 15:12:43) [INFO    ] Response: 0x211689a7e60 /api/exams?active=false 200 0
+(2026-10-04 15:12:43) [INFO    ] Request: 127.0.0.1:55569 0x21168ac2050 HTTP/1.1 GET /api/doctors
+(2026-10-04 15:12:43) [INFO    ] Response: 0x21168ac2050 /api/doctors 200 0
+(2026-10-04 15:22:34) [INFO    ] Request: 127.0.0.1:51819 0x211693d1440 HTTP/1.1 GET /
+(2026-10-04 15:22:34) [INFO    ] Response: 0x211693d1440 / 200 0
+(2026-10-04 15:22:34) [INFO    ] Request: 127.0.0.1:51819 0x211693d1440 HTTP/1.1 GET /assets/app.css
+(2026-10-04 15:22:34) [INFO    ] Response: 0x211693d1440 /assets/app.css 200 0
+(2026-10-04 15:22:34) [INFO    ] Request: 127.0.0.1:49703 0x21168968d80 HTTP/1.1 GET /assets/app.js
+(2026-10-04 15:22:34) [INFO    ] Response: 0x21168968d80 /assets/app.js 200 0
+(2026-10-04 15:22:34) [INFO    ] Request: 127.0.0.1:49703 0x21168968d80 HTTP/1.1 GET /api/patients
+(2026-10-04 15:22:36) [INFO    ] Response: 0x21168968d80 /api/patients 200 0
+(2026-10-04 15:22:36) [INFO    ] Request: 127.0.0.1:51819 0x211693d1440 HTTP/1.1 GET /api/departments
+(2026-10-04 15:22:36) [INFO    ] Response: 0x211693d1440 /api/departments 200 0
+(2026-10-04 15:22:36) [INFO    ] Request: 127.0.0.1:50120 0x21168966fb0 HTTP/1.1 GET /api/checkins
+(2026-10-04 15:22:36) [INFO    ] Response: 0x21168966fb0 /api/checkins 200 0
+(2026-10-04 15:22:36) [INFO    ] Request: 127.0.0.1:56019 0x2116897dbc0 HTTP/1.1 GET /api/queue
+(2026-10-04 15:22:36) [INFO    ] Response: 0x2116897dbc0 /api/queue 200 0
+(2026-10-04 15:22:36) [INFO    ] Request: 127.0.0.1:54753 0x21168b4e550 HTTP/1.1 GET /api/assignments
+(2026-10-04 15:22:36) [INFO    ] Response: 0x21168b4e550 /api/assignments 200 0
+(2026-10-04 15:22:36) [INFO    ] Request: 127.0.0.1:57468 0x211693f0890 HTTP/1.1 GET /api/exams
+(2026-10-04 15:22:36) [INFO    ] Response: 0x211693f0890 /api/exams?active=false 200 0
+(2026-10-04 15:22:36) [INFO    ] Request: 127.0.0.1:51819 0x211693d1440 HTTP/1.1 GET /assets/app.css
+(2026-10-04 15:22:36) [INFO    ] Response: 0x211693d1440 /assets/app.css 200 0
+(2026-10-04 15:22:36) [INFO    ] Request: 127.0.0.1:49703 0x21168968d80 HTTP/1.1 GET /api/doctors
+(2026-10-04 15:22:36) [INFO    ] Response: 0x21168968d80 /api/doctors 200 0
+(2026-10-04 15:26:48) [INFO    ] Request: 127.0.0.1:49311 0x21168a4b020 HTTP/1.1 GET /
+(2026-10-04 15:26:48) [INFO    ] Response: 0x21168a4b020 / 200 0
+(2026-10-04 15:26:48) [INFO    ] Request: 127.0.0.1:49311 0x21168a4b020 HTTP/1.1 GET /assets/app.css
+(2026-10-04 15:26:48) [INFO    ] Response: 0x21168a4b020 /assets/app.css 200 0
+(2026-10-04 15:26:48) [INFO    ] Request: 127.0.0.1:60679 0x21168968d80 HTTP/1.1 GET /assets/app.js
+(2026-10-04 15:26:48) [INFO    ] Response: 0x21168968d80 /assets/app.js 200 0
+(2026-10-04 15:26:48) [INFO    ] Request: 127.0.0.1:60679 0x21168968d80 HTTP/1.1 GET /api/patients
+(2026-10-04 15:26:50) [INFO    ] Response: 0x21168968d80 /api/patients 200 0
+(2026-10-04 15:26:50) [INFO    ] Request: 127.0.0.1:49311 0x21168a4b020 HTTP/1.1 GET /api/departments
+(2026-10-04 15:26:50) [INFO    ] Response: 0x21168a4b020 /api/departments 200 0
+(2026-10-04 15:26:50) [INFO    ] Request: 127.0.0.1:65331 0x2116897dbc0 HTTP/1.1 GET /api/checkins
+(2026-10-04 15:26:50) [INFO    ] Response: 0x2116897dbc0 /api/checkins 200 0
+(2026-10-04 15:26:50) [INFO    ] Request: 127.0.0.1:51229 0x21168966fb0 HTTP/1.1 GET /api/queue
+(2026-10-04 15:26:50) [INFO    ] Response: 0x21168966fb0 /api/queue 200 0
+(2026-10-04 15:26:50) [INFO    ] Request: 127.0.0.1:58271 0x21168b4e550 HTTP/1.1 GET /api/assignments
+(2026-10-04 15:26:50) [INFO    ] Response: 0x21168b4e550 /api/assignments 200 0
+(2026-10-04 15:26:50) [INFO    ] Request: 127.0.0.1:58535 0x2116b48a030 HTTP/1.1 GET /api/exams
+(2026-10-04 15:26:50) [INFO    ] Response: 0x2116b48a030 /api/exams?active=false 200 0
+(2026-10-04 15:26:50) [INFO    ] Request: 127.0.0.1:49311 0x21168a4b020 HTTP/1.1 GET /api/doctors
+(2026-10-04 15:26:50) [INFO    ] Response: 0x21168a4b020 /api/doctors 200 0
+(2026-10-04 15:28:27) [INFO    ] Request: 127.0.0.1:53351 0x2116b948020 HTTP/1.1 GET /
+(2026-10-04 15:28:27) [INFO    ] Response: 0x2116b948020 / 200 0
+(2026-10-04 15:28:27) [INFO    ] Request: 127.0.0.1:53351 0x2116b948020 HTTP/1.1 GET /assets/app.css
+(2026-10-04 15:28:27) [INFO    ] Response: 0x2116b948020 /assets/app.css 200 0
+(2026-10-04 15:28:27) [INFO    ] Request: 127.0.0.1:61590 0x21168966fb0 HTTP/1.1 GET /assets/app.js
+(2026-10-04 15:28:27) [INFO    ] Response: 0x21168966fb0 /assets/app.js 200 0
+(2026-10-04 15:28:27) [INFO    ] Request: 127.0.0.1:61590 0x21168966fb0 HTTP/1.1 GET /api/patients
+(2026-10-04 15:28:28) [INFO    ] Response: 0x21168966fb0 /api/patients 200 0
+(2026-10-04 15:28:28) [INFO    ] Request: 127.0.0.1:53351 0x2116b948020 HTTP/1.1 GET /api/departments
+(2026-10-04 15:28:28) [INFO    ] Response: 0x2116b948020 /api/departments 200 0
+(2026-10-04 15:28:28) [INFO    ] Request: 127.0.0.1:61590 0x21168966fb0 HTTP/1.1 GET /assets/app.css
+(2026-10-04 15:28:28) [INFO    ] Response: 0x21168966fb0 /assets/app.css 200 0
+(2026-10-04 15:28:28) [INFO    ] Request: 127.0.0.1:65342 0x2116897dbc0 HTTP/1.1 GET /api/checkins
+(2026-10-04 15:28:28) [INFO    ] Response: 0x2116897dbc0 /api/checkins 200 0
+(2026-10-04 15:28:28) [INFO    ] Request: 127.0.0.1:64523 0x21168968d80 HTTP/1.1 GET /api/queue
+(2026-10-04 15:28:28) [INFO    ] Response: 0x21168968d80 /api/queue 200 0
+(2026-10-04 15:28:28) [INFO    ] Request: 127.0.0.1:62871 0x21168b4e550 HTTP/1.1 GET /api/assignments
+(2026-10-04 15:28:28) [INFO    ] Response: 0x21168b4e550 /api/assignments 200 0
+(2026-10-04 15:28:28) [INFO    ] Request: 127.0.0.1:51605 0x211689792d0 HTTP/1.1 GET /api/exams
+(2026-10-04 15:28:28) [INFO    ] Response: 0x211689792d0 /api/exams?active=false 200 0
+(2026-10-04 15:28:28) [INFO    ] Request: 127.0.0.1:53351 0x2116b948020 HTTP/1.1 GET /api/doctors
+(2026-10-04 15:28:29) [INFO    ] Response: 0x2116b948020 /api/doctors 200 0
+(2026-10-04 15:32:55) [INFO    ] Request: 127.0.0.1:58786 0x21168973f60 HTTP/1.1 GET /
+(2026-10-04 15:32:55) [INFO    ] Response: 0x21168973f60 / 200 0
+(2026-10-04 15:32:55) [INFO    ] Request: 127.0.0.1:58786 0x21168973f60 HTTP/1.1 GET /assets/app.css
+(2026-10-04 15:32:55) [INFO    ] Response: 0x21168973f60 /assets/app.css 200 0
+(2026-10-04 15:32:55) [INFO    ] Request: 127.0.0.1:52964 0x21168968d80 HTTP/1.1 GET /assets/app.js
+(2026-10-04 15:32:55) [INFO    ] Response: 0x21168968d80 /assets/app.js 200 0
+(2026-10-04 15:32:55) [INFO    ] Request: 127.0.0.1:52964 0x21168968d80 HTTP/1.1 GET /api/patients
+(2026-10-04 15:32:57) [INFO    ] Response: 0x21168968d80 /api/patients 200 0
+(2026-10-04 15:32:57) [INFO    ] Request: 127.0.0.1:58786 0x21168973f60 HTTP/1.1 GET /api/departments
+(2026-10-04 15:32:57) [INFO    ] Response: 0x21168973f60 /api/departments 200 0
+(2026-10-04 15:32:57) [INFO    ] Request: 127.0.0.1:52110 0x2116897dbc0 HTTP/1.1 GET /api/checkins
+(2026-10-04 15:32:57) [INFO    ] Response: 0x2116897dbc0 /api/checkins 200 0
+(2026-10-04 15:32:57) [INFO    ] Request: 127.0.0.1:61485 0x21168966fb0 HTTP/1.1 GET /api/queue
+(2026-10-04 15:32:57) [INFO    ] Response: 0x21168966fb0 /api/queue 200 0
+(2026-10-04 15:32:57) [INFO    ] Request: 127.0.0.1:51405 0x2116b94d490 HTTP/1.1 GET /api/assignments
+(2026-10-04 15:32:57) [INFO    ] Response: 0x2116b94d490 /api/assignments 200 0
+(2026-10-04 15:32:57) [INFO    ] Request: 127.0.0.1:52966 0x21168b4e550 HTTP/1.1 GET /api/exams
+(2026-10-04 15:32:57) [INFO    ] Response: 0x21168b4e550 /api/exams?active=false 200 0
+(2026-10-04 15:32:57) [INFO    ] Request: 127.0.0.1:58786 0x21168973f60 HTTP/1.1 GET /assets/app.css
+(2026-10-04 15:32:57) [INFO    ] Response: 0x21168973f60 /assets/app.css 200 0
+(2026-10-04 15:32:57) [INFO    ] Request: 127.0.0.1:52964 0x21168968d80 HTTP/1.1 GET /api/doctors
+(2026-10-04 15:32:57) [INFO    ] Response: 0x21168968d80 /api/doctors 200 0
