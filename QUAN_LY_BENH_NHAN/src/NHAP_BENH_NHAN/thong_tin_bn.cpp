@@ -266,7 +266,7 @@ int main()
     sqlite3_close(db);
     file.close();
 
-    cout << "\n===== IMPORT HOAN TAT =====\n";
+    cout << "\n_____ IMPORT HOAN TAT _____\n";
     cout << "Thanh cong: " << success << '\n';
     cout << "That bai:    " << failed << '\n';
 

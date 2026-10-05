@@ -37,7 +37,7 @@ void DangKhamManager::hienThiDangKham() {
         cerr << "Loi doc danh sach dang kham.\n"; return;
     }
     const auto active = ExamCore::activeSessions(records);
-    cout << "\n========== BENH NHAN DANG KHAM ==========\n";
+    cout << "\n========== BENH NHAN DANG KHAM _____\n";
     int count = 0;
     for (const auto& session : active) {
         cout << ++count << ". Check-in: " << session.checkinId

@@ -33,9 +33,9 @@ int main() {
     }
 
 
-    // =============================
+    // _____________________________________
     // 1. Tìm bệnh nhân
-    // =============================
+    // _____________________________________
 
     vector<Patient> patients;
     if (!HospitalPersistence::loadPatients(db, patients)) {
@@ -69,9 +69,9 @@ int main() {
     cout << "Dia chi: " << oldAddress << endl;
 
 
-    // =============================
+    // _____________________________________
     // 2. Nhập thông tin mới
-    // =============================
+    // _____________________________________
 
     cout << "\n===== NHAP THONG TIN MOI =====\n";
     cout << "Bo trong neu khong muon thay doi.\n\n";
@@ -122,9 +122,9 @@ int main() {
     if (!input.empty())
         oldAddress = input;
 
-    // =============================
+    // _____________________________________
     // 3. UPDATE database
-    // =============================
+    // _____________________________________
 
     if (!cin) {
         cerr << "Nhap thong tin chua hoan tat; da huy cap nhat.\n";
