@@ -66,6 +66,22 @@ inline bool parseTime(const std::optional<std::string>& text, std::time_t& outpu
         clock.tm_min == minute && clock.tm_sec == second;
 }
 
+// Tính thời lượng khám thực tế theo phút.
+// - Đang khám: từ start_time đến thời điểm hiện tại.
+// - Đã kết thúc: từ start_time đến end_time thực tế.
+inline int elapsedMinutes(const ExamSession& session, std::time_t now = std::time(nullptr)) {
+    std::time_t start = 0;
+    if (!parseTime(session.startTime, start)) return 0;
+
+    std::time_t finish = now;
+    if (session.endTime) {
+        if (!parseTime(session.endTime, finish)) return 0;
+    }
+
+    if (finish <= start) return 0;
+    return static_cast<int>(std::difftime(finish, start) / 60.0);
+}
+
 inline bool hasStarted(const ExamSession& session, std::time_t now = std::time(nullptr)) {
     std::time_t start = 0;
     return !session.endTime && parseTime(session.startTime, start) && start <= now;
