@@ -27,7 +27,7 @@ $sources = @(
 )
 $includeDirectories = @("include", "SAP_XEP_BAC_SI/src/THUAT_TOAN_CHINH",
     "SAP_XEP_BAC_SI/src/QUAN_LY_THONG_TIN", "SAP_XEP_BAC_SI/src/THOI_GIAN",
-    "SAP_XEP_BAC_SI/src/XU_LY_DATA_BASE_neu_can")
+    "SAP_XEP_BAC_SI/src/XU_LY_DATA_BASE_neu_can", "DANG_KHAM/src")
 $arguments = @("-std=c++17", "-O0", "-Wall", "-Wextra", "-DASIO_STANDALONE", "-D_WIN32_WINNT=0x0601")
 foreach ($directory in $includeDirectories) { $arguments += "-I" + $directory }
 foreach ($source in $sources) { $arguments += $source }
