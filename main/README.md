@@ -33,16 +33,16 @@ Ca tới giờ được tự nhận khi bác sĩ trống; bác sĩ chỉ khám m
 Trong **Bác sĩ**, trạng thái gồm Đang khám, Đang trong ca trực, Ngoài ca/nghỉ và Bận đột xuất.
 **Xem ca trực** hiển thị 7 ngày từ ngày hiện tại của server, kèm giờ bắt đầu/kết thúc và ngày nghỉ.
 Khoa thường làm Thứ Hai–Thứ Sáu, 07:00–11:30 và 13:00–17:00;
-Khoa Cấp cứu (24/7) chia 2 ca 12 giờ: 06:00–18:00 và
-18:00–06:00 hôm sau. Bác sĩ chia 4 nhóm (2 ca × 2 nhóm ngày), trực một ca
-và nghỉ cách ngày luân phiên; chu kỳ liên tục khi chuyển năm.
+Khoa Cấp cứu vẫn tiếp nhận check-in 24/7, nhưng lịch bác sĩ cấp cứu trên web hiện là
+07:00–17:00 hằng ngày. Khi cần làm ngoài khung này, dùng chức năng **Tăng ca** trong
+**Cập nhật ca trực** để kéo dài thời gian nhận bệnh nhân.
 Ca phải bắt đầu trước khi kết thúc, tối đa 12 giờ, không chồng lấn với ca khác
 của cùng bác sĩ (kể cả qua nửa đêm). Ca liền kề được phép.
 Lịch mẫu sinh tự động theo quy tắc, không ghi đè các cuộc hẹn đã lưu.
 Lượt khám tự động chỉ được xếp nếu kết thúc trong ca trực.
 Lịch hiển thị dùng cùng quy tắc với bộ phân bác sĩ. Trực/nghỉ thủ công và bận đột xuất
 được ghi riêng trong hộp xem lịch để phân biệt với lịch tự động.
-**Ca trực** cho chọn tự động theo lịch, đang trực thủ công hoặc nghỉ ca.
+**Ca trực** cho chọn tự động theo lịch, đang trực thủ công hoặc nghỉ ca; đồng thời có thể nhập số phút **Tăng ca** (0–720 phút).
 **Bận đột xuất** nhận số phút (1–1440) và lý do; tự hết khi tới hạn hoặc bấm **Hết bận**.
 Báo bận/nghỉ trả các lịch chưa bắt đầu về hàng đợi để phân lại, giữ ca đang khám.
 Trạng thái được lưu trong SQLite và giữ sau khi khởi động lại server.
