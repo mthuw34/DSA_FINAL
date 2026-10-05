@@ -428,7 +428,9 @@ bool DatabaseDangKham::taoCauTruc()
 namespace {
 optional<string> nullableText(sqlite3_stmt* stmt, int column) {
     if (sqlite3_column_type(stmt, column) == SQLITE_NULL) return nullopt;
-    return getText(stmt, column);
+    const string value = getText(stmt, column);
+    if (value.empty()) return nullopt;
+    return value;
 }
 
 void bindText(sqlite3_stmt* stmt, int column, const optional<string>& text) {
