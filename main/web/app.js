@@ -257,7 +257,7 @@ function openModal(type, id) {
     const e = state.data.exams.find(e => e.checkin_id === id);
     if (!e) return;
     title = type === 'diagnosis' ? 'Cập nhật chẩn đoán' : 'Chi tiết lượt khám';
-    html = `<dl class="detail-grid"><div><dt>Bệnh nhân</dt><dd>${escapeHtml(patientName(e.patient_id))}</dd></div><div><dt>Bác sĩ</dt><dd>${escapeHtml(e.doctor_name || '—')}</dd></div><div><dt>Khoa khám</dt><dd>${escapeHtml(departmentLabel(e.department))}</dd></div><div><dt>Mã phiếu</dt><dd>#${id}</dd></div><div><dt>Bắt đầu</dt><dd>${escapeHtml(timeLabel(e.start_time))}</dd></div><div><dt>Kết thúc thực tế</dt><dd>${escapeHtml(timeLabel(e.end_time))}</dd></div></dl>`;
+    html = `<dl class="detail-grid"><div><dt>Bệnh nhân</dt><dd>${escapeHtml(patientName(e.patient_id))}</dd></div><div><dt>Bác sĩ</dt><dd>${escapeHtml(e.doctor_name || '—')}</dd></div><div><dt>Khoa khám</dt><dd>${escapeHtml(departmentLabel(e.department))}</dd></div><div><dt>Mã phiếu</dt><dd>#${id}</dd></div><div><dt>Bắt đầu</dt><dd>${escapeHtml(timeLabel(e.start_time))}</dd></div><div><dt>Thời lượng khám</dt><dd>${e.duration_minutes ?? 0} phút</dd></div><div><dt>Kết thúc thực tế</dt><dd>${escapeHtml(timeLabel(e.end_time))}</dd></div></dl>`;
     if (type === 'diagnosis') {
       html += `<div class="form-grid">${[['Chẩn đoán *','diagnosis',e.diagnosis,true],['Đơn thuốc','prescription',e.prescription,false],['Lời nhắc của bác sĩ','reminder',e.reminder,false]].map(([label,name,value,required]) => `<label class="field full">${label}<textarea name="${name}" maxlength="10000"${required ? ' required' : ''}>${escapeHtml(value)}</textarea></label>`).join('')}</div>`;
     } else {
