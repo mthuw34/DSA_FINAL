@@ -28,14 +28,15 @@ bool ThuatToanSapXep::xetUuTien(const HoSoTruyXuat& left, const HoSoTruyXuat& ri
         return left.basePriority < right.basePriority;
     }
     
-    // 5. Nếu giống nhau cả bệnh gốc lẫn hiện tại, xét thời gian cập nhật tình trạng
-    if (left.lastUpdate != right.lastUpdate) {
-        return left.lastUpdate < right.lastUpdate;
-    }
-    
-    // 6. Cuối cùng, nguyên tắc đến trước vào trước (FIFO)
+    // 5. Nếu cùng mức ưu tiên, xét ngày + giờ check-in để giữ đúng FIFO qua nhiều ngày.
+    // Chuỗi thời gian có dạng YYYY-MM-DD HH:MM:SS nên so sánh từ điển cũng đúng thứ tự thời gian.
     if (left.checkinTime != right.checkinTime) {
         return left.checkinTime < right.checkinTime;
+    }
+
+    // 6. Nếu cùng cả thời điểm check-in, dùng lần cập nhật gần nhất làm khóa phụ.
+    if (left.lastUpdate != right.lastUpdate) {
+        return left.lastUpdate < right.lastUpdate;
     }
     
     // checkinId provides deterministic ordering when all clinical/time keys match;
