@@ -64,8 +64,18 @@ namespace {
     }
 
     int chuanHoaPha(int pha) {
-        (void)pha;
-        return 0;
+        int result = pha % 2;
+        if (result < 0) result += 2;
+        return result;
+    }
+
+    bool dungNgayCapCuu(time_t t, int phaTruc) {
+        const int thu = thuTrongTuan(t);
+        const int pha = chuanHoaPha(phaTruc);
+
+        // Nhóm 0: Thứ 2, 4, 6. Nhóm 1: Thứ 3, 5, 7.
+        if (pha == 0) return thu == 1 || thu == 3 || thu == 5;
+        return thu == 2 || thu == 4 || thu == 6;
     }
 }
 
@@ -166,29 +176,32 @@ namespace ThoiGian {
     }
 
     bool DangTrucCapCuu(time_t t, int phaTruc) {
-        (void)phaTruc;
+        if (!dungNgayCapCuu(t, phaTruc)) return false;
         const int p = phutTrongNgay(t);
         return p >= 7 * 60 && p < 17 * 60;
     }
 
     time_t TrucCapCuuTiepTheo(time_t t, int phaTruc) {
-        (void)phaTruc;
-        if (DangTrucCapCuu(t, 0)) return t;
-        const int p = phutTrongNgay(t);
-        if (p < 7 * 60) return taoThoiGianCungNgay(t, 7, 0);
+        if (DangTrucCapCuu(t, phaTruc)) return t;
 
-        tm value = layLocalTm(t);
-        value.tm_mday += 1;
-        value.tm_hour = 7;
-        value.tm_min = 0;
-        value.tm_sec = 0;
-        return mktime(&value);
+        for (int offset = 0; offset <= 7; ++offset) {
+            tm value = layLocalTm(t);
+            value.tm_mday += offset;
+            value.tm_hour = 7;
+            value.tm_min = 0;
+            value.tm_sec = 0;
+            const time_t start = mktime(&value);
+
+            if (!dungNgayCapCuu(start, phaTruc)) continue;
+            if (start >= t) return start;
+        }
+
+        return t;
     }
 
     bool DuThoiGianKhamCapCuu(time_t batDau, int soPhut, int phaTruc) {
-        (void)phaTruc;
         if (soPhut <= 0 || soPhut > 10 * 60) return false;
-        if (!DangTrucCapCuu(batDau, 0)) return false;
+        if (!DangTrucCapCuu(batDau, phaTruc)) return false;
         const time_t endShift = taoThoiGianCungNgay(batDau, 17, 0);
         return batDau + static_cast<time_t>(soPhut) * 60 <= endShift;
     }
@@ -213,7 +226,7 @@ namespace ThoiGian {
             const time_t currentDay = mktime(&day);
 
             if (capCuu) {
-                (void)phaTruc;
+                if (!dungNgayCapCuu(currentDay, phaTruc)) continue;
                 const time_t start = taoThoiGianCungNgay(currentDay, 7, 0);
                 result.push_back({
                     DinhDangNgay(start),
