@@ -47,10 +47,13 @@ public:
 
     bool dongBoTuXepBacSi(const std::vector<std::string>& blockedDoctors = {});
 
-    // Ghi ket qua phan bac si truc tiep vao DANG_KHAM, khong qua ket_qua_kham.
+    // Ghi kết quả phân bác sĩ trực tiếp vào DANG_KHAM.
     bool ghiPhanBacSi(const std::vector<BenhNhanKham>& assignments);
 
-    // Tra cac ca chua bat dau ve hang doi khi bac si bi khoa/bận.
+    // Đọc các lượt đã được phân bác sĩ trực tiếp từ dangKham.db.
+    bool docPhanBacSi(std::vector<BenhNhanKham>& assignments);
+
+    // Trả các ca chưa bắt đầu về hàng đợi khi bác sĩ bị khóa/bận.
     bool xoaCaChuaBatDauCuaBacSi(const std::string& doctorId);
 
     bool docDanhSach(std::vector<ExamSession>& records);
