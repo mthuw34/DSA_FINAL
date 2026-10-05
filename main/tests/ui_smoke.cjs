@@ -24,7 +24,7 @@ const fixture = {
   '/api/assignments':[{checkin_id:10,patient_id:1,department:'Khoa Cap cuu',doctor_name:'Bác sĩ An',doctor_id:'BS001',start_time:'2026-10-04 10:00:00',planned_end_time:'2026-10-04 10:20:00',duration_minutes:20}],
   '/api/exams?active=false':[{checkin_id:10,patient_id:1,department:'Khoa Cap cuu',doctor_name:'Bác sĩ An',doctor_id:'BS001',start_time:'2026-10-04 10:00:00',end_time:null,diagnosis:malicious}],
   '/api/doctors':[{id:'BS001',name:'Bác sĩ An',department:'Khoa Cap cuu',experience_years:10,status:'on_duty',duty_mode:'auto',busy:false,
-    shift_rule:'daily_7_17',shift_period_start:'2026-10-05',overtime:false,overtime_until:null,shifts:[{date:'2026-10-05',start_time:'2026-10-05 07:00:00',end_time:'2026-10-05 17:00:00',is_current:true}]}]
+    shift_rule:'three_shifts_alternate_days',shift_period_start:'2026-10-05',overtime:false,overtime_until:null,shifts:[{date:'2026-10-05',start_time:'2026-10-05 07:00:00',end_time:'2026-10-05 17:00:00',is_current:true},{date:'2026-10-07',start_time:'2026-10-07 07:00:00',end_time:'2026-10-07 17:00:00',is_current:false},{date:'2026-10-09',start_time:'2026-10-09 07:00:00',end_time:'2026-10-09 17:00:00',is_current:false}]}]
 };
 const document = {querySelector:element,activeElement:null,body:element('body'),listeners:{},addEventListener(type,handler){this.listeners[type]=handler;}};
 const context = vm.createContext({document,location:{hash:''},window:{addEventListener(){}},console,Map,Set,Date,
