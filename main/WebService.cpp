@@ -239,8 +239,16 @@ Json WebService::checkIn(const Json& data) {
     require(saved != nullptr, 500, "Khong tim thay phieu check-in");
     Json result = checkInJson(*saved);
     tx.commit();
-    // Phiếu đã lưu là nguồn chính; tác vụ nền sẽ thử lại nếu đồng bộ tạm lỗi.
-    try { syncExams(); } catch (const std::exception&) { result["sync_pending"] = true; }
+
+    // Đồng bộ ngay phần hàng đợi sau check-in. Không phụ thuộc vào đồng bộ bác sĩ/ca khám,
+    // vì lỗi ở module phía sau không được làm bệnh nhân vừa tiếp nhận biến mất khỏi Hàng đợi.
+    try {
+        syncPriority();
+        QuanLyHangDoi queueManager;
+        require(queueManager.taiVaXuLyBenhNhan(), 500, "Khong dong bo duoc hang doi");
+    } catch (const std::exception&) {
+        result["sync_pending"] = true;
+    }
     return result;
 }
 Json WebService::listCheckIns() {
