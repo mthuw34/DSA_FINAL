@@ -14,21 +14,33 @@ int main() {
     assert(ThoiGian::DinhDang(normal[1].ketThuc) == "2026-10-05 17:00:00");
     assert(normal.back().ngay == "2026-10-09");
     assert(ThoiGian::KiemTraLichTruc(normal));
-    const auto emergency = ThoiGian::LichTruc(monday, true, 0);
-    assert(emergency.size() == 7);
-    for (const auto& shift : emergency) {
-        assert(ThoiGian::DinhDang(shift.batDau).substr(11) == "07:00:00");
-        assert(ThoiGian::DinhDang(shift.ketThuc).substr(11) == "17:00:00");
-        assert(ThoiGian::DangTrucCapCuu(shift.batDau, 0));
-        assert(difftime(shift.ketThuc, shift.batDau) == 10 * 3600);
-        assert(ThoiGian::DuThoiGianKhamCapCuu(shift.ketThuc - 20 * 60, 20, 0));
-        assert(!ThoiGian::DuThoiGianKhamCapCuu(shift.ketThuc - 19 * 60, 20, 0));
-        assert(!ThoiGian::DuThoiGianKhamCapCuu(shift.batDau, 601, 0));
-        assert(!ThoiGian::DangTrucCapCuu(shift.ketThuc, 0));
-        assert(ThoiGian::TrucCapCuuTiepTheo(shift.batDau - 1, 0) == shift.batDau);
-        assert(ThoiGian::TrucCapCuuTiepTheo(shift.ketThuc, 0) == shift.batDau + 86400);
+    const auto emergencyA = ThoiGian::LichTruc(monday, true, 0);
+    const auto emergencyB = ThoiGian::LichTruc(monday, true, 1);
+    assert(emergencyA.size() == 3);
+    assert(emergencyB.size() == 3);
+
+    const std::vector<std::string> daysA = {"2026-10-05","2026-10-07","2026-10-09"};
+    const std::vector<std::string> daysB = {"2026-10-06","2026-10-08","2026-10-10"};
+    for (size_t i = 0; i < emergencyA.size(); ++i) {
+        assert(emergencyA[i].ngay == daysA[i]);
+        assert(ThoiGian::DinhDang(emergencyA[i].batDau).substr(11) == "07:00:00");
+        assert(ThoiGian::DinhDang(emergencyA[i].ketThuc).substr(11) == "17:00:00");
+        assert(ThoiGian::DangTrucCapCuu(emergencyA[i].batDau, 0));
+        assert(difftime(emergencyA[i].ketThuc, emergencyA[i].batDau) == 10 * 3600);
     }
-    assert(ThoiGian::KiemTraLichTruc(emergency));
+    for (size_t i = 0; i < emergencyB.size(); ++i) {
+        assert(emergencyB[i].ngay == daysB[i]);
+        assert(ThoiGian::DangTrucCapCuu(emergencyB[i].batDau, 1));
+    }
+    assert(!ThoiGian::DangTrucCapCuu(emergencyA[0].batDau, 1));
+    assert(!ThoiGian::DangTrucCapCuu(emergencyB[0].batDau, 0));
+    assert(ThoiGian::DuThoiGianKhamCapCuu(emergencyA[0].ketThuc - 20 * 60, 20, 0));
+    assert(!ThoiGian::DuThoiGianKhamCapCuu(emergencyA[0].ketThuc - 19 * 60, 20, 0));
+    assert(!ThoiGian::DuThoiGianKhamCapCuu(emergencyA[0].batDau, 601, 0));
+    assert(ThoiGian::TrucCapCuuTiepTheo(emergencyA[0].ketThuc, 0) == emergencyA[1].batDau);
+    assert(ThoiGian::TrucCapCuuTiepTheo(emergencyB[0].ketThuc, 1) == emergencyB[1].batDau);
+    assert(ThoiGian::KiemTraLichTruc(emergencyA));
+    assert(ThoiGian::KiemTraLichTruc(emergencyB));
 
     const auto day = ThoiGian::DinhDangNgay(monday);
     std::vector<ThoiGian::CaTruc> invalid;
@@ -59,13 +71,13 @@ int main() {
     manager.KhoiTaoLich(monday, true);
     int phase = 0;
     for (int index : manager.LayBacSiTheoKhoa("Khoa Cap cuu")) {
-        const auto shifts = ThoiGian::LichTruc(monday + 2 * 86400, true, 0);
+        const auto shifts = ThoiGian::LichTruc(monday, true, phase % 2);
         const auto& shift = shifts.front();
         time_t start;
         assert(manager.TinhThoiDiemNhanBenhNhan(index, "Khoa Cap cuu", shift.ketThuc - 20 * 60, 20, start));
         assert(start == shift.ketThuc - 20 * 60);
         assert(manager.TinhThoiDiemNhanBenhNhan(index, "Khoa Cap cuu", shift.ketThuc - 19 * 60, 20, start));
-        assert(start == shift.batDau + 86400);
+        assert(start == shifts[1].batDau);
         assert(!manager.TinhThoiDiemNhanBenhNhan(index, "Khoa Cap cuu", shift.batDau, 601, start));
         ++phase;
     }
