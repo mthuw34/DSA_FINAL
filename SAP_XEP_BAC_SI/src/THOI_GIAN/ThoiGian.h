@@ -29,21 +29,20 @@ namespace ThoiGian {
     // Kiểm tra một ca khám có kết thúc trước khi ca hiện tại kết thúc hay ko
     bool DuThoiGianKhamKhoaThuong(std::time_t batDau, int soPhut);
 
-    // Khoa Cấp cứu có 6 nhóm luân phiên:
-    // - nhóm 0,1: 00:00 -> 08:00
-    // - nhóm 2,3: 08:00 -> 16:00
-    // - nhóm 4,5: 16:00 -> 00:00
+    // Khoa Cấp cứu có 4 nhóm luân phiên:
+    // - nhóm 0,1: 06:00 -> 18:00
+    // - nhóm 2,3: 18:00 -> 06:00 hôm sau
     // Hai nhóm cùng khung giờ luân phiên cách ngày, nên toàn khoa luôn phủ 24/7
     bool DangTrucCapCuu(std::time_t t, int phaTruc);
 
     // Tìm thời điểm gần nhất từ t mà nhóm cấp cứu này được phép trực
     std::time_t TrucCapCuuTiepTheo(std::time_t t, int phaTruc);
 
-    // Kiểm tra lượt khám có nằm trọn trong ca cấp cứu 8 giờ hiện tại hay không
+    // Kiểm tra lượt khám có nằm trọn trong ca cấp cứu 12 giờ hiện tại hay không
     bool DuThoiGianKhamCapCuu(std::time_t batDau, int soPhut, int phaTruc);
 
     // Sinh lịch trực trong soNgay ngày kể từ ngày chứa mốc
-    // Khoa thường bỏ cuối tuần; Cấp cứu dùng phaTruc 0 -> 5
+    // Khoa thường bỏ cuối tuần; Cấp cứu dùng phaTruc 0 -> 3
     std::vector<CaTruc> LichTruc(
         std::time_t moc,
         bool capCuu,
