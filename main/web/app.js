@@ -280,7 +280,7 @@ function openModal(type, id) {
     const d = state.data.doctors.find(d => d.id === id);
     if (!d) return;
     title = 'Ca trực bác sĩ · 7 ngày';
-    const rule = d.shift_rule === 'two_12h_rotating_days_off' ? 'Khoa Cấp cứu chia 2 ca 12 giờ: 06:00–18:00 và 18:00–06:00 hôm sau. Mỗi bác sĩ trực một ca, nghỉ cách ngày theo nhóm luân phiên.' : 'Thứ Hai–Thứ Sáu: 07:00–11:30 và 13:00–17:00. Nghỉ cuối tuần.';
+    const rule = d.shift_rule === 'daily_7_17' ? 'Bác sĩ Khoa Cấp cứu làm hằng ngày từ 07:00 đến 17:00. Có thể dùng Tăng ca khi cần kéo dài thời gian làm việc.' : 'Thứ Hai–Thứ Sáu: 07:00–11:30 và 13:00–17:00. Nghỉ cuối tuần.';
     html = `<p class="form-info">${escapeHtml(d.name)} · ${escapeHtml(departmentLabel(d.department))}</p><p class="form-note">${rule}</p>`;
     if (d.duty_mode !== 'auto') html += `<p class="form-note">${d.duty_mode === 'on_duty' ? 'Bác sĩ đang được bật trực thủ công, có thể nhận ca ngoài lịch dưới đây cho đến khi cập nhật lại.' : 'Bác sĩ đang được đặt nghỉ thủ công, tạm ngừng nhận ca dù có lịch bên dưới.'} Bảng dưới đây là lịch ca tự động.</p>`;
     if (d.busy) html += `<p class="form-note">Bận đột xuất đến ${escapeHtml(timeLabel(d.busy_until))}: ${escapeHtml(d.busy_reason)}</p>`;
