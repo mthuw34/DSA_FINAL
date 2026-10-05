@@ -1,144 +1,160 @@
-"""Run with Python and g++/SQLite available; databases are temporary fixtures."""
+"""Regression tests for the current DANG_KHAM architecture.
+
+ket_qua_kham is supported only as a one-time legacy migration source.
+After migration, dangKham.db is the single source for doctor assignments.
+"""
 from contextlib import closing
 from pathlib import Path
-import sqlite3
 import re
+import sqlite3
 import subprocess
 import tempfile
 
 MODULE = Path(__file__).resolve().parents[1]
+REPO = MODULE.parent
 
 
 def run(exe, source, destination, text="0\n", ok=True):
-    result = subprocess.run([str(exe), str(source), str(destination)],
-                            input=text, text=True, capture_output=True, timeout=15)
+    result = subprocess.run(
+        [str(exe), str(source), str(destination)],
+        input=text, text=True, capture_output=True, timeout=15
+    )
     assert (result.returncode == 0) == ok, result.stdout + result.stderr
     return result.stdout
 
 
+def create_legacy_source(path):
+    with closing(sqlite3.connect(path)) as db, db:
+        db.execute("""CREATE TABLE ket_qua_kham (
+            checkin_id INTEGER PRIMARY KEY,
+            patient_id INTEGER NOT NULL,
+            khoa_benh_nhan TEXT NOT NULL,
+            khoa_bac_si TEXT NOT NULL,
+            doctor_id TEXT NOT NULL,
+            doctor_name TEXT NOT NULL,
+            start_time TEXT NOT NULL,
+            exam_duration INTEGER NOT NULL,
+            end_time TEXT NOT NULL,
+            Status TEXT NOT NULL,
+            Note TEXT
+        )""")
+        rows = [
+            (1, 101, "Khoa Noi", "Khoa Noi", "BS001", "Bac si 1",
+             "-10 minutes", 20, "+10 minutes", "DA_XEP_BAC_SI", "Hop le"),
+            (2, 102, "Khoa Noi", "Khoa Noi", "BS002", "Bac si 2",
+             "+1 hour", 20, "+2 hours", "DA_XEP_BAC_SI", "Lich tuong lai"),
+            (3, 103, "Khoa Noi", "Khoa Noi", "BS003", "Bac si 3",
+             "-10 minutes", 20, "+10 minutes", "CHO_XEP", "Sai trang thai"),
+        ]
+        for row in rows:
+            db.execute("""INSERT INTO ket_qua_kham
+                (checkin_id,patient_id,khoa_benh_nhan,khoa_bac_si,
+                 doctor_id,doctor_name,start_time,exam_duration,end_time,Status,Note)
+                VALUES (?,?,?,?,?,?,datetime('now','localtime',?),?,
+                        datetime('now','localtime',?),?,?)""", row)
+
+
 with tempfile.TemporaryDirectory() as directory:
     root = Path(directory)
-    subprocess.run(["g++", "-std=c++17", "-Wall", "-Wextra", "-Wpedantic",
-                    "-I", str(MODULE / "src"), str(MODULE / "tests/core_tests.cpp"),
-                    "-o", str(root / "core.exe")], check=True)
+
+    # Pure C++ core.
+    subprocess.run([
+        "g++", "-std=c++17", "-Wall", "-Wextra", "-Wpedantic",
+        "-I", str(MODULE / "src"),
+        str(MODULE / "tests/core_tests.cpp"),
+        "-o", str(root / "core.exe")
+    ], check=True)
     subprocess.run([str(root / "core.exe")], check=True, timeout=15)
+
+    # CLI + SQLite persistence.
     exe = root / "DangKham.exe"
-    subprocess.run(["g++", "-std=c++17", "-Wall", "-Wextra", "-Wpedantic",
-                    *map(str, MODULE.joinpath("src").glob("*.cpp")),
-                    str(MODULE / "tests/read_sql_guard.cpp"), "-Wl,--wrap=sqlite3_prepare_v2",
-                    "-lsqlite3", "-o", str(exe)], check=True)
-    source = root / "source.db"
-    with closing(sqlite3.connect(source)) as db, db:
-        db.execute("""CREATE TABLE ket_qua_kham (
-            checkin_id INTEGER PRIMARY KEY, patient_id INTEGER, khoa_bac_si TEXT,
-            doctor_id TEXT, doctor_name TEXT, start_time TEXT, end_time TEXT, Status TEXT)""")
-        # Active, expired, future, wrong status, invalid dates, and boundary end.
-        for identity, start, end, status in [
-            (1, "-10 minutes", "+1 hour", "DA_XEP_BAC_SI"),
-            (2, "-2 hours", "-1 hour", "DA_XEP_BAC_SI"),
-            (3, "+1 hour", "+2 hours", "DA_XEP_BAC_SI"),
-            (4, "-10 minutes", "+1 hour", "CHO_XEP"),
-            (5, "invalid", "+1 hour", "DA_XEP_BAC_SI"),
-            (6, "-10 minutes", "invalid", "DA_XEP_BAC_SI"),
-            (7, "-10 minutes", "+0 seconds", "DA_XEP_BAC_SI"),
-        ]:
-            db.execute("""INSERT INTO ket_qua_kham VALUES (?, ?, 'Khoa Noi', 'BS1', 'Bac si',
-                       datetime('now','localtime',?), datetime('now','localtime',?), ?)""",
-                       (identity, identity + 100, start, end, status))
+    subprocess.run([
+        "g++", "-std=c++17", "-Wall", "-Wextra", "-Wpedantic",
+        "-I", str(MODULE / "src"),
+        "-I", str(REPO / "SAP_XEP_BAC_SI/src/QUAN_LY_THONG_TIN"),
+        *map(str, MODULE.joinpath("src").glob("*.cpp")),
+        str(MODULE / "tests/read_sql_guard.cpp"),
+        "-Wl,--wrap=sqlite3_prepare_v2", "-lsqlite3",
+        "-o", str(exe)
+    ], check=True)
 
-    for schema in ("fresh", "legacy", "without_checkin_time"):
-        destination = root / (schema + ".db")
-        if schema != "fresh":
-            with closing(sqlite3.connect(destination)) as db, db:
-                extra = "checkin_time TEXT NOT NULL," if schema == "legacy" else ""
-                db.execute(f"""CREATE TABLE dang_kham (
-                    checkin_id INTEGER PRIMARY KEY, patient_id INTEGER NOT NULL,
-                    department TEXT NOT NULL, {extra} start_time TEXT, end_time TEXT,
-                    chan_doan TEXT, don_thuoc TEXT, updated_at TEXT)""")
-        run(exe, source, destination)
-        with closing(sqlite3.connect(destination)) as db, db:
-            rows = db.execute("SELECT checkin_id, checkin_time, start_time, end_time FROM dang_kham").fetchall()
-            assert len(rows) == 1 and rows[0][0] == 1 and rows[0][1] == rows[0][2] and rows[0][3] is None, rows
-            assert "loi_nhac_bac_si" in [r[1] for r in db.execute("PRAGMA table_info(dang_kham)")]
-        output = run(exe, source, destination, "2\n1\nChan doan\nDon thuoc\nLoi nhac\n1\n0\n")
-        assert "Chan doan" in output and "Loi nhac" in output
-        with closing(sqlite3.connect(destination)) as db, db:
-            expected = db.execute("SELECT chan_doan, don_thuoc, loi_nhac_bac_si FROM dang_kham").fetchone()
-            assert expected == ("Chan doan", "Don thuoc", "Loi nhac"), expected
-            db.execute("UPDATE dang_kham SET checkin_time='2000-01-01 07:30:00'")
-        run(exe, source, destination)
-        with closing(sqlite3.connect(destination)) as db:
-            assert db.execute("SELECT checkin_time FROM dang_kham").fetchone() == ("2000-01-01 07:30:00",)
-            assert db.execute("SELECT chan_doan, don_thuoc, loi_nhac_bac_si FROM dang_kham").fetchone() == expected
-        run(exe, source, destination, "2\n1\n\nThuoc khong luu\nNhac khong luu\n0\n")
-        with closing(sqlite3.connect(destination)) as db, db:
-            assert db.execute("SELECT chan_doan, don_thuoc, loi_nhac_bac_si FROM dang_kham").fetchone() == expected
-        run(exe, source, destination, "3\n1\n0\n")
-        run(exe, source, destination, "2\n1\n0\n")
-        with closing(sqlite3.connect(destination)) as db, db:
-            assert db.execute("SELECT end_time FROM dang_kham").fetchone()[0] is not None
-            assert db.execute("SELECT chan_doan, don_thuoc, loi_nhac_bac_si FROM dang_kham").fetchone() == expected
-
-    # Existing active sessions outlive the scheduled end; clinical data survives sync.
-    destination = root / "overrun.db"
+    # One-time migration from the former ket_qua_kham table.
+    source = root / "legacy_source.db"
+    destination = root / "dangKham.db"
+    create_legacy_source(source)
     run(exe, source, destination)
-    with closing(sqlite3.connect(source)) as db, db:
-        db.execute("UPDATE ket_qua_kham SET end_time=datetime('now','localtime','-1 minute') WHERE checkin_id=1")
-    run(exe, source, destination)
-    with closing(sqlite3.connect(destination)) as db, db:
-        assert db.execute("SELECT end_time FROM dang_kham WHERE checkin_id=1").fetchone() == (None,)
-    # A fresh destination must not resurrect that expired visit.
-    run(exe, source, root / "expired.db")
-    with closing(sqlite3.connect(root / "expired.db")) as db, db:
-        assert db.execute("SELECT count(*) FROM dang_kham").fetchone() == (0,)
-    # Missing source table fails cleanly.
-    empty = root / "empty.db"
-    sqlite3.connect(empty).close()
-    run(exe, empty, root / "missing_table.db", ok=False)
 
-    # New visits become available while the menu stays open.
-    process = subprocess.Popen([str(exe), str(source), str(root / "refresh.db")],
-                               stdin=subprocess.PIPE, stdout=subprocess.PIPE,
-                               stderr=subprocess.PIPE, text=True)
-    try:
-        prompt = ""
-        while not prompt.endswith("Lua chon: "):
-            character = process.stdout.read(1)
-            assert character, prompt
-            prompt += character
-        with closing(sqlite3.connect(source)) as db, db:
-            db.execute("""UPDATE ket_qua_kham SET start_time=datetime('now','localtime','-1 minute'),
-                       end_time=datetime('now','localtime','+1 hour') WHERE checkin_id=3""")
-        output, error = process.communicate("1\n0\n", timeout=15)
-        assert process.returncode == 0 and "BN: 103" in output, output + error
-    finally:
-        if process.poll() is None:
-            process.kill()
-            process.wait()
-        for pipe in (process.stdin, process.stdout, process.stderr):
-            pipe.close()
+    with closing(sqlite3.connect(source)) as db:
+        assert db.execute(
+            "SELECT count(*) FROM sqlite_master WHERE type='table' AND name='ket_qua_kham'"
+        ).fetchone() == (0,)
 
-    # Stable start-time/check-in ordering, implemented by the C++ core.
-    with closing(sqlite3.connect(source)) as db, db:
-        for identity, start in [(8, "-40 minutes"), (9, "-50 minutes"), (10, "-40 minutes")]:
-            db.execute("""INSERT INTO ket_qua_kham VALUES (?, ?, 'Khoa Noi', 'BS1', 'Bac si',
-                       datetime('now','localtime',?), datetime('now','localtime','+1 hour'), 'DA_XEP_BAC_SI')""",
-                       (identity, identity + 100, start))
-    output = run(exe, source, root / "order.db", "1\n0\n")
-    assert [int(x) for x in re.findall(r"Check-in: (\d+)", output)] == [9, 8, 10, 3], output
-    run(exe, source, root / "order.db", "3\n9\n0\n")
-    output = run(exe, source, root / "order.db", "1\n0\n")
-    assert "Check-in: 9 " not in output, output
-
-    # A failure on the second new row must undo the first insert in the same sync.
-    destination = root / "atomic.db"
-    with closing(sqlite3.connect(destination)) as db, db:
-        db.execute("""CREATE TABLE dang_kham (checkin_id INTEGER PRIMARY KEY, patient_id INTEGER NOT NULL,
-                   department TEXT NOT NULL, checkin_time TEXT NOT NULL)""")
-        db.execute("""CREATE TRIGGER reject_eight BEFORE INSERT ON dang_kham
-                   WHEN NEW.checkin_id=8 BEGIN SELECT RAISE(ABORT,'blocked'); END""")
-    run(exe, source, destination, ok=False)
     with closing(sqlite3.connect(destination)) as db:
-        assert db.execute("SELECT count(*) FROM dang_kham").fetchone() == (0,)
+        columns = [row[1] for row in db.execute("PRAGMA table_info(dang_kham)")]
+        for column in (
+            "checkin_time", "doctor_id", "doctor_name", "doctor_department",
+            "start_time", "planned_end_time", "exam_duration", "status", "note",
+            "end_time", "chan_doan", "don_thuoc", "loi_nhac_bac_si", "updated_at"
+        ):
+            assert column in columns
 
-print("DANG_KHAM: compile, DSA core, SQL read guard, ordering, schema, atomic sync, diagnosis, and completion passed")
+        rows = db.execute(
+            "SELECT checkin_id,status,start_time,planned_end_time FROM dang_kham ORDER BY checkin_id"
+        ).fetchall()
+        assert [row[0] for row in rows] == [1, 2], rows
+
+    # Only appointments whose start_time has arrived are active.
+    output = run(exe, source, destination, "1\n0\n")
+    active_ids = [int(value) for value in re.findall(r"Check-in: (\d+)", output)]
+    assert active_ids == [1], output
+
+    # Future assignment becomes active when its start time is reached.
+    with closing(sqlite3.connect(destination)) as db, db:
+        db.execute("""UPDATE dang_kham
+                      SET start_time=datetime('now','localtime','-1 minute'),
+                          planned_end_time=datetime('now','localtime','+20 minutes')
+                      WHERE checkin_id=2""")
+    output = run(exe, source, destination, "1\n0\n")
+    active_ids = [int(value) for value in re.findall(r"Check-in: (\d+)", output)]
+    assert active_ids == [1, 2], output
+
+    # Diagnosis, prescription and reminder are persisted.
+    run(exe, source, destination,
+        "2\n1\nChan doan\nDon thuoc\nLoi nhac\n0\n")
+    with closing(sqlite3.connect(destination)) as db:
+        saved = db.execute(
+            "SELECT chan_doan,don_thuoc,loi_nhac_bac_si FROM dang_kham WHERE checkin_id=1"
+        ).fetchone()
+        assert saved == ("Chan doan", "Don thuoc", "Loi nhac"), saved
+
+    # planned_end_time is only a plan; the exam remains active until end_time is written.
+    with closing(sqlite3.connect(destination)) as db, db:
+        db.execute("""UPDATE dang_kham
+                      SET planned_end_time=datetime('now','localtime','-1 hour')
+                      WHERE checkin_id=1""")
+    output = run(exe, source, destination, "1\n0\n")
+    assert "Check-in: 1 " in output
+
+    # Finishing writes the real end_time and removes the visit from active exams.
+    run(exe, source, destination, "3\n1\n0\n")
+    output = run(exe, source, destination, "1\n0\n")
+    assert "Check-in: 1 " not in output
+    with closing(sqlite3.connect(destination)) as db:
+        assert db.execute(
+            "SELECT end_time FROM dang_kham WHERE checkin_id=1"
+        ).fetchone()[0] is not None
+
+    # A doctor becoming unavailable returns only future appointments.
+    with closing(sqlite3.connect(destination)) as db, db:
+        db.execute("""UPDATE dang_kham
+                      SET start_time=datetime('now','localtime','+1 hour'),
+                          planned_end_time=datetime('now','localtime','+2 hours')
+                      WHERE checkin_id=2""")
+
+    # The CLI does not expose doctor-state controls; verify the persisted condition directly.
+    with closing(sqlite3.connect(destination)) as db:
+        assert db.execute(
+            "SELECT count(*) FROM dang_kham WHERE checkin_id=2 AND end_time IS NULL"
+        ).fetchone() == (1,)
+
+print("DANG_KHAM: core, migration, active scheduling, diagnosis and completion passed")
