@@ -21,7 +21,7 @@ struct BacSi {
     // Nếu bác sĩ bận đột xuất, bác sĩ sẽ không nhận bệnh nhân cho tới thời điểm này
     time_t TamNghiDen = 0;
 
-    // Moc ket thuc nghi sau ca dem (toi thieu 48 gio).
+    // Mốc kết thúc nghỉ sau ca đêm (tối thiểu 48 giờ)
     time_t NghiSauCaDemDen = 0;
 
     bool DangLamViec = false;

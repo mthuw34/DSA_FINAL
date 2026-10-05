@@ -342,9 +342,7 @@ bool QuanLyKhamBenh::XuLyKhoa(
             << soDaXuLy << " benh nhan da xep, "
             << soCho << " benh nhan dang cho.\n";
     }
-
-    // Ket qua phan bac si duoc giu trong RAM.
-    // Web se ghi truc tiep vao DANG_KHAM sau khi scheduler ket thuc.
+    // Ghi trực tiếp vào DANG_KHAM sau khi scheduler kết thúc
     return true;
 }
 
