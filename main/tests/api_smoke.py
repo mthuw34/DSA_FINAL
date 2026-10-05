@@ -128,10 +128,13 @@ def main():
             assert len(emergency_coverage) == 7 * 2
             request('/api/patients', 'POST', raw=b'{', expected=400)
             request('/api/patients', 'POST', [], expected=400)
-            request('/api/patients', 'POST', {'name':'Test', 'birth_date':'2025-02-30'}, expected=400)
+            request('/api/patients', 'POST', {'name':'Test', 'birth_date':'30/02/2025'}, expected=400)
+            request('/api/patients', 'POST', {'name':'Phone', 'birth_date':'01/01/2000', 'phone':'912345678'}, expected=400)
+            request('/api/patients', 'POST', {'name':'Phone', 'birth_date':'01/01/2000', 'phone':'012345678'}, expected=400)
+            request('/api/patients', 'POST', {'name':'Phone', 'birth_date':'01/01/2000', 'phone':'01234567890'}, expected=400)
             request('/api/patients/999', expected=404)
             patient = request('/api/patients', 'POST', {
-                'name': 'Nguyễn Test', 'birth_date': '2000-01-15', 'height':170, 'weight':65
+                'name': 'Nguyễn Test', 'birth_date': '15/01/2000', 'phone':'0123456789', 'height':170, 'weight':65
             }, 201)
             assert abs(patient['bmi'] - 65 / 1.7**2) < .001
             pid = patient['id']
@@ -224,7 +227,9 @@ def main():
             request(endpoint, 'PATCH', {'duty_mode':'invalid'}, 400)
             request(endpoint, 'PATCH', {'busy_minutes':-1}, 400)
             request(endpoint, 'PATCH', {'busy_minutes':30,'busy_reason':' '}, 400)
-            request(endpoint, 'PATCH', {'duty_mode':'on_duty'})
+            request(endpoint, 'PATCH', {'duty_mode':'on_duty','overtime_minutes':60})
+            overtime_doctor=next(d for d in request('/api/doctors') if d['id']==did)
+            assert overtime_doctor['overtime'] and overtime_doctor['overtime_until'] is not None
             request('/api/assignments', 'POST', {'doctor_id':did,'department':'Khoa Noi'}, 400)
             request('/api/assignments', 'POST', {'doctor_id':'unknown'}, 404)
             request('/api/assignments', 'POST', {'doctor_id':''}, 400)
