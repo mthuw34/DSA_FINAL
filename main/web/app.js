@@ -119,6 +119,47 @@ function filter(records, fields) {
   const query = normalize(state.search);
   return records.filter(r => (!state.department || r.department === state.department || r.doctor_department === state.department) && (!query || fields(r).some(value => normalize(value).includes(query))));
 }
+
+function rankedFilter(records, ranker) {
+  const query = normalize(state.search).trim();
+  const allowed = records.filter(r => !state.department || r.department === state.department || r.doctor_department === state.department);
+  if (!query) return allowed;
+
+  return allowed
+    .map((record,index) => ({record,index,rank:ranker(record,query)}))
+    .filter(item => Number.isFinite(item.rank))
+    .sort((a,b) => a.rank - b.rank || a.index - b.index)
+    .map(item => item.record);
+}
+
+function patientSearchRank(p, query) {
+  const id = normalize(p.id);
+  const displayId = normalize(`BN-${String(p.id).padStart(4,'0')}`);
+  const name = normalize(p.name);
+  const birth = normalize(p.birth_date);
+  const phone = normalize(p.phone);
+
+  if (query === id || query === displayId) return 0;
+  if (id.includes(query) || displayId.includes(query)) return 1;
+  if (name.startsWith(query)) return 2;
+  if (name.includes(query)) return 3;
+  if (birth.startsWith(query) || birth.includes(query)) return 4;
+  if (phone.includes(query)) return 5;
+  return Infinity;
+}
+
+function doctorSearchRank(d, query) {
+  const id = normalize(d.id);
+  const name = normalize(d.name);
+  const department = normalize(departmentLabel(d.department));
+
+  if (query === id) return 0;
+  if (id.includes(query)) return 1;
+  if (name.startsWith(query)) return 2;
+  if (name.includes(query)) return 3;
+  if (department.includes(query)) return 4;
+  return Infinity;
+}
 function pager(records, row, headers, title, description) {
   const size = 20;
   const pages = Math.max(1, Math.ceil(records.length / size));
@@ -152,7 +193,7 @@ function renderList() {
   const d = state.data;
   if (state.view === 'patients') {
     const checked = new Set(d.checkins.map(r => r.patient_id));
-    const records = filter(d.patients.filter(p => !checked.has(p.id)),p => [p.name,p.phone,p.id,`BN-${String(p.id).padStart(4,'0')}`,p.birth_date]);
+    const records = rankedFilter(d.patients.filter(p => !checked.has(p.id)),patientSearchRank);
     return toolbar('Tìm tên, mã bệnh nhân, số điện thoại…',false) + `<section class="panel"><div class="panel-header"><h2>Hồ sơ chờ check-in</h2><span class="result-count">${number(records.length)} hồ sơ</span></div>${pager(records,p => [person(p.name,`BN-${String(p.id).padStart(4,'0')}`),escapeHtml(p.birth_date),`${p.age} tuổi`,escapeHtml(p.gender || '—'),escapeHtml(p.phone || '—'),checked.has(p.id) ? badge('Đã tiếp nhận','green') : badge('Chưa tiếp nhận','gray'),`<div class="row-actions">${button('edit-patient','Sửa',p.id)}${checked.has(p.id) ? '' : button('checkin','Check-in',p.id,'primary small')}${checked.has(p.id) ? '' : button('delete-patient','Xóa',p.id,'danger small')}</div>`],['BỆNH NHÂN','NGÀY SINH','TUỔI','GIỚI TÍNH','ĐIỆN THOẠI','TRẠNG THÁI','THAO TÁC'],'Không tìm thấy bệnh nhân','Thêm hồ sơ mới hoặc thử từ khóa khác.')}</section>`;
   }
   if (state.view === 'queue') {
@@ -168,7 +209,7 @@ function renderList() {
     const mode = `<select id="exam-mode" aria-label="Lọc trạng thái khám"><option value="active"${state.examMode === 'active' ? ' selected' : ''}>Đang khám</option><option value="completed"${state.examMode === 'completed' ? ' selected' : ''}>Đã hoàn tất</option><option value="all"${state.examMode === 'all' ? ' selected' : ''}>Tất cả lượt khám</option></select>`;
     return toolbar('Tìm bệnh nhân, bác sĩ, mã phiếu…',true,mode) + `<section class="panel"><div class="panel-header"><div><h2>Theo dõi lượt khám</h2><p>Thời lượng khám tính từ lúc bắt đầu đến hiện tại; ca hoàn tất tính đến giờ kết thúc thực tế.</p></div></div>${pager(records,r => [person(patientName(r.patient_id),`Mã phiếu #${r.checkin_id}`),escapeHtml(departmentLabel(r.department)),person(r.doctor_name,r.doctor_id),escapeHtml(timeLabel(r.start_time)),`${r.duration_minutes ?? 0} phút`,badge(r.end_time ? 'Đã hoàn tất' : 'Đang khám',r.end_time ? 'gray' : 'blue'),`<div class="row-actions">${button('exam-detail','Chi tiết',r.checkin_id)}${r.end_time ? '' : button('diagnosis','Chẩn đoán',r.checkin_id,'primary small')}${r.end_time ? '' : button('finish','Kết thúc',r.checkin_id)}</div>`],['BỆNH NHÂN','KHOA','BÁC SĨ','BẮT ĐẦU','THỜI LƯỢNG KHÁM','TRẠNG THÁI','THAO TÁC'],'Chưa có lượt khám phù hợp','Các ca tới giờ tự cập nhật. Chọn trạng thái khác để xem lịch sử.')}</section>`;
   }
-  const records = filter(d.doctors,r => [r.name,r.id,r.department]);
+  const records = rankedFilter(d.doctors,doctorSearchRank);
   return toolbar('Tìm tên hoặc mã bác sĩ…') + `<section class="panel"><div class="panel-header"><h2>Đội ngũ bác sĩ</h2><span class="result-count">${number(records.length)} bác sĩ</span></div>${pager(records,r => [person(r.name,r.id),escapeHtml(departmentLabel(r.department)),`${r.experience_years} năm`,doctorStatus(r),r.busy ? escapeHtml(`${r.busy_reason} · Đến ${timeLabel(r.busy_until)}`) : '—',`<div class="row-actions">${button('doctor-shifts','Xem ca trực',r.id)}${button('doctor-status','Cập nhật ca',r.id)}${button(r.busy ? 'doctor-resume' : 'doctor-busy',r.busy ? 'Hết bận' : 'Bận đột xuất',r.id)}</div>`],['BÁC SĨ','CHUYÊN KHOA','KINH NGHIỆM','TRẠNG THÁI','BẬN ĐỘT XUẤT','THAO TÁC'],'Không tìm thấy bác sĩ','Thử thay đổi khoa hoặc từ khóa tìm kiếm.')}</section>`;
 }
 function doctorStatus(d) {
