@@ -89,7 +89,9 @@ Json examJson(const ExamSession& e) {
     return {{"checkin_id",e.checkinId},{"patient_id",e.patientId},{"department",e.department},
         {"doctor_id",optionalJson(e.doctorId)},{"doctor_name",optionalJson(e.doctorName)},
         {"checkin_time",optionalJson(e.checkinTime)},{"start_time",optionalJson(e.startTime)},
-        {"end_time",optionalJson(e.endTime)},{"diagnosis",optionalJson(e.diagnosis)},
+        {"end_time",optionalJson(e.endTime)},
+        {"duration_minutes",ExamCore::elapsedMinutes(e)},
+        {"diagnosis",optionalJson(e.diagnosis)},
         {"prescription",optionalJson(e.prescription)},{"reminder",optionalJson(e.reminder)},
         {"updated_at",optionalJson(e.updatedAt)}};
 }
