@@ -253,7 +253,15 @@ bool DatabaseDangKham::migrateLegacyAssignments() {
         const string plannedEnd = getText(select, 8);
         const string status = getText(select, 9);
         const string note = getText(select, 10);
-        (void)doctorDepartment;
+
+        time_t parsedStart = 0;
+        time_t parsedEnd = 0;
+        if (status != "DA_XEP_BAC_SI" ||
+            !ExamCore::parseTime(startTime, parsedStart) ||
+            !ExamCore::parseTime(plannedEnd, parsedEnd) ||
+            parsedEnd <= parsedStart) {
+            continue;
+        }
 
         sqlite3_bind_int(insert, 1, checkinId);
         sqlite3_bind_int(insert, 2, patientId);
