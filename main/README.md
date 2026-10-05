@@ -33,9 +33,10 @@ Ca tới giờ được tự nhận khi bác sĩ trống; bác sĩ chỉ khám m
 Trong **Bác sĩ**, trạng thái gồm Đang khám, Đang trong ca trực, Ngoài ca/nghỉ và Bận đột xuất.
 **Xem ca trực** hiển thị 7 ngày từ ngày hiện tại của server, kèm giờ bắt đầu/kết thúc và ngày nghỉ.
 Khoa thường làm Thứ Hai–Thứ Sáu, 07:00–11:30 và 13:00–17:00;
-Khoa Cấp cứu vẫn tiếp nhận check-in 24/7. Bác sĩ Cấp cứu được chia 2 nhóm trực xen kẽ,
-mỗi bác sĩ chỉ có 3 ca/tuần, mỗi ca 07:00–17:00: nhóm A trực Thứ 2–4–6, nhóm B trực
-Thứ 3–5–7; Chủ nhật nghỉ theo lịch tự động. Khi cần làm thêm, dùng **Tăng ca** hoặc
+Khoa Cấp cứu vẫn tiếp nhận check-in 24/7. Bác sĩ Cấp cứu được chia ca ngày **06:00–18:00**
+và ca đêm **18:00–06:00 hôm sau**. Mỗi bác sĩ có 3 ca/tuần: nhóm A bắt đầu ca
+Thứ 2–4–6, nhóm B bắt đầu ca Thứ 3–5–7. Ca đêm Thứ 7 kéo dài đến 06:00 Chủ nhật.
+Khi cần làm thêm, dùng **Tăng ca** hoặc
 bật trực thủ công trong **Cập nhật ca trực**.
 Ca phải bắt đầu trước khi kết thúc, tối đa 12 giờ, không chồng lấn với ca khác
 của cùng bác sĩ (kể cả qua nửa đêm). Ca liền kề được phép.
@@ -131,6 +132,12 @@ Chỉ bác sĩ đang trong ca và không bận/đang khám nhận ca mới. Mỗ
 một bệnh nhân trong một lượt gọi; không tạo lịch tương lai. Ca đã gọi được ghi vào
 `dangKham.db` và loại khỏi `priority.db`/`truyXuat.db`; đồng bộ tiếp theo tiếp tục loại
 các ca đã có bác sĩ nên chúng không quay lại hàng đợi.
+Database chặn lưu hai ca chưa kết thúc của cùng bác sĩ bằng unique index. Khi khởi động,
+các lịch cũ bị trùng được lưu vào `dang_kham_assignment_archive`; hệ thống giữ ca có
+kết quả khám (hoặc ca bắt đầu sớm nhất) và trả những lượt dư về hàng đợi để phân lại.
+Nếu phiếu check-in gốc bị mất, hệ thống khôi phục phiếu cho hồ sơ bệnh nhân còn tồn tại,
+giữ giờ tiếp nhận cũ và dùng mức ưu tiên gốc 4 khi không còn thông tin ưu tiên.
+Mã phiếu đã bị dùng cho người khác được thay bằng mã mới và lưu đối chiếu trong `restored_checkin_ids`.
 Gọi lại không phân lại ca đã lưu;
 lịch bận bác sĩ được khôi phục từ các ca trước để tránh chồng lịch.
 Thuật toán web mô phỏng thời lượng 10–30 phút; bận đột xuất do người dùng khai báo.

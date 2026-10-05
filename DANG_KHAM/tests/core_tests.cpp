@@ -53,6 +53,15 @@ int main() {
     assert(active.size() == 2 && active[0].checkinId == 2 && active[1].checkinId == 1);
     assert(ExamCore::findActive(existing, 2) && !ExamCore::findActive(existing, 3));
     assert(ExamCore::activeSessions({}).empty());
+    auto duplicate = overrun;
+    duplicate.checkinId = 20;
+    duplicate.startTime = "2026-10-04 08:00:00";
+    duplicate.diagnosis.reset(); duplicate.prescription.reset(); duplicate.reminder.reset();
+    assert(ExamCore::duplicateDoctorAssignments({duplicate, completed, overrun}) == std::vector<int>{20});
+    auto noResults = overrun;
+    noResults.diagnosis.reset(); noResults.prescription.reset(); noResults.reminder.reset();
+    assert(ExamCore::duplicateDoctorAssignments({noResults, duplicate, completed}) == std::vector<int>{2});
+    assert(ExamCore::duplicateDoctorAssignments({completed, overrun}).empty());
     ExamCore::SessionIndex ids;
     ids.put(1, 2); ids.put(4100, 3); // Cùng bucket.
     std::size_t position;

@@ -457,7 +457,52 @@ bool DatabaseDangKham::taoCauTruc()
     }
     sqlite3_finalize(stmt);
     if (!success) return false;
-    return migrateLegacyAssignments();
+    if (!migrateLegacyAssignments() || !suaCaTrungBacSi()) return false;
+    return executeSql(
+        "CREATE UNIQUE INDEX IF NOT EXISTS ux_dang_kham_unfinished_doctor ON dang_kham(doctor_id) "
+        "WHERE end_time IS NULL AND doctor_id IS NOT NULL AND doctor_id <> '';",
+        "Loi bao ve moi bac si chi nhan mot ca"
+    );
+}
+
+bool DatabaseDangKham::suaCaTrungBacSi() {
+    if (!executeSql("BEGIN IMMEDIATE;", "Loi bat dau sua ca trung")) return false;
+    vector<ExamSession> records;
+    bool ok = docDanhSach(records);
+    const auto duplicates = ExamCore::duplicateDoctorAssignments(records);
+    if (ok && !duplicates.empty())
+        ok = executeSql(
+            "CREATE TABLE IF NOT EXISTS dang_kham_assignment_archive AS "
+            "SELECT *, datetime('now','localtime') AS archived_at, 'duplicate_doctor' AS repair_reason "
+            "FROM dang_kham WHERE 0;", "Loi tao ban luu lich cu"
+        );
+    sqlite3_stmt* archive = nullptr;
+    sqlite3_stmt* reset = nullptr;
+    if (ok && !duplicates.empty()) {
+        ok = sqlite3_prepare_v2(db,
+            "INSERT INTO dang_kham_assignment_archive SELECT *, datetime('now','localtime'), 'duplicate_doctor' "
+            "FROM dang_kham WHERE checkin_id=?;", -1, &archive, nullptr) == SQLITE_OK;
+        if (ok) ok = sqlite3_prepare_v2(db,
+            "UPDATE dang_kham SET doctor_id=NULL, doctor_name=NULL, doctor_department=NULL, "
+            "start_time=NULL, planned_end_time=NULL, exam_duration=NULL, status='CHO_DOI', "
+            "note='Tra ve hang doi do lich cu trung bac si', updated_at=datetime('now','localtime') "
+            "WHERE checkin_id=? AND end_time IS NULL;", -1, &reset, nullptr) == SQLITE_OK;
+    }
+    for (int id : duplicates) {
+        if (!ok) break;
+        sqlite3_bind_int(archive, 1, id);
+        ok = sqlite3_step(archive) == SQLITE_DONE;
+        sqlite3_reset(archive);
+        if (!ok) break;
+        sqlite3_bind_int(reset, 1, id);
+        ok = sqlite3_step(reset) == SQLITE_DONE && sqlite3_changes(db) == 1;
+        sqlite3_reset(reset);
+    }
+    sqlite3_finalize(archive);
+    sqlite3_finalize(reset);
+    if (ok) ok = executeSql("COMMIT;", "Loi hoan tat sua ca trung");
+    if (!ok) sqlite3_exec(db, "ROLLBACK;", nullptr, nullptr, nullptr);
+    return ok;
 }
 
 // DANG_KHAM la nguon assignment duy nhat sau khi bo ket_qua_kham.

@@ -23,6 +23,7 @@ class WebService {
     Patient findPatient(int id);
     std::vector<BenhNhanKham> assignments();
     void syncPriority();
+    void restoreReturnedCheckins();
 public:
     std::mutex mutex;
     WebService();
