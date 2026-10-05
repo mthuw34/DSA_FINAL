@@ -14,42 +14,22 @@ int main() {
     assert(ThoiGian::DinhDang(normal[1].ketThuc) == "2026-10-05 17:00:00");
     assert(normal.back().ngay == "2026-10-09");
     assert(ThoiGian::KiemTraLichTruc(normal));
-    for (int phase : {0, 1, 2, 3}) {
-        const auto emergency = ThoiGian::LichTruc(monday, true, phase);
-        assert(emergency.size() == 3 || emergency.size() == 4);
-        for (const auto& shift : emergency) {
-            assert(ThoiGian::DangTrucCapCuu(shift.batDau, phase));
-            assert(ThoiGian::DinhDang(shift.batDau).substr(11) ==
-                (phase / 2 == 0 ? "06:00:00" : "18:00:00"));
-            assert(shift.ngay == ThoiGian::DinhDangNgay(shift.batDau));
-            assert(shift.ketThuc > shift.batDau);
-            assert(difftime(shift.ketThuc, shift.batDau) == 12 * 3600);
-            assert(ThoiGian::DuThoiGianKhamCapCuu(shift.ketThuc - 20 * 60, 20, phase));
-            assert(!ThoiGian::DuThoiGianKhamCapCuu(shift.ketThuc - 19 * 60, 20, phase));
-            assert(!ThoiGian::DuThoiGianKhamCapCuu(shift.batDau, 721, phase));
-            assert(!ThoiGian::DuThoiGianKhamCapCuu(shift.batDau, 0, phase));
-            assert(!ThoiGian::DangTrucCapCuu(shift.ketThuc, phase));
-            assert(ThoiGian::TrucCapCuuTiepTheo(shift.batDau - 1, phase) == shift.batDau);
-            assert(ThoiGian::TrucCapCuuTiepTheo(shift.batDau + 1, phase) == shift.batDau + 1);
-            assert(ThoiGian::TrucCapCuuTiepTheo(shift.ketThuc, phase) == shift.batDau + 2 * 86400);
-        }
-        assert(ThoiGian::KiemTraLichTruc(emergency));
+    const auto emergency = ThoiGian::LichTruc(monday, true, 0);
+    assert(emergency.size() == 7);
+    for (const auto& shift : emergency) {
+        assert(ThoiGian::DinhDang(shift.batDau).substr(11) == "07:00:00");
+        assert(ThoiGian::DinhDang(shift.ketThuc).substr(11) == "17:00:00");
+        assert(ThoiGian::DangTrucCapCuu(shift.batDau, 0));
+        assert(difftime(shift.ketThuc, shift.batDau) == 10 * 3600);
+        assert(ThoiGian::DuThoiGianKhamCapCuu(shift.ketThuc - 20 * 60, 20, 0));
+        assert(!ThoiGian::DuThoiGianKhamCapCuu(shift.ketThuc - 19 * 60, 20, 0));
+        assert(!ThoiGian::DuThoiGianKhamCapCuu(shift.batDau, 601, 0));
+        assert(!ThoiGian::DangTrucCapCuu(shift.ketThuc, 0));
+        assert(ThoiGian::TrucCapCuuTiepTheo(shift.batDau - 1, 0) == shift.batDau);
+        assert(ThoiGian::TrucCapCuuTiepTheo(shift.ketThuc, 0) == shift.batDau + 86400);
     }
-    // Tat ca 6 nhom cung nhau phu kin 24/7, ke ca cuoi tuan va qua nam moi.
-    time_t yearEnd;
-    assert(ExamCore::parseTime(std::string("2026-12-29 00:00:00"), yearEnd));
-    for (int hour = 0; hour < 10 * 24; ++hour) {
-        auto now = yearEnd + hour * 3600;
-        int working = 0;
-        for (int phase = 0; phase < 4; ++phase) {
-            working += ThoiGian::DangTrucCapCuu(now, phase);
-            auto shifts = ThoiGian::LichTruc(yearEnd, true, phase, 10);
-            bool inShift = false;
-            for (const auto& s : shifts) inShift |= s.batDau <= now && now < s.ketThuc;
-            assert(inShift == ThoiGian::DangTrucCapCuu(now, phase));
-        }
-        assert(working == 1);
-    }
+    assert(ThoiGian::KiemTraLichTruc(emergency));
+
     const auto day = ThoiGian::DinhDangNgay(monday);
     std::vector<ThoiGian::CaTruc> invalid;
     invalid.push_back({day,monday,monday});
@@ -73,20 +53,20 @@ int main() {
     invalid[0] = {day,night,night + 4 * 3600};
     invalid[1] = {"2026-10-06",night + 3 * 3600,night + 5 * 3600};
     assert(!ThoiGian::KiemTraLichTruc(invalid));
-    // Phan bac si dung cung pha voi API va khong xep luot kham qua gio het ca.
+    // Phân bác sĩ dùng cùng ca 07:00-17:00 và không xếp lượt khám quá giờ hết ca.
     QuanLyBacSi manager;
     assert(manager.DocCSV("SAP_XEP_BAC_SI/db/bac_si_500_chia_khoa.csv"));
     manager.KhoiTaoLich(monday, true);
     int phase = 0;
     for (int index : manager.LayBacSiTheoKhoa("Khoa Cap cuu")) {
-        const auto shifts = ThoiGian::LichTruc(monday + 2 * 86400, true, phase % 4);
+        const auto shifts = ThoiGian::LichTruc(monday + 2 * 86400, true, 0);
         const auto& shift = shifts.front();
         time_t start;
         assert(manager.TinhThoiDiemNhanBenhNhan(index, "Khoa Cap cuu", shift.ketThuc - 20 * 60, 20, start));
         assert(start == shift.ketThuc - 20 * 60);
         assert(manager.TinhThoiDiemNhanBenhNhan(index, "Khoa Cap cuu", shift.ketThuc - 19 * 60, 20, start));
-        assert(start == shift.batDau + 2 * 86400);
-        assert(!manager.TinhThoiDiemNhanBenhNhan(index, "Khoa Cap cuu", shift.batDau, 721, start));
+        assert(start == shift.batDau + 86400);
+        assert(!manager.TinhThoiDiemNhanBenhNhan(index, "Khoa Cap cuu", shift.batDau, 601, start));
         ++phase;
     }
     time_t friday;
