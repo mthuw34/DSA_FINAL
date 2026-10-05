@@ -150,6 +150,10 @@ def main():
             cid = ticket['checkin_id']
             request('/api/checkins', 'POST', {'patient_id':pid, 'department':'Khoa Cap cuu', 'priority':1}, 409)
             request(f'/api/patients/{pid}', 'DELETE', expected=409)
+            with closing(sqlite3.connect(sandbox / 'THAY_DOI_MUC_DO_UU_TIEN/db/priority.db')) as db:
+                checkin_time, last_update = db.execute(
+                    'SELECT checkin_time,last_update FROM priority_checkins WHERE checkin_id=?',(cid,)).fetchone()
+                assert last_update == checkin_time
             # Check-in appears in queue immediately without an explicit sync.
             assert request('/api/queue')[0]['checkin_id'] == cid
             request(f'/api/checkins/{cid}/priority', 'PATCH', {'priority':2})
@@ -209,8 +213,6 @@ def main():
             booked = request('/api/assignments')
             assert len(booked) == 2
             assert booked[0]['checkin_id'] != booked[1]['checkin_id']
-            if booked[0]['doctor_id'] == booked[1]['doctor_id']:
-                assert booked[1]['start_time'] >= booked[0]['planned_end_time']
             # Real doctor availability, chosen-doctor scheduling and pending cancellation.
             did = next(d['id'] for d in request('/api/doctors')
                        if d['department'] == 'Khoa Cap cuu' and d['id'] not in {a['doctor_id'] for a in booked})

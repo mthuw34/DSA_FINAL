@@ -2,7 +2,6 @@
 
 #include <cassert>
 #include <ctime>
-#include <string>
 
 namespace {
 time_t localTimestamp(int year, int month, int day, int hour, int minute)

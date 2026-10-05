@@ -293,10 +293,10 @@ Json WebService::queue() {
 }
 Json WebService::changePriority(int id, const Json& data) {
     const int level = intField(data, "priority", 1, 5);
+    for (const auto& r : assignments()) require(r.CheckinId != id, 409, "Benh nhan da duoc phan bac si");
     syncPriority(); PriorityManager manager(priority);
     int base, current;
     require(manager.getPriority(id, base, current), 404, "Khong tim thay check-in");
-    for (const auto& r : assignments()) require(r.CheckinId != id, 409, "Benh nhan da duoc phan bac si");
     if (current != level) require(manager.updatePriority(id, level), 409, "Khong cap nhat duoc uu tien");
     return {{"checkin_id",id},{"base_priority",base},{"current_priority",level}};
 }
@@ -415,7 +415,18 @@ Json WebService::schedule(const Json& data) {
     QuanLyHangDoi queueManager;
     require(queueManager.taiVaXuLyBenhNhan(), 500, "Khong dong bo duoc hang doi");
     QuanLyKhamBenh manager;
-    require(manager.KhoiDongWeb(retrievalPath, doctorsPath, assignments(), allowed, duty), 500, "Khong khoi dong duoc phan bac si");
+    auto existingAssignments = assignments();
+    std::vector<ExamSession> examSessions;
+    require(exams.docDanhSach(examSessions), 500, "Khong doc duoc ca kham");
+    existingAssignments.erase(std::remove_if(existingAssignments.begin(), existingAssignments.end(),
+        [&](const BenhNhanKham& assignment) {
+            return std::any_of(examSessions.begin(), examSessions.end(),
+                [&](const ExamSession& session) {
+                    return session.checkinId == assignment.CheckinId && session.endTime.has_value();
+                });
+        }), existingAssignments.end());
+    require(manager.KhoiDongWeb(retrievalPath, doctorsPath, existingAssignments, allowed, duty),
+        500, "Khong khoi dong duoc phan bac si");
     require(department.empty() ? manager.XuLyTatCaKhoa() : manager.XuLyKhoa(department),
         500, "Phan bac si that bai; kiem tra lich da luu truoc khi thu lai");
     require(exams.ghiPhanBacSi(manager.LayKetQua()), 500, "Khong luu duoc ket qua phan bac si");
