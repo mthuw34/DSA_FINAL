@@ -325,7 +325,7 @@ Json WebService::listDoctors() {
     Json result = Json::array();
     int capCuuIndex = 0;
     for (const auto& d : manager.LayDanhSach()) {
-        const int phase = d.khoaChuyenMon == "Khoa Cap cuu" ? capCuuIndex++ % 6 : 0;
+        const int phase = d.khoaChuyenMon == "Khoa Cap cuu" ? capCuuIndex++ % 4 : 0;
         const auto settings = saved.value(d.id, Json::object());
         const auto mode = settings.value("duty_mode", "auto");
         const auto until = settings.value("busy_until", "");
@@ -343,7 +343,7 @@ Json WebService::listDoctors() {
         result.push_back({{"id",d.id},{"name",d.name},{"department",d.khoaChuyenMon},
             {"experience_years",d.ExpYears},{"duty_mode",mode},{"on_duty",duty},{"shifts",shifts},
             {"shift_period_start",ThoiGian::DinhDangNgay(now)},
-            {"shift_rule",d.khoaChuyenMon == "Khoa Cap cuu" ? "three_8h_rotating_days_off" : "weekday_split"},
+            {"shift_rule",d.khoaChuyenMon == "Khoa Cap cuu" ? "two_12h_rotating_days_off" : "weekday_split"},
             {"busy",busy},{"busy_until",busy ? Json(until) : Json(nullptr)},
             {"busy_reason",busy ? settings.value("busy_reason", "") : ""},
             {"status",examining ? "examining" : busy ? "busy" : duty ? "on_duty" : "off_duty"}});
