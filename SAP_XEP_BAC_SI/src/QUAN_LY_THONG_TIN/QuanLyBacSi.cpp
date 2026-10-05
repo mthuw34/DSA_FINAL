@@ -114,8 +114,8 @@ void QuanLyBacSi::KhoiTaoLich(time_t hienTai, bool onDinh) {
         bs.TrucThuCong = false;
 
         if (bs.khoaChuyenMon == "Khoa Cap cuu") {
-            // Chia lần lượt vào 6 pha để Web và bộ xếp bác sĩ dùng cùng lịch.
-            const int pha = capCuuIndex++ % 6;
+            // Chia lần lượt vào 4 pha để Web và bộ xếp bác sĩ dùng cùng lịch.
+            const int pha = capCuuIndex++ % 4;
             NgayBatDauTrucCapCuu[i] = pha;
             bs.ThoiGianRanh = ThoiGian::TrucCapCuuTiepTheo(hienTai, pha);
             bs.DangLamViec = ThoiGian::DangTrucCapCuu(hienTai, pha);
@@ -179,7 +179,7 @@ bool QuanLyBacSi::TinhThoiDiemNhanBenhNhan(
     }
 
     if (khoa == "Khoa Cap cuu") {
-        if (thoiLuong > 8 * 60) return false;
+        if (thoiLuong > 12 * 60) return false;
 
         const int pha = LayPhaTrucCapCuu(index);
         if (pha < 0) return false;
@@ -194,7 +194,7 @@ bool QuanLyBacSi::TinhThoiDiemNhanBenhNhan(
             }
 
             // Không đủ thời gian trong ca hiện tại thì chuyển sang ca kế tiếp của nhóm.
-            t = ThoiGian::TrucCapCuuTiepTheo(t + 8 * 60 * 60, pha);
+            t = ThoiGian::TrucCapCuuTiepTheo(t + 12 * 60 * 60, pha);
         }
 
         return false;
