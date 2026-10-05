@@ -90,6 +90,7 @@ Json examJson(const ExamSession& e) {
         {"doctor_id",optionalJson(e.doctorId)},{"doctor_name",optionalJson(e.doctorName)},
         {"checkin_time",optionalJson(e.checkinTime)},{"start_time",optionalJson(e.startTime)},
         {"end_time",optionalJson(e.endTime)},
+        {"active",ExamCore::hasStarted(e)},
         {"duration_minutes",ExamCore::elapsedMinutes(e)},
         {"diagnosis",optionalJson(e.diagnosis)},
         {"prescription",optionalJson(e.prescription)},{"reminder",optionalJson(e.reminder)},
