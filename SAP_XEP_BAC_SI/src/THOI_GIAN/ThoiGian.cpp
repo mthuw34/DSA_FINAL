@@ -64,36 +64,8 @@ namespace {
     }
 
     int chuanHoaPha(int pha) {
-        int result = pha % 4;
-        if (result < 0) result += 4;
-        return result;
-    }
-
-    int gioBatDauCapCuu(int pha) {
-        return chuanHoaPha(pha) / 2 == 0 ? 6 : 18;
-    }
-
-    bool dungNgayCapCuu(time_t t, int pha) {
-        const int parity = chuanHoaPha(pha) % 2;
-        long long day = chiSoNgay(t) % 2;
-        if (day < 0) day += 2;
-        return day == parity;
-    }
-
-    time_t batDauCaCapCuuChua(time_t t, int pha) {
-        const int startHour = gioBatDauCapCuu(pha);
-        time_t start = taoThoiGianCungNgay(t, startHour, 0);
-
-        // Ca đêm 18:00 -> 06:00: từ 00:00 đến trước 06:00 thuộc ca bắt đầu hôm trước.
-        if (startHour == 18 && phutTrongNgay(t) < 6 * 60) {
-            tm previous = layLocalTm(t);
-            previous.tm_mday -= 1;
-            previous.tm_hour = 18;
-            previous.tm_min = 0;
-            previous.tm_sec = 0;
-            start = mktime(&previous);
-        }
-        return start;
+        (void)pha;
+        return 0;
     }
 }
 
@@ -194,38 +166,30 @@ namespace ThoiGian {
     }
 
     bool DangTrucCapCuu(time_t t, int phaTruc) {
-        const int pha = chuanHoaPha(phaTruc);
-        const time_t start = batDauCaCapCuuChua(t, pha);
-        if (!dungNgayCapCuu(start, pha)) return false;
-        return t >= start && t < start + 12 * 60 * 60;
+        (void)phaTruc;
+        const int p = phutTrongNgay(t);
+        return p >= 7 * 60 && p < 17 * 60;
     }
 
     time_t TrucCapCuuTiepTheo(time_t t, int phaTruc) {
-        const int pha = chuanHoaPha(phaTruc);
-        if (DangTrucCapCuu(t, pha)) return t;
+        (void)phaTruc;
+        if (DangTrucCapCuu(t, 0)) return t;
+        const int p = phutTrongNgay(t);
+        if (p < 7 * 60) return taoThoiGianCungNgay(t, 7, 0);
 
-        // Mỗi nhóm trực cách ngày, nên tìm trong tối đa ba ngày lịch.
-        for (int offset = 0; offset <= 3; ++offset) {
-            tm value = layLocalTm(t);
-            value.tm_mday += offset;
-            value.tm_hour = gioBatDauCapCuu(pha);
-            value.tm_min = 0;
-            value.tm_sec = 0;
-            const time_t start = mktime(&value);
-
-            if (!dungNgayCapCuu(start, pha)) continue;
-            if (start >= t) return start;
-        }
-
-        return t;
+        tm value = layLocalTm(t);
+        value.tm_mday += 1;
+        value.tm_hour = 7;
+        value.tm_min = 0;
+        value.tm_sec = 0;
+        return mktime(&value);
     }
 
     bool DuThoiGianKhamCapCuu(time_t batDau, int soPhut, int phaTruc) {
-        if (soPhut <= 0 || soPhut > 12 * 60) return false;
-        if (!DangTrucCapCuu(batDau, phaTruc)) return false;
-
-        const time_t startShift = batDauCaCapCuuChua(batDau, phaTruc);
-        const time_t endShift = startShift + 12 * 60 * 60;
+        (void)phaTruc;
+        if (soPhut <= 0 || soPhut > 10 * 60) return false;
+        if (!DangTrucCapCuu(batDau, 0)) return false;
+        const time_t endShift = taoThoiGianCungNgay(batDau, 17, 0);
         return batDau + static_cast<time_t>(soPhut) * 60 <= endShift;
     }
 
@@ -249,13 +213,12 @@ namespace ThoiGian {
             const time_t currentDay = mktime(&day);
 
             if (capCuu) {
-                if (!dungNgayCapCuu(currentDay, phaTruc)) continue;
-                const time_t start =
-                    taoThoiGianCungNgay(currentDay, gioBatDauCapCuu(phaTruc), 0);
+                (void)phaTruc;
+                const time_t start = taoThoiGianCungNgay(currentDay, 7, 0);
                 result.push_back({
                     DinhDangNgay(start),
                     start,
-                    start + 12 * 60 * 60
+                    taoThoiGianCungNgay(currentDay, 17, 0)
                 });
                 continue;
             }
