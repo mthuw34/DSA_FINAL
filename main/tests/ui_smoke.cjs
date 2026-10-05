@@ -24,7 +24,7 @@ const fixture = {
   '/api/assignments':[{checkin_id:10,patient_id:1,department:'Khoa Cap cuu',doctor_name:'Bác sĩ An',doctor_id:'BS001',start_time:'2026-10-04 10:00:00',planned_end_time:'2026-10-04 10:20:00',duration_minutes:20}],
   '/api/exams?active=false':[{checkin_id:10,patient_id:1,department:'Khoa Cap cuu',doctor_name:'Bác sĩ An',doctor_id:'BS001',start_time:'2026-10-04 10:00:00',end_time:null,diagnosis:malicious}],
   '/api/doctors':[{id:'BS001',name:'Bác sĩ An',department:'Khoa Cap cuu',experience_years:10,status:'on_duty',duty_mode:'auto',busy:false,
-    shift_rule:'three_8h_rotating_days_off',shift_period_start:'2026-10-05',shifts:[{date:'2026-10-05',start_time:'2026-10-05 00:00:00',end_time:'2026-10-05 08:00:00',is_current:true}]}]
+    shift_rule:'daily_7_17',shift_period_start:'2026-10-05',overtime:false,overtime_until:null,shifts:[{date:'2026-10-05',start_time:'2026-10-05 07:00:00',end_time:'2026-10-05 17:00:00',is_current:true}]}]
 };
 const document = {querySelector:element,activeElement:null,body:element('body'),listeners:{},addEventListener(type,handler){this.listeners[type]=handler;}};
 const context = vm.createContext({document,location:{hash:''},window:{addEventListener(){}},console,Map,Set,Date,
@@ -103,14 +103,25 @@ const run = code => vm.runInContext(code,context);
   assert(!element('#content').innerHTML.includes('&lt;img'));
   run("state.search='';openModal('new-patient')");
   assert(element('#modal-body').innerHTML.includes('birth_date'));
+  assert(element('#modal-body').innerHTML.includes('DD/MM/YYYY'));
+  assert(element('#modal-body').innerHTML.includes('pattern="0[0-9]{9}"'));
+
+  run("state.view='patients';state.search='';render()");
+  document.listeners.compositionstart({target:{id:'search'}});
+  document.listeners.input({target:{id:'search',value:'Nguyễ'},isComposing:true});
+  assert.equal(run('state.search'),'','IME composition must not rebuild search mid-word');
+  document.listeners.compositionend({target:{id:'search',value:'Nguyễn'}});
+  assert.equal(run('state.search'),'Nguyễn');
   run("openModal('doctor-shifts','BS001')");
-  assert(element('#modal-body').innerHTML.includes('00:00 · 05/10/2026'));
-  assert(element('#modal-body').innerHTML.includes('08:00 · 05/10/2026'));
+  assert(element('#modal-body').innerHTML.includes('07:00 · 05/10/2026'));
+  assert(element('#modal-body').innerHTML.includes('17:00 · 05/10/2026'));
   assert(element('#modal-body').innerHTML.includes('Nghỉ'));
   assert(element('#modal-submit').hidden);
   run("state.data.doctors[0].duty_mode='off_duty';openModal('doctor-shifts','BS001')");
   assert(element('#modal-body').innerHTML.includes('nghỉ thủ công'));
   run("state.data.doctors[0].duty_mode='auto'");
+  run("openModal('doctor-status','BS001')");
+  assert(element('#modal-body').innerHTML.includes('overtime_minutes'));
   run("openModal('checkin',2)");
   assert(element('#modal-body').innerHTML.includes('value="2" selected'));
   assert(!element('#modal-body').innerHTML.includes('>#1 ·'));
