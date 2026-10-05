@@ -160,6 +160,9 @@ def main():
             request(f'/api/checkins/{cid}/priority', 'PATCH', {'priority':2})
             assert request('/api/queue')[0]['current_priority'] == 2
             with closing(sqlite3.connect(sandbox / 'THAY_DOI_MUC_DO_UU_TIEN/db/priority.db')) as db:
+                manual_update = db.execute(
+                    'SELECT last_update FROM priority_checkins WHERE checkin_id=?',(cid,)).fetchone()[0]
+                assert manual_update >= checkin_time, (checkin_time, manual_update)
                 db.execute("UPDATE priority_checkins SET last_update='2000-01-03 08:00:00' WHERE checkin_id=?", (cid,))
                 db.commit()
             deadline = time.monotonic() + 12
