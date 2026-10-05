@@ -31,7 +31,7 @@ bool executeSql(sqlite3* database, const char* sql, const char* operation) {
 
 }
 
-bool DBTruyXuat::docDanhSachBenhNhan(vector<HoSoTruyXuat>& outRecords) {
+bool DBTruyXuat::docDanhSachBenhNhan(MangDongBenhNhan& outRecords) {
     outRecords.clear();
 
     sqlite3* database = nullptr;
@@ -91,7 +91,7 @@ bool DBTruyXuat::docDanhSachBenhNhan(vector<HoSoTruyXuat>& outRecords) {
 }
 
 bool DBTruyXuat::ghiDanhSachDaSapXep(
-    const vector<HoSoTruyXuat>& sortedRecords
+    const MangDongBenhNhan& sortedRecords
 ) {
     sqlite3* database = nullptr;
     if (sqlite3_open_v2(retrievalPath, &database, SQLITE_OPEN_READWRITE, nullptr) != SQLITE_OK) {
@@ -133,8 +133,9 @@ bool DBTruyXuat::ghiDanhSachDaSapXep(
     }
 
     array<int, CauHinhTruyXuat::danhSachKhoa.size()> departmentOrders{};
-    for (const HoSoTruyXuat& record : sortedRecords) {
+    for (int recordIndex = 0; recordIndex < sortedRecords.size(); ++recordIndex) {
         if (!success) break;
+        const HoSoTruyXuat& record = sortedRecords[recordIndex];
         if (record.departmentOrder < 1
             || static_cast<size_t>(record.departmentOrder) > statements.size()) {
             continue;

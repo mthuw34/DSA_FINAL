@@ -18,7 +18,6 @@ struct ApiError : std::runtime_error {
 class WebService {
     sqlite3* hospital = nullptr;
     sqlite3* priority = nullptr;
-    sqlite3* retrieval = nullptr;
     DatabaseDangKham exams;
     std::vector<Patient> patients();
     Patient findPatient(int id);

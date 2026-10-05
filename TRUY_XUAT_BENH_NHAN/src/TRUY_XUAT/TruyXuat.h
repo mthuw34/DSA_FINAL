@@ -4,7 +4,6 @@
 #include <array>
 #include <cstddef>
 #include <string_view>
-#include <vector>
 
 struct HoSoTruyXuat {
     int checkinId;
@@ -24,6 +23,9 @@ struct HoSoTruyXuat {
     std::string lastUpdate;
     bool isTroNangLamSang = false;
 };
+
+class MangDongBenhNhan;
+#include "MangDongBenhNhan.h"
 
 namespace CauHinhTruyXuat
 {
@@ -61,15 +63,15 @@ namespace ThuatToanSapXep {
     int layThuTuKhoa(const std::string& department);
     bool xetUuTien(const HoSoTruyXuat& left, const HoSoTruyXuat& right);
     void tron(
-        std::vector<HoSoTruyXuat>& records,
-        std::vector<HoSoTruyXuat>& buffer,
+        MangDongBenhNhan& records,
+        MangDongBenhNhan& buffer,
         int left,
         int middle,
         int right
     );
     void sapXepTron(
-        std::vector<HoSoTruyXuat>& records,
-        std::vector<HoSoTruyXuat>& buffer,
+        MangDongBenhNhan& records,
+        MangDongBenhNhan& buffer,
         int left,
         int right
     );
@@ -82,8 +84,8 @@ public:
 
 class DBTruyXuat {
 public:
-    static bool docDanhSachBenhNhan(std::vector<HoSoTruyXuat>& outRecords);
+    static bool docDanhSachBenhNhan(MangDongBenhNhan& outRecords);
     static bool ghiDanhSachDaSapXep(
-        const std::vector<HoSoTruyXuat>& sortedRecords
+        const MangDongBenhNhan& sortedRecords
     );
 };

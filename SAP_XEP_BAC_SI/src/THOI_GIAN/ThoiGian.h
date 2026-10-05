@@ -17,36 +17,33 @@ namespace ThoiGian {
 
     bool LaCuoiTuan(std::time_t t);
 
-    // Khoa thường:
-    // - sáng: 07:00 -> 11:30
-    // - chiều: 13:00 -> 17:00
+    // Khoa thường thì sáng: 07:00 -> 11:30, chiều: 13:00 -> 17:00
     bool DangTrongCaThuong(std::time_t t);
 
-    // Trả về thời điểm bắt đầu ca tiếp theo mà khoa thường có thể làm.
+    // Trả về thời điểm bắt đầu ca tiếp theo mà khoa thường có thể làm
     std::time_t CaThuongTiepTheo(std::time_t t);
 
-    // Điều chỉnh thời điểm bắt đầu sao cho nằm trong ca làm việc
-    // và không rơi vào cuối tuần.
+    // Điều chỉnh thời điểm bắt đầu sao cho nằm trong ca làm việc và ko rơi vào cuối tuần
     std::time_t DieuChinhThoiGianKhoaThuong(std::time_t t);
 
-    // Kiểm tra một ca khám có kết thúc trước khi ca hiện tại kết thúc hay không.
+    // Kiểm tra một ca khám có kết thúc trước khi ca hiện tại kết thúc hay ko
     bool DuThoiGianKhamKhoaThuong(std::time_t batDau, int soPhut);
 
     // Khoa Cấp cứu có 6 nhóm luân phiên:
     // - nhóm 0,1: 00:00 -> 08:00
     // - nhóm 2,3: 08:00 -> 16:00
     // - nhóm 4,5: 16:00 -> 00:00
-    // Hai nhóm cùng khung giờ luân phiên cách ngày, nên toàn khoa luôn phủ 24/7.
+    // Hai nhóm cùng khung giờ luân phiên cách ngày, nên toàn khoa luôn phủ 24/7
     bool DangTrucCapCuu(std::time_t t, int phaTruc);
 
-    // Tìm thời điểm gần nhất từ t mà nhóm cấp cứu này được phép trực.
+    // Tìm thời điểm gần nhất từ t mà nhóm cấp cứu này được phép trực
     std::time_t TrucCapCuuTiepTheo(std::time_t t, int phaTruc);
 
-    // Kiểm tra lượt khám có nằm trọn trong ca cấp cứu 8 giờ hiện tại hay không.
+    // Kiểm tra lượt khám có nằm trọn trong ca cấp cứu 8 giờ hiện tại hay không
     bool DuThoiGianKhamCapCuu(std::time_t batDau, int soPhut, int phaTruc);
 
-    // Sinh lịch trực trong soNgay ngày kể từ ngày chứa moc.
-    // Khoa thường bỏ cuối tuần; Cấp cứu dùng phaTruc 0..5.
+    // Sinh lịch trực trong soNgay ngày kể từ ngày chứa mốc
+    // Khoa thường bỏ cuối tuần; Cấp cứu dùng phaTruc 0 -> 5
     std::vector<CaTruc> LichTruc(
         std::time_t moc,
         bool capCuu,
@@ -54,6 +51,6 @@ namespace ThoiGian {
         int soNgay = 7
     );
 
-    // Kiểm tra các ca có thời gian hợp lệ và không chồng lấn.
+    // Kiểm tra các ca có thgian hợp lệ và ko chồng lấn
     bool KiemTraLichTruc(const std::vector<CaTruc>& lich);
 }

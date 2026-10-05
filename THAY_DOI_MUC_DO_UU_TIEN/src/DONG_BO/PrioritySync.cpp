@@ -10,14 +10,32 @@
 
 using namespace std;
 
-PrioritySync::PrioritySync(sqlite3* hospital, sqlite3* priority)
+PrioritySync::PrioritySync(sqlite3* hospital, sqlite3* priority, sqlite3* exams)
 {
     hospitalDb = hospital;
     priorityDb = priority;
+    examsDb = exams;
 }
 
-bool PrioritySync::syncAll()
+bool PrioritySync::syncAll(const vector<int>& assignedCheckins)
 {
+    unordered_set<int> assignedIds(assignedCheckins.begin(), assignedCheckins.end());
+    if (examsDb) {
+        sqlite3_stmt* stmt = nullptr;
+        const char* sql = "SELECT checkin_id FROM dang_kham WHERE doctor_id IS NOT NULL AND doctor_id <> '';";
+        if (sqlite3_prepare_v2(examsDb, sql, -1, &stmt, nullptr) != SQLITE_OK) {
+            cerr << "Loi doc cac ca da phan bac si: " << sqlite3_errmsg(examsDb) << '\n';
+            return false;
+        }
+        int result;
+        while ((result = sqlite3_step(stmt)) == SQLITE_ROW)
+            assignedIds.insert(sqlite3_column_int(stmt, 0));
+        sqlite3_finalize(stmt);
+        if (result != SQLITE_DONE) {
+            cerr << "Loi doc cac ca da phan bac si: " << sqlite3_errmsg(examsDb) << '\n';
+            return false;
+        }
+    }
     vector<priority_storage::SourceRecord> sourceRecords;
     if (!priority_storage::loadSourceRecords(hospitalDb, sourceRecords))
     {
@@ -54,6 +72,10 @@ bool PrioritySync::syncAll()
     unordered_set<int> sourceIds;
     for (const priority_storage::SourceRecord& source : sourceRecords)
     {
+        if (assignedIds.find(source.checkinId) != assignedIds.end())
+        {
+            continue;
+        }
         sourceIds.insert(source.checkinId);
 
         auto existing = recordIndexes.find(source.checkinId);

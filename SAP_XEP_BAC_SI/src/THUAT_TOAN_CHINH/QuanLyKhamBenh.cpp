@@ -164,6 +164,8 @@ bool QuanLyKhamBenh::TimBacSiTotNhat(
     for (int index : danhSach) {
         if (WebMode && find(BacSiChoPhep.begin(), BacSiChoPhep.end(),
                 QuanLyBacSiManager.LayBacSi(index).id) == BacSiChoPhep.end()) continue;
+        if (WebMode && find(BacSiDaPhanTrongLanChay.begin(), BacSiDaPhanTrongLanChay.end(),
+                QuanLyBacSiManager.LayBacSi(index).id) != BacSiDaPhanTrongLanChay.end()) continue;
         time_t thoiDiemNhan = 0;
 
         if (QuanLyBacSiManager.TinhThoiDiemNhanBenhNhan(
@@ -209,6 +211,11 @@ bool QuanLyKhamBenh::XuLyMotBenhNhan(
         benhNhan.Note = "Chua tim duoc bac si phu hop.";
         return false;
     }
+    if (WebMode && batDau > hienTai) {
+        benhNhan.Status = "CHO_DOI";
+        benhNhan.Note = "Chua co bac si trong ca truc hien tai.";
+        return false;
+    }
 
     BacSi& bs = QuanLyBacSiManager.LayBacSi(bacSiIndex);
     time_t ketThuc = batDau + thoiLuong * 60;
@@ -244,6 +251,7 @@ bool QuanLyKhamBenh::XuLyMotBenhNhan(
         bacSiIndex,
         ketThuc
     );
+    if (WebMode) BacSiDaPhanTrongLanChay.push_back(bs.id);
 
     return true;
 }
@@ -342,9 +350,7 @@ bool QuanLyKhamBenh::XuLyKhoa(
             << soDaXuLy << " benh nhan da xep, "
             << soCho << " benh nhan dang cho.\n";
     }
-
-    // Ket qua phan bac si duoc giu trong RAM.
-    // Web se ghi truc tiep vao DANG_KHAM sau khi scheduler ket thuc.
+    // Ghi trực tiếp vào DANG_KHAM sau khi scheduler kết thúc
     return true;
 }
 
@@ -361,6 +367,7 @@ bool QuanLyKhamBenh::KhoiDongWeb(const string& database, const string& csv,
     if (!QuanLyBacSiManager.DocCSV(csv) || !Database.MoDatabase(database)) return false;
     WebMode = true;
     BacSiChoPhep = choPhep;
+    BacSiDaPhanTrongLanChay.clear();
     const auto now = ThoiGian::HienTai();
     QuanLyBacSiManager.KhoiTaoLich(now);
     for (int i = 0; i < static_cast<int>(QuanLyBacSiManager.LayDanhSach().size()); ++i) {

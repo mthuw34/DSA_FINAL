@@ -5,6 +5,7 @@ Luồng dữ liệu: SQLite → vector lịch phân bác sĩ/lịch sử khám �
 - **Presentation:** `DangKhamManager.cpp`, `NhapChanDoan.cpp` và `main.cpp` nhận input, gọi tầng xử lý và hiển thị kết quả.
 - **DSA Core:** `ExamCore.h` chứa bảng băm tự cài đặt để đối chiếu check-in, kiểm tra thời gian/trạng thái bằng C++, tìm ca trên vector và Merge Sort ổn định tự cài đặt cho danh sách đang khám. Các hàm này không phụ thuộc SQLite.
 - **Persistence:** `DatabaseDangKham.cpp` nạp toàn bộ `ket_qua_kham` và `dang_kham` bằng SELECT thuần; tạo/bổ sung schema; ghi các bản ghi mà tầng xử lý đã chọn. Không lọc hoặc sắp xếp danh sách bằng SQL.
+- `dangKham.db` cũng lưu `doctor_state` để giữ chế độ trực và trạng thái bận của bác sĩ. Khi khởi động, dữ liệu từ bảng `doctor_state` cũ trong `truyXuat.db` được chuyển sang database này một lần; bảng cũ được gỡ khỏi database hàng đợi. `sqlite_sequence` là metadata nội bộ SQLite của riêng từng file và không phải bảng nghiệp vụ để di chuyển.
 
 Ca mới chỉ được nhận khi đã đến giờ bắt đầu và chưa hết giờ dự kiến. Ca đã nhận vẫn đang khám cho đến khi bác sĩ kết thúc thực tế; đồng bộ không mở lại ca đã kết thúc và không ghi đè chẩn đoán, đơn thuốc, lời nhắc hay giờ check-in đã lưu. Thời gian nguồn dùng định dạng địa phương YYYY-MM-DD HH:MM:SS (chấp nhận T thay khoảng trắng). Nguồn chưa có giờ check-in gốc nên giờ bắt đầu là giá trị thay thế khi thiếu.
 

@@ -61,7 +61,8 @@ void loadPatients(sqlite3* db, AutoPriorityHeap& heap)
 
         AutoPriorityItem item;
         item.checkinId = record.checkinId;
-        item.nextBoostTime = calculateNextBoostTime(lastUpdateTime);
+        item.nextBoostTime = calculateNextBoostTime(
+            lastUpdateTime, record.department == "Khoa Cap cuu");
         heap.insert(item);
     }
 }
@@ -121,7 +122,8 @@ void processAuto(sqlite3* db, AutoPriorityHeap& heap)
         time_t lastUpdateTime;
         if (!parseTime(record.lastUpdate, lastUpdateTime)) continue;
 
-        time_t correctBoostTime = calculateNextBoostTime(lastUpdateTime);
+        const bool emergencyDepartment = record.department == "Khoa Cap cuu";
+        time_t correctBoostTime = calculateNextBoostTime(lastUpdateTime, emergencyDepartment);
         if (item.nextBoostTime != correctBoostTime)
         {
             item.nextBoostTime = correctBoostTime;
@@ -139,7 +141,8 @@ void processAuto(sqlite3* db, AutoPriorityHeap& heap)
         {
             AutoPriorityItem nextItem;
             nextItem.checkinId = record.checkinId;
-            nextItem.nextBoostTime = calculateNextBoostTime(item.nextBoostTime);
+            nextItem.nextBoostTime = calculateNextBoostTime(
+                item.nextBoostTime, emergencyDepartment);
             heap.insert(nextItem);
         }
     }

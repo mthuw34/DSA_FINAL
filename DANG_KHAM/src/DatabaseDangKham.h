@@ -31,6 +31,7 @@ private:
     );
 
     bool migrateLegacyAssignments();
+    bool migrateDoctorState();
 
 public:
     DatabaseDangKham() = default;

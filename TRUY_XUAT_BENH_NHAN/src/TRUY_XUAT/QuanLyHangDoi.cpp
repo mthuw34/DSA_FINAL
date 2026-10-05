@@ -1,21 +1,19 @@
 #include "TruyXuat.h"
-#include <vector>
+#include "MangDongBenhNhan.h"
 #include <iostream>
 
-using namespace std;
-
 bool QuanLyHangDoi::taiVaXuLyBenhNhan() {
-    vector<HoSoTruyXuat> records;
+    MangDongBenhNhan records;
     if (!DBTruyXuat::docDanhSachBenhNhan(records)) {
-        cerr << "Khong the doc danh sach benh nhan tu database.\n";
+        std::cerr << "Khong the doc danh sach benh nhan tu database.\n";
         return false;
     }
 
-    if (!records.empty()) {
-        // Merge Sort uses O(n) auxiliary storage to guarantee stable sorting in Theta(n log n) time.
-        vector<HoSoTruyXuat> buffer(records.size());
-        ThuatToanSapXep::sapXepTron(records, buffer, 0, static_cast<int>(records.size()) - 1);
-    }
+    MangDongBenhNhan buffer;
+    for (int index = 0; index < records.size(); ++index)
+        buffer.push_back(records[index]);
+    if (!records.empty())
+        ThuatToanSapXep::sapXepTron(records, buffer, 0, records.size() - 1);
 
     return DBTruyXuat::ghiDanhSachDaSapXep(records);
 }

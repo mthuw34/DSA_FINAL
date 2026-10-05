@@ -16,6 +16,7 @@ $sources = @(
     "THAY_DOI_MUC_DO_UU_TIEN/src/CAP_NHAT_THU_CONG/PriorityManager.cpp",
     "TRUY_XUAT_BENH_NHAN/src/TAO_BANG/DBTaoBang.cpp",
     "TRUY_XUAT_BENH_NHAN/src/TRUY_XUAT/DBTruyXuat.cpp",
+    "TRUY_XUAT_BENH_NHAN/src/XOA_BENH_NHAN/DBXoaBenhNhan.cpp",
     "TRUY_XUAT_BENH_NHAN/src/TRUY_XUAT/QuanLyHangDoi.cpp",
     "TRUY_XUAT_BENH_NHAN/src/TRUY_XUAT/ThuatToanSapXep.cpp",
     "SAP_XEP_BAC_SI/src/THUAT_TOAN_CHINH/QuanLyKhamBenh.cpp",
@@ -27,7 +28,8 @@ $sources = @(
 )
 $includeDirectories = @("include", "SAP_XEP_BAC_SI/src/THUAT_TOAN_CHINH",
     "SAP_XEP_BAC_SI/src/QUAN_LY_THONG_TIN", "SAP_XEP_BAC_SI/src/THOI_GIAN",
-    "SAP_XEP_BAC_SI/src/XU_LY_DATA_BASE_neu_can", "DANG_KHAM/src")
+    "SAP_XEP_BAC_SI/src/XU_LY_DATA_BASE_neu_can", "DANG_KHAM/src",
+    "TRUY_XUAT_BENH_NHAN/src/TRUY_XUAT")
 $arguments = @("-std=c++17", "-O0", "-Wall", "-Wextra", "-DASIO_STANDALONE", "-D_WIN32_WINNT=0x0601")
 foreach ($directory in $includeDirectories) { $arguments += "-I" + $directory }
 foreach ($source in $sources) { $arguments += $source }

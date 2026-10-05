@@ -20,6 +20,7 @@ private:
     vector<BenhNhanKham> KetQuaTrongLanChay;
     bool WebMode = false;
     vector<string> BacSiChoPhep;
+    vector<string> BacSiDaPhanTrongLanChay;
     vector<int> CheckinDaPhan;
 
     int TimChiSoKhoa(const string& khoa) const;

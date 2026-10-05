@@ -126,7 +126,10 @@ POST assignments nhận `{department: "Khoa Noi"}` để phân một khoa,
 `{doctor_id: "BS001"}` để phân cho một bác sĩ (tự lấy khoa của bác sĩ), hoặc `{}` để phân tất cả khoa.
 PATCH trạng thái nhận `{duty_mode: "auto" | "on_duty" | "off_duty"}` và/hoặc
 `{busy_minutes: 30, busy_reason: "Họp gấp"}`. Gửi `{busy_minutes: 0}` để hết bận sớm.
-Bác sĩ bận/nghỉ/đang khám không nhận lịch mới. Bác sĩ tự động ngoài giờ có thể nhận lịch trong ca tiếp theo.
+Chỉ bác sĩ đang trong ca và không bận/đang khám nhận ca mới. Mỗi bác sĩ nhận tối đa
+một bệnh nhân trong một lượt gọi; không tạo lịch tương lai. Ca đã gọi được ghi vào
+`dangKham.db` và loại khỏi `priority.db`/`truyXuat.db`; đồng bộ tiếp theo tiếp tục loại
+các ca đã có bác sĩ nên chúng không quay lại hàng đợi.
 Gọi lại không phân lại ca đã lưu;
 lịch bận bác sĩ được khôi phục từ các ca trước để tránh chồng lịch.
 Thuật toán web mô phỏng thời lượng 10–30 phút; bận đột xuất do người dùng khai báo.
@@ -137,7 +140,9 @@ Ngoài giờ, ưu tiên 1–2 có thể gửi `transfer_to_emergency: true` đ�
 Mỗi bệnh nhân vẫn chỉ có một check-in theo schema hiện tại. Ca được nhận vào đang khám
 chỉ khi giờ bắt đầu đã tới và bác sĩ chưa khám ca khác, kể cả server khởi động trễ; ca đã nhận chỉ kết thúc
 khi gọi API finish. Giờ dùng timezone của máy chạy server, nên cấu hình máy theo giờ Việt Nam.
-Tăng ưu tiên tự động theo thời gian chưa được chạy nền bởi server này.
+Server tự đồng bộ mức ưu tiên khi chạy: tính từ giờ check-in, bù các mốc 90 phút đã qua
+đến tối đa mức 1. Khoa thường cộng thời gian mỗi ngày trong khung 07:30–11:30 và
+13:00–17:00; Khoa Cấp cứu cộng liên tục 24/7. Chương trình `auto_main` cũng áp dụng cùng quy tắc.
 Không chạy chương trình CLI phân bác sĩ song song với server vì CLI cũ không khôi phục lịch đã lưu.
 
 ## Kiểm tra
