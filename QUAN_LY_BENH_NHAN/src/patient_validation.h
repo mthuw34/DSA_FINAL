@@ -2,6 +2,7 @@
 #include <ctime>
 #include <stdexcept>
 #include <string>
+#include <algorithm>
 
 inline int parseNonNegativeInt(const std::string& value)
 {
@@ -10,10 +11,30 @@ inline int parseNonNegativeInt(const std::string& value)
     return std::stoi(value);
 }
 
-inline int ageFromBirthDate(const std::string& value)
+inline std::string normalizeBirthDate(const std::string& value)
 {
-    if (value.size() != 10 || value[4] != '-' || value[7] != '-')
-        throw std::invalid_argument("Ngay sinh phai la YYYY-MM-DD");
+    if (value.size() != 10)
+        throw std::invalid_argument("Ngay sinh phai co dang DD/MM/YYYY");
+
+    if (value[2] == '/' && value[5] == '/')
+        return value.substr(6, 4) + "-" + value.substr(3, 2) + "-" + value.substr(0, 2);
+
+    if (value[4] == '-' && value[7] == '-')
+        return value;
+
+    throw std::invalid_argument("Ngay sinh phai co dang DD/MM/YYYY");
+}
+
+inline bool validPhone(const std::string& value)
+{
+    return value.empty() ||
+        (value.size() == 10 && value[0] == '0' &&
+         std::all_of(value.begin(), value.end(), [](unsigned char c) { return c >= '0' && c <= '9'; }));
+}
+
+inline int ageFromBirthDate(const std::string& input)
+{
+    const std::string value = normalizeBirthDate(input);
     const int year = parseNonNegativeInt(value.substr(0, 4));
     const int month = parseNonNegativeInt(value.substr(5, 2));
     const int day = parseNonNegativeInt(value.substr(8, 2));
