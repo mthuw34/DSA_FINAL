@@ -315,13 +315,14 @@ Json WebService::listDoctors() {
     QuanLyBacSi manager;
     require(manager.DocCSV(doctorsPath), 500, "Khong doc duoc CSV bac si");
     Json saved = Json::object();
-    auto stmt = prepare(exams.get(), "SELECT doctor_id,duty_mode,busy_until,busy_reason FROM doctor_state;");
+    auto stmt = prepare(exams.get(), "SELECT doctor_id,duty_mode,busy_until,busy_reason,overtime_until FROM doctor_state;");
     int rc;
     while ((rc = sqlite3_step(stmt.get())) == SQLITE_ROW)
         saved[HospitalPersistence::text(stmt.get(), 0)] = {
             {"duty_mode",HospitalPersistence::text(stmt.get(), 1)},
             {"busy_until",HospitalPersistence::text(stmt.get(), 2)},
-            {"busy_reason",HospitalPersistence::text(stmt.get(), 3)}};
+            {"busy_reason",HospitalPersistence::text(stmt.get(), 3)},
+            {"overtime_until",HospitalPersistence::text(stmt.get(), 4)}};
     require(rc == SQLITE_DONE, 500, "Khong doc duoc trang thai bac si");
     const auto now = time(nullptr);
     auto active = listExams(true);
@@ -332,10 +333,13 @@ Json WebService::listDoctors() {
         const auto settings = saved.value(d.id, Json::object());
         const auto mode = settings.value("duty_mode", "auto");
         const auto until = settings.value("busy_until", "");
-        time_t busyEnd = 0;
+        const auto overtimeUntil = settings.value("overtime_until", "");
+        time_t busyEnd = 0, overtimeEnd = 0;
         const bool busy = ExamCore::parseTime(until, busyEnd) && busyEnd > now;
-        const bool duty = mode == "on_duty" || (mode == "auto" &&
-            (d.khoaChuyenMon == "Khoa Cap cuu" ? ThoiGian::DangTrucCapCuu(now, phase) : ThoiGian::DangTrongCaThuong(now)));
+        const bool overtime = ExamCore::parseTime(overtimeUntil, overtimeEnd) && overtimeEnd > now;
+        const bool scheduledDuty =
+            d.khoaChuyenMon == "Khoa Cap cuu" ? ThoiGian::DangTrucCapCuu(now, phase) : ThoiGian::DangTrongCaThuong(now);
+        const bool duty = mode == "on_duty" || (mode == "auto" && (scheduledDuty || overtime));
         bool examining = false;
         for (const auto& e : active) if (e["doctor_id"] == d.id) examining = true;
         Json shifts = Json::array();
@@ -349,6 +353,7 @@ Json WebService::listDoctors() {
             {"shift_rule",d.khoaChuyenMon == "Khoa Cap cuu" ? "two_12h_rotating_days_off" : "weekday_split"},
             {"busy",busy},{"busy_until",busy ? Json(until) : Json(nullptr)},
             {"busy_reason",busy ? settings.value("busy_reason", "") : ""},
+            {"overtime",overtime},{"overtime_until",overtime ? Json(overtimeUntil) : Json(nullptr)},
             {"status",examining ? "examining" : busy ? "busy" : duty ? "on_duty" : "off_duty"}});
     }
     return result;
@@ -357,20 +362,26 @@ Json WebService::updateDoctor(const std::string& id, const Json& data) {
     auto doctors = listDoctors();
     auto found = std::find_if(doctors.begin(), doctors.end(), [&](const Json& d) { return d["id"] == id; });
     require(found != doctors.end(), 404, "Khong tim thay bac si");
-    require(data.contains("duty_mode") || data.contains("busy_minutes"), 400, "Thieu trang thai can cap nhat");
+    require(data.contains("duty_mode") || data.contains("busy_minutes") || data.contains("overtime_minutes"),
+        400, "Thieu trang thai can cap nhat");
     const auto mode = data.contains("duty_mode") ? stringField(data, "duty_mode", true) : (*found)["duty_mode"].get<std::string>();
     require(mode == "auto" || mode == "on_duty" || mode == "off_duty", 400, "Trang thai ca truc khong hop le");
     auto until = (*found)["busy_until"].is_string() ? (*found)["busy_until"].get<std::string>() : "";
     auto reason = (*found)["busy_reason"].get<std::string>();
+    auto overtimeUntil = (*found)["overtime_until"].is_string() ? (*found)["overtime_until"].get<std::string>() : "";
     if (data.contains("busy_minutes")) {
         const auto minutes = intField(data, "busy_minutes", 0, 1440);
         until = minutes ? ThoiGian::DinhDang(time(nullptr) + minutes * 60) : "";
         reason = minutes ? stringField(data, "busy_reason", true) : "";
     }
+    if (data.contains("overtime_minutes")) {
+        const auto minutes = intField(data, "overtime_minutes", 0, 720);
+        overtimeUntil = minutes ? ThoiGian::DinhDang(time(nullptr) + minutes * 60) : "";
+    }
     Transaction tx(exams.get());
-    auto stmt = prepare(exams.get(), "INSERT INTO doctor_state(doctor_id,duty_mode,busy_until,busy_reason) VALUES(?,?,?,?) "
-        "ON CONFLICT(doctor_id) DO UPDATE SET duty_mode=excluded.duty_mode,busy_until=excluded.busy_until,busy_reason=excluded.busy_reason;");
-    bindText(stmt.get(), 1, id); bindText(stmt.get(), 2, mode); bindText(stmt.get(), 3, until); bindText(stmt.get(), 4, reason);
+    auto stmt = prepare(exams.get(), "INSERT INTO doctor_state(doctor_id,duty_mode,busy_until,busy_reason,overtime_until) VALUES(?,?,?,?,?) "
+        "ON CONFLICT(doctor_id) DO UPDATE SET duty_mode=excluded.duty_mode,busy_until=excluded.busy_until,busy_reason=excluded.busy_reason,overtime_until=excluded.overtime_until;");
+    bindText(stmt.get(), 1, id); bindText(stmt.get(), 2, mode); bindText(stmt.get(), 3, until); bindText(stmt.get(), 4, reason); bindText(stmt.get(), 5, overtimeUntil);
     require(sqlite3_step(stmt.get()) == SQLITE_DONE, 500, "Khong luu duoc trang thai bac si");
 
     int returned = 0;
@@ -387,7 +398,7 @@ Json WebService::updateDoctor(const std::string& id, const Json& data) {
     }
 
     tx.commit();
-    return {{"doctor_id",id},{"returned_to_queue",returned}};
+    return {{"doctor_id",id},{"returned_to_queue",returned},{"overtime_until",overtimeUntil.empty() ? Json(nullptr) : Json(overtimeUntil)}};
 }
 std::vector<BenhNhanKham> WebService::assignments() {
     std::vector<BenhNhanKham> result;
@@ -440,6 +451,15 @@ Json WebService::schedule(const Json& data) {
         500, "Khong khoi dong duoc phan bac si");
     require(department.empty() ? manager.XuLyTatCaKhoa() : manager.XuLyKhoa(department),
         500, "Phan bac si that bai; kiem tra lich da luu truoc khi thu lai");
+
+    if (!department.empty() && manager.LayKetQua().empty()) {
+        bool hasWaiting = false;
+        for (const auto& item : queue()) {
+            if (item["department"] == department) { hasWaiting = true; break; }
+        }
+        require(!hasWaiting, 409, "Khoa hien dang day hoac tat ca bac si dang ban. Benh nhan van duoc giu trong hang doi.");
+    }
+
     require(exams.ghiPhanBacSi(manager.LayKetQua()), 500, "Khong luu duoc ket qua phan bac si");
     for (const auto& assigned : manager.LayKetQua())
         require(DBXoaBenhNhan::xoaBenhNhan(assigned.PatientId), 500,
