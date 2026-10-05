@@ -66,9 +66,15 @@ inline bool parseTime(const std::optional<std::string>& text, std::time_t& outpu
         clock.tm_min == minute && clock.tm_sec == second;
 }
 
+inline bool hasStarted(const ExamSession& session, std::time_t now = std::time(nullptr)) {
+    std::time_t start = 0;
+    return !session.endTime && parseTime(session.startTime, start) && start <= now;
+}
+
 inline const ExamSession* findActive(const std::vector<ExamSession>& records, int id) {
+    const auto now = std::time(nullptr);
     for (const auto& session : records)
-        if (session.checkinId == id && !session.endTime) return &session;
+        if (session.checkinId == id && hasStarted(session, now)) return &session;
     return nullptr;
 }
 
@@ -138,7 +144,9 @@ inline void mergeSessions(std::vector<ExamSession>& records, std::vector<ExamSes
 
 inline std::vector<ExamSession> activeSessions(const std::vector<ExamSession>& records) {
     std::vector<ExamSession> active;
-    for (const auto& session : records) if (!session.endTime) active.push_back(session);
+    const auto now = std::time(nullptr);
+    for (const auto& session : records)
+        if (hasStarted(session, now)) active.push_back(session);
     std::vector<ExamSession> buffer(active.size());
     mergeSessions(active, buffer, 0, active.size());
     return active;
