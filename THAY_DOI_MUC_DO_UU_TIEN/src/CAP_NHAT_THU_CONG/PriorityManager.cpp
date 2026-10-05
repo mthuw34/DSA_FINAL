@@ -1,6 +1,9 @@
 #include "PriorityManager.h"
 #include <iostream>
 #include <vector>
+#include <ctime>
+#include <iomanip>
+#include <sstream>
 #include "../LUU_MUC_UU_TIEN/PriorityStorage.h"
 
 using namespace std;
@@ -123,6 +126,18 @@ bool PriorityManager::updatePriority(
 
     // Sửa mức ưu tiên của phần tử trong mảng.
     records[index].currentPriority = newPriority;
+
+    // Cập nhật mốc thời gian sau thay đổi thủ công để tiến trình tự động
+    // không lập tức tính tiếp từ mốc cũ và làm mức vừa chọn bị đổi lại.
+    const time_t now = time(nullptr);
+    tm* local = localtime(&now);
+    if (local != nullptr)
+    {
+        ostringstream text;
+        text << put_time(local, "%Y-%m-%d %H:%M:%S");
+        records[index].lastUpdate = text.str();
+        records[index].hasLastUpdate = true;
+    }
 
     // Ghi danh sách đã sửa vào database.
     if (!priority_storage::replaceRecords(db, records))
