@@ -478,7 +478,10 @@ Json WebService::schedule(const Json& data) {
         require(DBXoaBenhNhan::xoaBenhNhan(assigned.PatientId), 500,
             "Da luu ca kham nhung khong the xoa benh nhan khoi hang doi");
     syncExams();
-    return {{"assigned_count",manager.LayKetQua().size()},{"assignments",listAssignments()}};
+    int waitingCount = 0;
+    for (const auto& item : queue())
+        if (department.empty() || item["department"] == department) ++waitingCount;
+    return {{"assigned_count",manager.LayKetQua().size()},{"waiting_count",waitingCount},{"assignments",listAssignments()}};
 }
 Json WebService::syncExams() {
     syncPriority();
