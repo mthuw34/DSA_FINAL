@@ -223,7 +223,7 @@ function renderList() {
   return toolbar('Tìm tên hoặc mã bác sĩ…') + `<section class="panel"><div class="panel-header"><h2>Đội ngũ bác sĩ</h2><span class="result-count">${number(records.length)} bác sĩ</span></div>${pager(records,r => [person(r.name,r.id),escapeHtml(departmentLabel(r.department)),`${r.experience_years} năm`,doctorStatus(r),r.busy ? escapeHtml(`${r.busy_reason} · Đến ${timeLabel(r.busy_until)}`) : '—',`<div class="row-actions">${button('doctor-shifts','Xem ca trực',r.id)}${button('doctor-status','Cập nhật ca',r.id)}${button(r.busy ? 'doctor-resume' : 'doctor-busy',r.busy ? 'Hết bận' : 'Bận đột xuất',r.id)}</div>`],['BÁC SĨ','CHUYÊN KHOA','KINH NGHIỆM','TRẠNG THÁI','BẬN ĐỘT XUẤT','THAO TÁC'],'Không tìm thấy bác sĩ','Thử thay đổi khoa hoặc từ khóa tìm kiếm.')}</section>`;
 }
 function doctorStatus(d) {
-  return badge(({examining:'Đang khám',busy:'Bận đột xuất',on_duty:'Đang trong ca trực',off_duty:'Ngoài ca / nghỉ'})[d.status] || 'Chưa cập nhật', ({examining:'blue',busy:'orange',on_duty:'green',off_duty:'gray'})[d.status] || 'gray');
+  return badge(({examining:'Đang khám',busy:'Bận đột xuất',on_duty:'Đang rảnh',off_duty:'Ngoài ca / nghỉ'})[d.status] || 'Chưa cập nhật', ({examining:'blue',busy:'orange',on_duty:'green',off_duty:'gray'})[d.status] || 'gray');
 }
 function examStatus(id) {
   const exam = state.data.exams.find(e => e.checkin_id === id);
@@ -318,7 +318,7 @@ function openModal(type, id) {
   } else if (type === 'delete-patient' || type === 'finish') {
     const p = type === 'delete-patient' ? state.patientMap.get(id) : state.data.exams.find(e => e.checkin_id === id);
     if (!p) return;
-    title = type === 'delete-patient' ? 'Xóa hồ sơ bệnh nhân?' : 'Kết thúc lượt khám?';
+    title = type === 'delete-patient' ? 'Xóa hồ sơ bệnh nhân?' : 'Bạn có muốn kết thúc ca khám bệnh nhân này không?';
     html = `<p class="form-info">${escapeHtml(type === 'delete-patient' ? p.name : patientName(p.patient_id))}</p><p class="form-note">${type === 'delete-patient' ? 'Hồ sơ này sẽ được xóa khỏi danh sách. Chỉ có thể xóa bệnh nhân chưa check-in.' : 'Lượt khám sẽ được ghi nhận đã hoàn tất với giờ kết thúc hiện tại. Sau đó không thể sửa chẩn đoán của lượt khám này.'}</p>`;
     $('#modal-submit').textContent = type === 'delete-patient' ? 'Xóa hồ sơ' : 'Xác nhận kết thúc';
     if (type === 'delete-patient') $('#modal-submit').className = 'button danger';
@@ -351,6 +351,7 @@ async function mutate(action, successMessage, close = true) {
     else if ($('#modal').open) { $('#form-error').textContent = error.message; $('#form-error').hidden = false; }
     else notice(error.message, 'error');
   } finally { setBusy(false); }
+  return committed;
 }
 $('#modal-form').addEventListener('submit', async event => {
   event.preventDefault();
@@ -376,12 +377,14 @@ $('#modal-form').addEventListener('submit', async event => {
       $('#form-error').hidden = false;
       return;
     }
-    await mutate(() => api('/api/assignments','POST',payload), r => `Đã phân bác sĩ cho ${r.assigned_count} lượt khám.${r.waiting_count ? ` Còn ${r.waiting_count} bệnh nhân tiếp tục chờ do chưa có bác sĩ trống.` : ' Các lượt đã phân đã được xóa khỏi Hàng đợi.'}`);
+    const department = payload.department || state.data.doctors.find(d => d.id === payload.doctor_id)?.department;
+    await mutate(() => api('/api/assignments','POST',payload), r => `Đã phân bác sĩ cho ${r.assigned_count} lượt khám.${r.waiting_count ? ` ${payload.doctor_id ? 'Bác sĩ đã nhận ca.' : `Hiện tại ${departmentLabel(department)} đã đầy.`} Còn ${r.waiting_count} bệnh nhân tiếp tục ở hàng đợi.` : ' Các lượt đã phân đã được xóa khỏi Hàng đợi.'}`);
   } else if (['doctor-status','doctor-busy','doctor-resume'].includes(type)) {
     const payload = type === 'doctor-status' ? {duty_mode:data.duty_mode,overtime_minutes:Number(data.overtime_minutes || 0)} : type === 'doctor-resume' ? {busy_minutes:0} : {busy_minutes:Number(data.busy_minutes),busy_reason:data.busy_reason.trim()};
     await mutate(() => api(`/api/doctors/${encodeURIComponent(id)}/status`,'PATCH',payload), r => `Đã cập nhật trạng thái bác sĩ.${r.returned_to_queue ? ` ${r.returned_to_queue} lịch chưa bắt đầu đã về hàng đợi.` : ''}`);
   } else if (type === 'diagnosis') {
-    await mutate(() => api(`/api/exams/${id}/diagnosis`,'PATCH',data),'Đã lưu chẩn đoán và thông tin điều trị.');
+    const saved = await mutate(() => api(`/api/exams/${id}/diagnosis`,'PATCH',data),'Đã lưu chẩn đoán và thông tin điều trị.');
+    if (saved && !state.data.exams.find(e => e.checkin_id === id)?.end_time) openModal('finish',id);
   } else if (type === 'delete-patient') {
     await mutate(() => api(`/api/patients/${id}`,'DELETE'),'Đã xóa hồ sơ bệnh nhân.');
   } else if (type === 'finish') {

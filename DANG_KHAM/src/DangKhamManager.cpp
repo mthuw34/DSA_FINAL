@@ -116,8 +116,15 @@ void DangKhamManager::nhapChanDoan()
         return;
     }
 
-    if (database.luuChanDoan(checkinId, chanDoan, donThuoc, loiNhacBacSi))
+    if (database.luuChanDoan(checkinId, chanDoan, donThuoc, loiNhacBacSi)) {
         cout << "Da luu chan doan, don thuoc va loi nhac bac si.\n";
+        cout << "Co muon ket thuc ca kham benh nhan nay khong? (y/n): ";
+        string answer;
+        if (getline(cin, answer) && (answer == "y" || answer == "Y")) {
+            if (database.ketThucPhien(checkinId)) cout << "Da ket thuc phien kham.\n";
+            else cerr << "Khong the ket thuc phien kham.\n";
+        }
+    }
     else cerr << "Khong cap nhat duoc thong tin kham.\n";
 }
 

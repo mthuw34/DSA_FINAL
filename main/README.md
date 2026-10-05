@@ -141,6 +141,10 @@ Ngoài giờ, ưu tiên 1–2 có thể gửi `transfer_to_emergency: true` đ�
 Mỗi bệnh nhân vẫn chỉ có một check-in theo schema hiện tại. Ca được nhận vào đang khám
 chỉ khi giờ bắt đầu đã tới và bác sĩ chưa khám ca khác, kể cả server khởi động trễ; ca đã nhận chỉ kết thúc
 khi gọi API finish. Giờ dùng timezone của máy chạy server, nên cấu hình máy theo giờ Việt Nam.
+Lưu chẩn đoán thành công mở xác nhận kết thúc ca khám. Đóng xác nhận giữ ca đang khám
+và kết quả đã lưu. Kết thúc khám trả bác sĩ còn trong ca trực, không bận đột xuất về
+**Đang rảnh**; bấm **Phân bác sĩ** để nhận bệnh nhân tiếp theo. Khi 5 bác sĩ rảnh và
+6 bệnh nhân chờ, chỉ nhận 5 người, giữ 1 người ở hàng đợi và thông báo khoa đã đầy.
 Server tự đồng bộ mức ưu tiên khi chạy: tính từ giờ check-in, bù các mốc 90 phút đã qua
 đến tối đa mức 1. Khoa thường cộng thời gian mỗi ngày trong khung 07:30–11:30 và
 13:00–17:00; Khoa Cấp cứu cộng liên tục 24/7. Chương trình `auto_main` cũng áp dụng cùng quy tắc.

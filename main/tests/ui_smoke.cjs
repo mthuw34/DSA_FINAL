@@ -150,7 +150,18 @@ const run = code => vm.runInContext(code,context);
   document.listeners.change({target:{id:'schedule-mode',value:'department'}});
   assert(!element('#schedule-department-field').hidden);
   form.values={schedule_mode:'department',department:'Khoa Cap cuu'};
+  const scheduleFetch=context.fetch;
+  context.fetch=async(url,options)=>{
+    if(url==='/api/assignments' && options.method==='POST') {
+      calls.push([url,options]);
+      return {ok:true,json:async()=>({ok:true,data:{assigned_count:5,waiting_count:1}})};
+    }
+    return scheduleFetch(url,options);
+  };
   await form.listeners.submit({preventDefault(){},currentTarget:form});
+  assert(element('#notice').innerHTML.includes('Khoa Cấp cứu đã đầy'));
+  assert(element('#notice').innerHTML.includes('Còn 1 bệnh nhân tiếp tục ở hàng đợi'));
+  context.fetch=scheduleFetch;
   const departmentAssignment=calls.findLast(([url,options])=>url==='/api/assignments' && options.method==='POST');
   assert.deepEqual(JSON.parse(departmentAssignment[1].body),{department:'Khoa Cap cuu'});
   run("openModal('doctor-busy','BS001')");
@@ -160,6 +171,24 @@ const run = code => vm.runInContext(code,context);
   assert.deepEqual(JSON.parse(doctorWrite[1].body),{busy_minutes:30,busy_reason:'Họp gấp'});
   run("openModal('diagnosis',10)");
   assert(element('#modal-body').innerHTML.includes('&lt;img'));
+  assert(run("doctorStatus(state.data.doctors[0])").includes('Đang rảnh'));
+  form.values={diagnosis:'Chẩn đoán mới',prescription:'Thuốc',reminder:'Tái khám'};
+  await form.listeners.submit({preventDefault(){},currentTarget:form});
+  assert.equal(run('state.modal.type'),'finish');
+  assert(element('#modal-title').textContent.includes('muốn kết thúc ca khám'));
+  assert(!calls.some(([url])=>url==='/api/exams/10/finish'),'Save must wait for finish confirmation');
+  run('closeModal()');
+  assert(!element('#modal').open,'Closing confirmation keeps examination active');
+  run("openModal('diagnosis',10)");
+  await form.listeners.submit({preventDefault(){},currentTarget:form});
+  await form.listeners.submit({preventDefault(){},currentTarget:form});
+  assert(calls.some(([url,options])=>url==='/api/exams/10/finish' && options.method==='POST'));
+  const diagnosisFetch=context.fetch;
+  context.fetch=async()=>({ok:false,json:async()=>({ok:false,error:'Không lưu được'})});
+  run("openModal('diagnosis',10)");
+  await form.listeners.submit({preventDefault(){},currentTarget:form});
+  assert.equal(run('state.modal.type'),'diagnosis','Failed save must not open confirmation');
+  context.fetch=diagnosisFetch;
   run("openModal('exam-detail',10)");
   assert(element('#modal-submit').hidden);
   run("openModal('new-patient')");
@@ -174,5 +203,16 @@ const run = code => vm.runInContext(code,context);
   await run("mutate(async()=>({}), 'Đã lưu', false)");
   assert(element('#notice').innerHTML.includes('đã được lưu'));
   assert(!run('state.busy'));
+  // Diagnosis is committed even if refreshing the lists fails afterward.
+  context.fetch=async(url,options)=>{
+    if(url==='/api/exams/10/diagnosis' && options.method==='PATCH')
+      return {ok:true,json:async()=>({ok:true,data:{saved:true}})};
+    throw Error('offline');
+  };
+  run("openModal('diagnosis',10)");
+  form.values={diagnosis:'Đã lưu',prescription:'',reminder:''};
+  await form.listeners.submit({preventDefault(){},currentTarget:form});
+  assert.equal(run('state.modal.type'),'finish');
+  assert(element('#notice').innerHTML.includes('đã được lưu'));
   console.log('PASS: UI views, auto refresh/form preservation, intake-to-queue, both scheduling modes, doctor busy, validation, escaping, saved-write refresh failure');
 })().catch(error=>{console.error(error);process.exitCode=1;});

@@ -128,6 +128,9 @@ def main():
                 assert sum(s['is_current'] for s in doctor['shifts']) <= 1
                 assert doctor['on_duty'] == any(s['is_current'] for s in doctor['shifts'])
             assert len(emergency_coverage) == 6
+            # Keep scheduling fixtures available even when tests run after hours.
+            for doctor in [d for d in doctors if d['department'] == 'Khoa Cap cuu'][:5]:
+                request(f"/api/doctors/{doctor['id']}/status", 'PATCH', {'duty_mode':'on_duty'})
             request('/api/patients', 'POST', raw=b'{', expected=400)
             request('/api/patients', 'POST', [], expected=400)
             request('/api/patients', 'POST', {'name':'Test', 'birth_date':'30/02/2025'}, expected=400)
@@ -281,6 +284,38 @@ def main():
             result=request('/api/assignments','POST',{'doctor_id':did})
             assert [a['checkin_id'] for a in result['assignments']].count(remaining)==1
             assert not any(q['checkin_id']==remaining for q in request('/api/queue'))
+            # Finishing before the planned end releases this doctor immediately.
+            request(f'/api/exams/{remaining}/finish', 'POST')
+            assert next(d for d in request('/api/doctors') if d['id']==did)['status']=='on_duty'
+            person=request('/api/patients','POST',{'name':'Next after finish','birth_date':'2000-01-01'},201)
+            next_id=request('/api/checkins','POST',{'patient_id':person['id'],'department':'Khoa Cap cuu','priority':1},201)['checkin_id']
+            result=request('/api/assignments','POST',{'doctor_id':did})
+            assert result['assigned_count']==1
+            assert next(e for e in request('/api/exams') if e['checkin_id']==next_id)['doctor_id']==did
+            # Admit only five patients when six are queued and five doctors are free.
+            for exam in request('/api/exams'):
+                request(f"/api/exams/{exam['checkin_id']}/finish", 'POST')
+            emergency=[d for d in request('/api/doctors') if d['department']=='Khoa Cap cuu']
+            available_ids={d['id'] for d in emergency[:5]}
+            with closing(sqlite3.connect(sandbox / 'DANG_KHAM/db/dangKham.db')) as db:
+                db.executemany("INSERT INTO doctor_state(doctor_id,duty_mode,busy_reason) VALUES(?,?,'') "
+                    "ON CONFLICT(doctor_id) DO UPDATE SET duty_mode=excluded.duty_mode,busy_until=NULL,busy_reason=''",
+                    [(d['id'],'on_duty' if d['id'] in available_ids else 'off_duty') for d in emergency])
+                db.commit()
+            capacity_ids=[]
+            for i in range(6):
+                person=request('/api/patients','POST',{'name':f'Capacity {i}','birth_date':'2000-01-01'},201)
+                capacity_ids.append(request('/api/checkins','POST',{'patient_id':person['id'],
+                    'department':'Khoa Cap cuu','priority':1},201)['checkin_id'])
+            result=request('/api/assignments','POST',{'department':'Khoa Cap cuu'})
+            assert result['assigned_count']==5 and result['waiting_count']==1
+            admitted=[e for e in request('/api/exams') if e['checkin_id'] in capacity_ids]
+            assert len(admitted)==5 and {e['doctor_id'] for e in admitted}==available_ids
+            request('/api/assignments','POST',{'department':'Khoa Cap cuu'},409)
+            request(f"/api/exams/{admitted[0]['checkin_id']}/finish",'POST')
+            assert next(d for d in request('/api/doctors') if d['id']==admitted[0]['doctor_id'])['status']=='on_duty'
+            result=request('/api/assignments','POST',{'department':'Khoa Cap cuu'})
+            assert result['assigned_count']==1 and result['waiting_count']==0
             with closing(sqlite3.connect(sandbox / 'THAY_DOI_MUC_DO_UU_TIEN/db/priority.db')) as db:
                 assert db.execute('SELECT 1 FROM priority_checkins WHERE checkin_id=?',(remaining,)).fetchone() is None
             removable = request('/api/patients', 'POST', {'name':'Delete', 'birth_date':'2000-01-01'}, 201)
