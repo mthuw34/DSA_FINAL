@@ -430,7 +430,7 @@ Json WebService::schedule(const Json& data) {
         }
         if (doctor["status"] != "on_duty") continue;
         allowed.push_back(id);
-        if (doctor["duty_mode"] == "on_duty") duty.push_back(id);
+        if (doctor["duty_mode"] == "on_duty" || doctor.value("overtime", false)) duty.push_back(id);
     }
     require(doctorFound, 404, "Khong tim thay bac si");
     syncPriority();
