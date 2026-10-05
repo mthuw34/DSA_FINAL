@@ -1,8 +1,15 @@
 #pragma once
 #include <ctime>
 #include <string>
+#include <vector>
 
 namespace ThoiGian {
+    struct CaTruc {
+        std::string ngay;
+        std::time_t batDau = 0;
+        std::time_t ketThuc = 0;
+    };
+
     std::time_t HienTai();
 
     std::string DinhDang(std::time_t t);
@@ -25,12 +32,28 @@ namespace ThoiGian {
     // Kiểm tra một ca khám có kết thúc trước khi ca hiện tại kết thúc hay không.
     bool DuThoiGianKhamKhoaThuong(std::time_t batDau, int soPhut);
 
-    // Khoa cấp cứu: chia bác sĩ thành 2 nhóm ca.
-    // loaiCa = 0: ca ngày 06:00 -> 18:00.
-    // loaiCa = 1: ca đêm 18:00 -> 06:00 hôm sau.
-    // Nhóm ca đêm trực theo chu kỳ 1 trực - 2 nghỉ.
-    bool DangTrucCapCuu(std::time_t t, int loaiCa);
+    // Khoa Cấp cứu có 6 nhóm luân phiên:
+    // - nhóm 0,1: 00:00 -> 08:00
+    // - nhóm 2,3: 08:00 -> 16:00
+    // - nhóm 4,5: 16:00 -> 00:00
+    // Hai nhóm cùng khung giờ luân phiên cách ngày, nên toàn khoa luôn phủ 24/7.
+    bool DangTrucCapCuu(std::time_t t, int phaTruc);
 
-    // Tìm thời điểm bắt đầu ca cấp cứu tiếp theo mà bác sĩ được phép trực.
-    std::time_t TrucCapCuuTiepTheo(std::time_t t, int loaiCa);
+    // Tìm thời điểm gần nhất từ t mà nhóm cấp cứu này được phép trực.
+    std::time_t TrucCapCuuTiepTheo(std::time_t t, int phaTruc);
+
+    // Kiểm tra lượt khám có nằm trọn trong ca cấp cứu 8 giờ hiện tại hay không.
+    bool DuThoiGianKhamCapCuu(std::time_t batDau, int soPhut, int phaTruc);
+
+    // Sinh lịch trực trong soNgay ngày kể từ ngày chứa moc.
+    // Khoa thường bỏ cuối tuần; Cấp cứu dùng phaTruc 0..5.
+    std::vector<CaTruc> LichTruc(
+        std::time_t moc,
+        bool capCuu,
+        int phaTruc,
+        int soNgay = 7
+    );
+
+    // Kiểm tra các ca có thời gian hợp lệ và không chồng lấn.
+    bool KiemTraLichTruc(const std::vector<CaTruc>& lich);
 }
