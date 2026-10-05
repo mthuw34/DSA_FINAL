@@ -8,7 +8,8 @@ bool isWorkingTime(
 );
 
 time_t calculateNextBoostTime(
-    time_t startTime
+    time_t startTime,
+    bool emergencyDepartment = false
 );
 
 #endif

@@ -12,6 +12,7 @@
 #include "../THAY_DOI_MUC_DO_UU_TIEN/src/CAP_NHAT_THU_CONG/PriorityManager.h"
 #include "../TRUY_XUAT_BENH_NHAN/src/TRUY_XUAT/TruyXuat.h"
 #include "../TRUY_XUAT_BENH_NHAN/src/TAO_BANG/TaoBangTruyXuat.h"
+#include "../TRUY_XUAT_BENH_NHAN/src/XOA_BENH_NHAN/XoaBenhNhan.h"
 #include "../SAP_XEP_BAC_SI/src/THUAT_TOAN_CHINH/QuanLyKhamBenh.h"
 
 namespace hospital_web {
@@ -256,25 +257,30 @@ Json WebService::listCheckIns() {
     return result;
 }
 void WebService::syncPriority() {
-    PrioritySync sync(hospital, priority);
-    require(sync.syncAll(), 500, "Dong bo uu tien that bai");
+    PrioritySync sync(hospital, priority, exams.get());
+    std::vector<int> assignedCheckins;
+    for (const auto& assignment : assignments())
+        assignedCheckins.push_back(assignment.CheckinId);
+    require(sync.syncAll(assignedCheckins), 500, "Dong bo uu tien that bai");
     AutoPriorityHeap heap;
     loadPatients(priority, heap);
     processAuto(priority, heap);
 }
 Json WebService::queue() {
     // GET chỉ đọc. Đồng bộ/ghi queue được thực hiện bằng POST /api/queue/sync.
-    std::vector<HoSoTruyXuat> records;
+    MangDongBenhNhan records;
     require(DBTruyXuat::docDanhSachBenhNhan(records), 500, "Khong doc duoc hang doi");
+    MangDongBenhNhan buffer;
+    for (int i = 0; i < records.size(); ++i) buffer.push_back(records[i]);
     if (!records.empty()) {
-        std::vector<HoSoTruyXuat> buffer(records.size());
-        ThuatToanSapXep::sapXepTron(records, buffer, 0, static_cast<int>(records.size()) - 1);
+        ThuatToanSapXep::sapXepTron(records, buffer, 0, records.size() - 1);
     }
     auto assigned = assignments(); ExamCore::SessionIndex ids;
     for (std::size_t i = 0; i < assigned.size(); ++i) ids.put(assigned[i].CheckinId, i);
     auto people = patients(); auto index = PatientCore::indexPatients(people);
     Json result = Json::array();
-    for (const auto& r : records) {
+    for (int i = 0; i < records.size(); ++i) {
+        const auto& r = records[i];
         std::size_t position;
         if (ids.find(r.checkinId, position)) continue;
         Json item = {{"checkin_id",r.checkinId},{"patient_id",r.patientId},{"department",r.department},
@@ -398,10 +404,9 @@ Json WebService::schedule(const Json& data) {
             doctorFound = true;
             require(department.empty() || department == doctor["department"], 400, "Bac si khong thuoc khoa da chon");
             department = doctor["department"].get<std::string>();
-            require(!doctor["busy"].get<bool>() && doctor["status"] != "examining" && doctor["duty_mode"] != "off_duty",
-                409, "Bac si dang ban, dang kham hoac da nghi ca");
+            require(doctor["status"] == "on_duty", 409, "Bac si hien khong trong ca truc hoac dang ban");
         }
-        if (doctor["busy"].get<bool>() || doctor["status"] == "examining" || doctor["duty_mode"] == "off_duty") continue;
+        if (doctor["status"] != "on_duty") continue;
         allowed.push_back(id);
         if (doctor["duty_mode"] == "on_duty") duty.push_back(id);
     }
@@ -414,6 +419,9 @@ Json WebService::schedule(const Json& data) {
     require(department.empty() ? manager.XuLyTatCaKhoa() : manager.XuLyKhoa(department),
         500, "Phan bac si that bai; kiem tra lich da luu truoc khi thu lai");
     require(exams.ghiPhanBacSi(manager.LayKetQua()), 500, "Khong luu duoc ket qua phan bac si");
+    for (const auto& assigned : manager.LayKetQua())
+        require(DBXoaBenhNhan::xoaBenhNhan(assigned.PatientId), 500,
+            "Da luu ca kham nhung khong the xoa benh nhan khoi hang doi");
     syncExams();
     return {{"assigned_count",manager.LayKetQua().size()},{"assignments",listAssignments()}};
 }

@@ -1,140 +1,76 @@
 #include "WorkingTime.h"
-using namespace std;
 
+#include <ctime>
 
-// 07:30
-const int SANG_BAT_DAU = 7 * 60 + 30;
+namespace {
+constexpr int MORNING_START = 7 * 60 + 30;
+constexpr int MORNING_END = 11 * 60 + 30;
+constexpr int AFTERNOON_START = 13 * 60;
+constexpr int AFTERNOON_END = 17 * 60;
+constexpr int BOOST_SECONDS = 90 * 60;
 
-// 11:30
-const int SANG_KET_THUC = 11 * 60 + 30;
+bool localTime(time_t timestamp, tm& result)
+{
+#ifdef _WIN32
+    return localtime_s(&result, &timestamp) == 0;
+#else
+    return localtime_r(&timestamp, &result) != nullptr;
+#endif
+}
 
-// 13:00
-const int CHIEU_BAT_DAU = 13 * 60;
-
-// 16:30
-const int CHIEU_KET_THUC = 16 * 60 + 30;
-
+time_t atMinuteOfDay(tm day, int minuteOfDay)
+{
+    day.tm_hour = minuteOfDay / 60;
+    day.tm_min = minuteOfDay % 60;
+    day.tm_sec = 0;
+    day.tm_isdst = -1;
+    return mktime(&day);
+}
+}
 
 bool isWorkingTime(time_t timestamp)
 {
-    tm info = *localtime(&timestamp);
-    int minutes = info.tm_hour * 60 + info.tm_min;
-
-    bool morning =
-        minutes >= SANG_BAT_DAU &&
-        minutes <= SANG_KET_THUC;
-
-    bool afternoon =
-        minutes >= CHIEU_BAT_DAU &&
-        minutes <= CHIEU_KET_THUC;
-
-    return morning || afternoon;
+    tm local{};
+    if (!localTime(timestamp, local)) return false;
+    const int minuteOfDay = local.tm_hour * 60 + local.tm_min;
+    return (minuteOfDay >= MORNING_START && minuteOfDay < MORNING_END) ||
+        (minuteOfDay >= AFTERNOON_START && minuteOfDay < AFTERNOON_END);
 }
 
-
-time_t calculateNextBoostTime(time_t startTime)
+time_t calculateNextBoostTime(time_t startTime, bool emergencyDepartment)
 {
-    const int BOOST_SECONDS = 90 * 60;
+    if (emergencyDepartment) return startTime + BOOST_SECONDS;
 
     int remaining = BOOST_SECONDS;
     time_t current = startTime;
+    while (remaining > 0) {
+        tm local{};
+        if (!localTime(current, local)) return static_cast<time_t>(-1);
+        const int minuteOfDay = local.tm_hour * 60 + local.tm_min;
 
-    while (remaining > 0)
-    {
-        tm info = *localtime(&current);
-
-        int minutes = info.tm_hour * 60 + info.tm_min;
-
-        // Ca sáng
-        if (
-            minutes >= SANG_BAT_DAU &&
-            minutes < SANG_KET_THUC
-        )
-        {
-            tm endMorning = info;
-
-            endMorning.tm_hour = 11;
-            endMorning.tm_min = 30;
-            endMorning.tm_sec = 0;
-
-            time_t endTime = mktime(&endMorning);
-
-            int available = static_cast<int>(
-                    endTime - current
-                );
-
-            if (remaining <= available)
-            {
-                return current + remaining;
-            }
-
-            remaining -= available;
-            current = endTime;
+        int windowEnd = 0;
+        if (minuteOfDay < MORNING_START) {
+            current = atMinuteOfDay(local, MORNING_START);
+            continue;
+        }
+        if (minuteOfDay < MORNING_END) {
+            windowEnd = MORNING_END;
+        } else if (minuteOfDay < AFTERNOON_START) {
+            current = atMinuteOfDay(local, AFTERNOON_START);
+            continue;
+        } else if (minuteOfDay < AFTERNOON_END) {
+            windowEnd = AFTERNOON_END;
+        } else {
+            ++local.tm_mday;
+            current = atMinuteOfDay(local, MORNING_START);
+            continue;
         }
 
-        // Nghỉ trưa
-        else if (
-            minutes >= SANG_KET_THUC &&
-            minutes < CHIEU_BAT_DAU
-        )
-        {
-            tm afternoon = info;
-
-            afternoon.tm_hour = 13;
-            afternoon.tm_min = 0;
-            afternoon.tm_sec = 0;
-
-            current = mktime(&afternoon);
-        }
-
-        // Ca chiều
-        else if (
-            minutes >= CHIEU_BAT_DAU &&
-            minutes < CHIEU_KET_THUC
-        )
-        {
-            tm endAfternoon = info;
-
-            endAfternoon.tm_hour = 16;
-            endAfternoon.tm_min = 30;
-            endAfternoon.tm_sec = 0;
-
-            time_t endTime = mktime(&endAfternoon);
-
-            int available = static_cast<int>(endTime - current);
-
-            if (remaining <= available)
-            {
-                return current + remaining;
-            }
-
-            remaining -= available;
-            current = endTime;
-        }
-
-
-        // Ngoài giờ làm việc
-        else
-        {
-            tm next = info;
-
-            if (minutes < SANG_BAT_DAU)
-            {
-                next.tm_hour = 7;
-                next.tm_min = 30;
-                next.tm_sec = 0;
-            }
-            else
-            {
-                next.tm_mday++;
-
-                next.tm_hour = 7;
-                next.tm_min = 30;
-                next.tm_sec = 0;
-            }
-            current = mktime(&next);
-        }
+        const time_t endTime = atMinuteOfDay(local, windowEnd);
+        const int available = static_cast<int>(endTime - current);
+        if (remaining <= available) return current + remaining;
+        remaining -= available;
+        current = endTime;
     }
-
     return current;
 }
