@@ -102,7 +102,7 @@ def main():
             assert len(doctors) == 500
             emergency_coverage = set()
             for doctor in doctors:
-                assert doctor['shift_rule'] in ('daily_7_17','weekday_split')
+                assert doctor['shift_rule'] in ('three_shifts_alternate_days','weekday_split')
                 assert len(doctor['shift_period_start']) == 10
                 assert all(s['start_time'] < s['end_time'] and s['date'] == s['start_time'][:10] for s in doctor['shifts'])
                 previous_end = None
@@ -113,7 +113,7 @@ def main():
                     assert 0 < duration <= 12 * 3600
                     assert previous_end is None or previous_end <= shift_start
                     previous_end = shift_end
-                    if doctor['shift_rule'] == 'daily_7_17':
+                    if doctor['shift_rule'] == 'three_shifts_alternate_days':
                         assert duration == 10 * 3600
                         assert shift_start.hour == 7 and shift_end.hour == 17
                         emergency_coverage.add((shift['date'], shift_start.hour))
@@ -123,11 +123,11 @@ def main():
                     assert len(doctor['shifts']) == 10
                 else:
                     starts = [datetime.fromisoformat(s['start_time']) for s in doctor['shifts']]
-                    assert len(starts) == 7
-                    assert all((b - a).days == 1 for a, b in zip(starts, starts[1:]))
+                    assert len(starts) == 3
+                    assert all((b - a).days == 2 for a, b in zip(starts, starts[1:]))
                 assert sum(s['is_current'] for s in doctor['shifts']) <= 1
                 assert doctor['on_duty'] == any(s['is_current'] for s in doctor['shifts'])
-            assert len(emergency_coverage) == 7
+            assert len(emergency_coverage) == 6
             request('/api/patients', 'POST', raw=b'{', expected=400)
             request('/api/patients', 'POST', [], expected=400)
             request('/api/patients', 'POST', {'name':'Test', 'birth_date':'30/02/2025'}, expected=400)
