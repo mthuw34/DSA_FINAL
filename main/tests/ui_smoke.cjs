@@ -45,11 +45,19 @@ const run = code => vm.runInContext(code,context);
   }
   assert(run("normalize('Nguyễn Văn Đạt')") === 'nguyen van dat');
   run("state.view='patients';render()");
-  assert(element('#content').innerHTML.includes('&lt;img'),'Checked-in patient must remain searchable in patient registry');
-  run("state.search='1';render()");
-  assert(element('#content').innerHTML.includes('BN-0001'),'Patient search must support numeric ID');
-  run("state.search='BN-0001';render()");
-  assert(element('#content').innerHTML.includes('BN-0001'),'Patient search must support displayed patient code');
+  assert(!element('#content').innerHTML.includes('&lt;img'),'Checked-in patient must leave intake list');
+
+  // Search ranking: exact ID > ID contains > name > birth date > phone.
+  run("state.data.patients.push({id:2009,name:'An ID',birth_date:'1990-01-01',age:36,phone:'',gender:'Nam'})");
+  run("state.data.patients.push({id:3000,name:'Bệnh nhân sinh 2009',birth_date:'2009-05-01',age:17,phone:'',gender:'Nữ'})");
+  run("state.search='2009';render()");
+  assert(element('#content').innerHTML.indexOf('BN-2009') < element('#content').innerHTML.indexOf('BN-3000'),'Exact patient ID must rank before birth year match');
+
+  run("state.data.doctors.push({id:'BS2009',name:'Bác sĩ ID',department:'Khoa Cap cuu',experience_years:5,status:'on_duty',duty_mode:'auto',busy:false,shifts:[]})");
+  run("state.data.doctors.push({id:'BS999',name:'Bác sĩ 2009',department:'Khoa Cap cuu',experience_years:5,status:'on_duty',duty_mode:'auto',busy:false,shifts:[]})");
+  run("state.view='doctors';state.search='2009';render()");
+  assert(element('#content').innerHTML.indexOf('BS2009') < element('#content').innerHTML.indexOf('BS999'),'Doctor ID must rank before name match');
+
   run("state.search='';render()");
   run("state.view='queue';render()");
   assert(element('#content').innerHTML.includes('&lt;img'),'Checked-in patient appears in queue');
