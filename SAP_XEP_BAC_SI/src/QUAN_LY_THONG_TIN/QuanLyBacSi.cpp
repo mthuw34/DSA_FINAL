@@ -114,8 +114,9 @@ void QuanLyBacSi::KhoiTaoLich(time_t hienTai, bool onDinh) {
         bs.TrucThuCong = false;
 
         if (bs.khoaChuyenMon == "Khoa Cap cuu") {
-            // Khoa Cấp cứu dùng cùng ca 07:00-17:00 mỗi ngày.
-            const int pha = capCuuIndex++ % 1;
+            // Chia bác sĩ Cấp cứu thành 2 nhóm xen kẽ:
+            // nhóm 0 trực T2-T4-T6, nhóm 1 trực T3-T5-T7.
+            const int pha = capCuuIndex++ % 2;
             NgayBatDauTrucCapCuu[i] = pha;
             bs.ThoiGianRanh = ThoiGian::TrucCapCuuTiepTheo(hienTai, pha);
             bs.DangLamViec = ThoiGian::DangTrucCapCuu(hienTai, pha);
