@@ -18,7 +18,6 @@ private:
     HangDoiTuCaiDat<BenhNhanKham> HangDoiTheoKhoa[SO_KHOA];
 
     vector<BenhNhanKham> KetQuaTrongLanChay;
-    bool DaMoPhongBanDotXuat = false;
     bool WebMode = false;
     vector<string> BacSiChoPhep;
     vector<int> CheckinDaPhan;

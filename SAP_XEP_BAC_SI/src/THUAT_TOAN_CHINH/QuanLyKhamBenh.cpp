@@ -4,7 +4,7 @@
 #include <random>
 #include <algorithm>
 #include <chrono>
-#include "../../../DANG_KHAM/src/ExamCore.h"
+#include "ExamCore.h"
 using namespace std;
 
 namespace {
@@ -264,12 +264,6 @@ bool QuanLyKhamBenh::XuLyKhoa(
     cout << "Thoi gian hien tai: "
               << ThoiGian::DinhDang(hienTai) << "\n";
 
-    // Mô phỏng trường hợp bác sĩ bận đột xuất (lấy xs ví dụ là 8%)
-    if (!WebMode && !DaMoPhongBanDotXuat) {
-        QuanLyBacSiManager.MoPhongBanDotXuat(hienTai);
-        DaMoPhongBanDotXuat = true;
-    }
-
     HangDoiTuCaiDat<BenhNhanKham>& hangDoi =
         HangDoiTheoKhoa[khoaIndex];
 
@@ -349,15 +343,8 @@ bool QuanLyKhamBenh::XuLyKhoa(
             << soCho << " benh nhan dang cho.\n";
     }
 
-    if (!ketQuaKhoa.empty()) {
-        if (Database.GhiKetQuaNhieu(ketQuaKhoa)) {
-            cout << "Da ghi " << ketQuaKhoa.size()
-                      << " ket qua vao database.\n";
-        } else {
-            cout << "Ghi ket qua vao database that bai.\n";
-            return false;
-        }
-    }
+    // Ket qua phan bac si duoc giu trong RAM.
+    // Web se ghi truc tiep vao DANG_KHAM sau khi scheduler ket thuc.
     return true;
 }
 
@@ -375,7 +362,7 @@ bool QuanLyKhamBenh::KhoiDongWeb(const string& database, const string& csv,
     WebMode = true;
     BacSiChoPhep = choPhep;
     const auto now = ThoiGian::HienTai();
-    QuanLyBacSiManager.KhoiTaoLich(now, true);
+    QuanLyBacSiManager.KhoiTaoLich(now);
     for (int i = 0; i < static_cast<int>(QuanLyBacSiManager.LayDanhSach().size()); ++i) {
         auto& doctor = QuanLyBacSiManager.LayBacSi(i);
         if (find(dangTruc.begin(), dangTruc.end(), doctor.id) != dangTruc.end()) {

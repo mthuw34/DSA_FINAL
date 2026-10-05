@@ -14,11 +14,6 @@ public:
     // Nạp bệnh nhân của 10 khoa
     bool LayTatCaBenhNhan(std::vector<BenhNhanKham>& danhSach);
 
-    bool GhiKetQua(const BenhNhanKham& benhNhan);
-
-    bool GhiKetQuaNhieu(
-        const std::vector<BenhNhanKham>& DanhSach
-    );
 
     sqlite3* LayDatabase() const;
 

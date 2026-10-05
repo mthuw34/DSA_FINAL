@@ -28,7 +28,6 @@ Nếu server cũ đang chạy, bấm Ctrl+C trong terminal đó, build lại r�
 Sau check-in, bệnh nhân tự xuất hiện ở **Hàng đợi** và rời danh sách **Hồ sơ chờ check-in**.
 Hồ sơ gốc vẫn được lưu để tra cứu trong lượt khám. Server tự đồng bộ mỗi 5 giây,
 kể cả khi đóng trình duyệt; giao diện tự tải dữ liệu mỗi 5 giây khi không mở biểu mẫu.
-Tải nền không làm mờ/khóa giao diện, không dựng lại bảng hoặc menu nếu nội dung không đổi.
 Trong **Lịch khám → Phân bác sĩ**, chọn **Phân một khoa** hoặc **Phân theo bác sĩ**.
 Ca tới giờ được tự nhận khi bác sĩ trống; bác sĩ chỉ khám một ca cùng lúc.
 Trong **Bác sĩ**, trạng thái gồm Đang khám, Đang trong ca trực, Ngoài ca/nghỉ và Bận đột xuất.
