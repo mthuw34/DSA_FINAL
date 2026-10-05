@@ -2,6 +2,7 @@
 #include <thread>
 #include <chrono>
 #include <conio.h>
+#include <filesystem>
 #include <sqlite3.h>
 
 #include "AutoPriority.h"
@@ -11,6 +12,7 @@ int main()
 {
     sqlite3* hospitalDb = nullptr;
     sqlite3* priorityDb = nullptr;
+    sqlite3* examsDb = nullptr;
 
     const char* hospitalPath =
         "QUAN_LY_BENH_NHAN/db/hospital.db";
@@ -57,8 +59,18 @@ int main()
         return 1;
     }
 
+    if (std::filesystem::exists("DANG_KHAM/db/dangKham.db") &&
+        sqlite3_open_v2("DANG_KHAM/db/dangKham.db", &examsDb, SQLITE_OPEN_READONLY, nullptr) != SQLITE_OK)
+    {
+        std::cout << "Khong mo duoc dangKham.db\n";
+        if (examsDb) sqlite3_close(examsDb);
+        sqlite3_close(priorityDb);
+        sqlite3_close(hospitalDb);
+        return 1;
+    }
+
     // Khởi tạo đối tượng đồng bộ.
-    PrioritySync sync(hospitalDb, priorityDb);
+    PrioritySync sync(hospitalDb, priorityDb, examsDb);
 
     std::cout << "====================================\n";
     std::cout << " CAP NHAT UU TIEN TU DONG\n";
@@ -122,6 +134,7 @@ int main()
     }
 
     // Đóng các kết nối database.
+    if (examsDb) sqlite3_close(examsDb);
     sqlite3_close(priorityDb);
     sqlite3_close(hospitalDb);
 

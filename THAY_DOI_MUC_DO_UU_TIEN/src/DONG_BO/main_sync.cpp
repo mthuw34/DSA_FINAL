@@ -1,4 +1,5 @@
 #include <iostream>
+#include <filesystem>
 #include <sqlite3.h>
 
 #include "PrioritySync.h"
@@ -9,6 +10,7 @@ int main()
 {
     sqlite3* hospitalDb = nullptr;
     sqlite3* priorityDb = nullptr;
+    sqlite3* examsDb = nullptr;
 
     if (sqlite3_open(
             "QUAN_LY_BENH_NHAN/db/hospital.db",
@@ -30,12 +32,22 @@ int main()
         return 1;
     }
 
-    PrioritySync sync(hospitalDb, priorityDb);
+    if (std::filesystem::exists("DANG_KHAM/db/dangKham.db") &&
+        sqlite3_open_v2("DANG_KHAM/db/dangKham.db", &examsDb, SQLITE_OPEN_READONLY, nullptr) != SQLITE_OK)
+    {
+        cerr << "Khong mo duoc dangKham.db\n";
+        if (examsDb) sqlite3_close(examsDb);
+        sqlite3_close(hospitalDb);
+        sqlite3_close(priorityDb);
+        return 1;
+    }
 
-    sync.syncAll();
+    PrioritySync sync(hospitalDb, priorityDb, examsDb);
+    const bool success = sync.syncAll();
 
+    if (examsDb) sqlite3_close(examsDb);
     sqlite3_close(hospitalDb);
     sqlite3_close(priorityDb);
 
-    return 0;
+    return success ? 0 : 1;
 }

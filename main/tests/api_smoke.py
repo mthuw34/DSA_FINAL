@@ -229,14 +229,26 @@ def main():
                 test_ids.append(request('/api/checkins','POST',{'patient_id':person['id'],'department':'Khoa Cap cuu','priority':1},201)['checkin_id'])
             result=request('/api/assignments','POST',{'doctor_id':did})
             selected=[a for a in result['assignments'] if a['checkin_id'] in test_ids]
-            assert len(selected)==2 and all(a['doctor_id']==did for a in selected)
-            assert selected[1]['start_time'] >= selected[0]['planned_end_time']
+            assert len(selected)==1 and selected[0]['doctor_id']==did
+            first_called=selected[0]['checkin_id']
+            remaining=next(checkin_id for checkin_id in test_ids if checkin_id != first_called)
+            assert any(q['checkin_id']==remaining for q in request('/api/queue'))
+            request('/api/queue/sync','POST')
+            assert all(q['checkin_id'] != first_called for q in request('/api/queue'))
+            with closing(sqlite3.connect(sandbox / 'THAY_DOI_MUC_DO_UU_TIEN/db/priority.db')) as db:
+                assert db.execute('SELECT 1 FROM priority_checkins WHERE checkin_id=?',(first_called,)).fetchone() is None
+            with closing(sqlite3.connect(sandbox / 'TRUY_XUAT_BENH_NHAN/db/truyXuat.db')) as db:
+                assert sum(db.execute(f'SELECT COUNT(*) FROM {table} WHERE checkin_id=?',(first_called,)).fetchone()[0]
+                           for table in ('queue_khoa_cap_cuu','queue_khoa_noi','queue_khoa_ngoai',
+                                         'queue_khoa_tim_mach','queue_khoa_nhi','queue_khoa_san',
+                                         'queue_khoa_tai_mui_hong','queue_khoa_mat','queue_khoa_da_lieu',
+                                         'queue_khoa_than_kinh')) == 0
             active=[e for e in request('/api/exams') if e['doctor_id']==did]
             assert len(active)==1
             request('/api/assignments','POST',{'doctor_id':did},409)
             result=request(endpoint,'PATCH',{'busy_minutes':30,'busy_reason':'Meeting'})
-            assert result['returned_to_queue']==1
-            assert any(q['checkin_id']==selected[1]['checkin_id'] for q in request('/api/queue'))
+            assert result['returned_to_queue']==0
+            assert any(q['checkin_id']==remaining for q in request('/api/queue'))
             assert any(e['checkin_id']==active[0]['checkin_id'] for e in request('/api/exams'))
             doctor=next(d for d in request('/api/doctors') if d['id']==did)
             assert doctor['busy'] and doctor['status']=='examining'
@@ -253,25 +265,12 @@ def main():
             request(endpoint,'PATCH',{'duty_mode':'off_duty'})
             request('/api/assignments','POST',{'doctor_id':did},409)
             request(endpoint,'PATCH',{'duty_mode':'on_duty'})
-            # Future appointment becomes active via background sync, even after planned end.
-            with closing(sqlite3.connect(sandbox / 'DANG_KHAM/db/dangKham.db')) as db:
-                db.execute("UPDATE dang_kham SET planned_end_time=datetime('now','localtime') WHERE checkin_id=?", (active[0]['checkin_id'],))
-                db.commit()
-            request('/api/assignments','POST',{'doctor_id':did})
-            late=selected[1]['checkin_id']
-            # A scheduled visit becomes active when start_time is reached; planned_end_time
-            # never closes the real exam automatically.
-            with closing(sqlite3.connect(sandbox / 'DANG_KHAM/db/dangKham.db')) as db:
-                db.execute("UPDATE dang_kham SET start_time=datetime('now','localtime','-30 minutes'), planned_end_time=datetime('now','localtime','-1 minute') WHERE checkin_id=?",(late,))
-                db.commit()
-            with closing(sqlite3.connect(sandbox / 'DANG_KHAM/db/dangKham.db')) as db:
-                db.execute("UPDATE doctor_state SET busy_until=datetime('now','localtime','-1 minute') WHERE doctor_id=?",(did,))
-                db.commit()
-            deadline=time.monotonic()+12
-            while not any(e['checkin_id']==late for e in request('/api/exams')):
-                assert time.monotonic()<deadline, 'Scheduled exam did not become active'
-                time.sleep(.2)
-            assert not next(d for d in request('/api/doctors') if d['id']==did)['busy']
+            # A free doctor takes the next patient on a later call; no future slot is pre-booked.
+            result=request('/api/assignments','POST',{'doctor_id':did})
+            assert [a['checkin_id'] for a in result['assignments']].count(remaining)==1
+            assert not any(q['checkin_id']==remaining for q in request('/api/queue'))
+            with closing(sqlite3.connect(sandbox / 'THAY_DOI_MUC_DO_UU_TIEN/db/priority.db')) as db:
+                assert db.execute('SELECT 1 FROM priority_checkins WHERE checkin_id=?',(remaining,)).fetchone() is None
             removable = request('/api/patients', 'POST', {'name':'Delete', 'birth_date':'2000-01-01'}, 201)
             request(f"/api/patients/{removable['id']}", 'DELETE')
             request(f"/api/patients/{removable['id']}", expected=404)
