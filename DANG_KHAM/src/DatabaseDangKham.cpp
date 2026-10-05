@@ -496,6 +496,48 @@ bool DatabaseDangKham::ghiPhanBacSi(const vector<BenhNhanKham>& assignments) {
     return ok;
 }
 
+// Đọc lịch phân bác sĩ trực tiếp từ dangKham.db.
+bool DatabaseDangKham::docPhanBacSi(vector<BenhNhanKham>& assignments) {
+    assignments.clear();
+
+    const char* sql =
+        "SELECT checkin_id, patient_id, department, doctor_department, "
+        "doctor_id, doctor_name, start_time, exam_duration, planned_end_time, "
+        "status, note, checkin_time "
+        "FROM dang_kham "
+        "WHERE doctor_id IS NOT NULL AND doctor_id <> '';";
+
+    sqlite3_stmt* stmt = nullptr;
+    if (sqlite3_prepare_v2(db, sql, -1, &stmt, nullptr) != SQLITE_OK)
+        return false;
+
+    int result;
+    while ((result = sqlite3_step(stmt)) == SQLITE_ROW) {
+        BenhNhanKham record;
+        record.CheckinId = sqlite3_column_int(stmt, 0);
+        record.PatientId = sqlite3_column_int(stmt, 1);
+        record.khoa = getText(stmt, 2);
+        record.KhoaBacSi = getText(stmt, 3);
+        record.DoctorId = getText(stmt, 4);
+        record.DoctorName = getText(stmt, 5);
+        record.StartTime = getText(stmt, 6);
+        record.ExamDuration = sqlite3_column_int(stmt, 7);
+        record.EndTime = getText(stmt, 8);
+        record.Status = getText(stmt, 9);
+        record.Note = getText(stmt, 10);
+        record.CheckinTime = getText(stmt, 11);
+        assignments.push_back(record);
+    }
+
+    sqlite3_finalize(stmt);
+    if (result != SQLITE_DONE) {
+        assignments.clear();
+        return false;
+    }
+
+    return true;
+}
+
 bool DatabaseDangKham::xoaCaChuaBatDauCuaBacSi(const string& doctorId) {
     sqlite3_stmt* stmt = nullptr;
     const char* sql = "DELETE FROM dang_kham WHERE doctor_id=? AND end_time IS NULL "
