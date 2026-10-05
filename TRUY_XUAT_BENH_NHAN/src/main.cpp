@@ -11,7 +11,8 @@ int main() {
     while (true) {
         cout << "\n========== TRUY XUAT BENH NHAN ==========\n";
         cout << "1. Truy xuat va sap xep benh nhan\n";
-        cout << "2. Xoa benh nhan khoi cac database\n";
+        cout << "2. Xoa mot benh nhan\n";
+        cout << "3. Xoa toan bo benh nhan\n";
         cout << "0. Thoat\n";
         cout << "Lua chon: ";
 
@@ -43,6 +44,21 @@ int main() {
                 continue;
             }
             XoaBenhNhan::xoaBenhNhan(patientId);
+        } else if (choice == 3) {
+            cout << "Ban co chac chan muon xoa toan bo benh nhan? "
+                    "Nhap Y de xac nhan: ";
+            char confirmation = '\0';
+            if (!(cin >> confirmation)) {
+                cin.clear();
+                cin.ignore(numeric_limits<streamsize>::max(), '\n');
+                cout << "Lua chon khong hop le.\n";
+                continue;
+            }
+            if (confirmation == 'Y' || confirmation == 'y') {
+                XoaBenhNhan::xoaTatCaBenhNhan();
+            } else {
+                cout << "Da huy thao tac xoa.\n";
+            }
         } else {
             cout << "Lua chon khong hop le.\n";
         }

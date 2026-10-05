@@ -32,9 +32,10 @@ bool executeSql(sqlite3* database, const char* sql, const char* operation) {
 
 }
 
-bool DBXoaBenhNhan::xoaBenhNhan(int patientId) {
-    // Precondition: patientId must be positive and both database files must already exist.
-    if (patientId <= 0) {
+namespace {
+
+bool xoaDuLieuBenhNhan(bool xoaTatCa, int patientId) {
+    if (!xoaTatCa && patientId <= 0) {
         cerr << "ID benh nhan phai lon hon 0.\n";
         return false;
     }
@@ -80,14 +81,16 @@ bool DBXoaBenhNhan::xoaBenhNhan(int patientId) {
 
     int deletedRows = 0;
     bool success = true;
-    const auto deleteForPatient = [&](const string& sql) {
+    const auto deleteRows = [&](const string& sql) {
         sqlite3_stmt* statement = nullptr;
         if (sqlite3_prepare_v2(database, sql.c_str(), -1, &statement, nullptr) != SQLITE_OK) {
             reportError(database, "Khong the chuan bi cau lenh xoa");
             return false;
         }
 
-        sqlite3_bind_int(statement, 1, patientId);
+        if (!xoaTatCa) {
+            sqlite3_bind_int(statement, 1, patientId);
+        }
         const int result = sqlite3_step(statement);
         if (result != SQLITE_DONE) {
             reportError(database, "Loi xoa du lieu benh nhan");
@@ -100,21 +103,27 @@ bool DBXoaBenhNhan::xoaBenhNhan(int patientId) {
         return true;
     };
 
-    success = deleteForPatient(
-        "DELETE FROM priority_checkins WHERE patient_id = ?;"
+    success = deleteRows(
+        xoaTatCa
+            ? "DELETE FROM priority_checkins;"
+            : "DELETE FROM priority_checkins WHERE patient_id = ?;"
     );
     for (const auto& department : CauHinhTruyXuat::danhSachKhoa) {
         if (!success) break;
         const string deleteSql =
             "DELETE FROM retrieval." + string(department.tenBang)
-            + " WHERE patient_id = ?;";
-        success = deleteForPatient(deleteSql);
+            + (xoaTatCa ? ";" : " WHERE patient_id = ?;");
+        success = deleteRows(deleteSql);
     }
 
     if (success && executeSql(database, "COMMIT;", "Khong the hoan tat giao dich xoa")) {
-        if (deletedRows == 0) {
+        if (xoaTatCa && deletedRows == 0) {
+            cout << "Khong co du lieu benh nhan nao de xoa.\n";
+        } else if (!xoaTatCa && deletedRows == 0) {
             cout << "Khong tim thay benh nhan ID " << patientId
                       << " trong hai database.\n";
+        } else if (xoaTatCa) {
+            cout << "Da xoa toan bo benh nhan khoi priority.db va truyXuat.db.\n";
         } else {
             cout << "Da xoa benh nhan ID " << patientId
                       << " khoi priority.db va truyXuat.db.\n";
@@ -127,4 +136,14 @@ bool DBXoaBenhNhan::xoaBenhNhan(int patientId) {
     sqlite3_exec(database, "DETACH DATABASE retrieval;", nullptr, nullptr, nullptr);
     sqlite3_close(database);
     return success;
+}
+
+}
+
+bool DBXoaBenhNhan::xoaBenhNhan(int patientId) {
+    return xoaDuLieuBenhNhan(false, patientId);
+}
+
+bool DBXoaBenhNhan::xoaTatCaBenhNhan() {
+    return xoaDuLieuBenhNhan(true, 0);
 }
