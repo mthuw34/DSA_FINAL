@@ -46,6 +46,9 @@ public:
 
     bool taoCauTruc();
 
+    // Lưu bản gốc các lịch trùng trước khi trả lượt dư về hàng đợi.
+    bool suaCaTrungBacSi();
+
     bool dongBoTuXepBacSi(const std::vector<std::string>& blockedDoctors = {});
 
     // Ghi kết quả phân bác sĩ trực tiếp vào DANG_KHAM.

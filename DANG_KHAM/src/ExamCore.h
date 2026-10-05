@@ -1,4 +1,5 @@
 #pragma once
+#include <algorithm>
 #include <cstddef>
 #include <ctime>
 #include <optional>
@@ -140,6 +141,31 @@ inline bool startsBefore(const ExamSession& a, const ExamSession& b) {
     if (validFirst != validSecond) return !validFirst;
     if (validFirst && first != second) return first < second;
     return a.checkinId < b.checkinId;
+}
+
+// Giữ ca có kết quả khám; nếu chưa có kết quả thì giữ ca đã bắt đầu sớm nhất.
+// Các lịch dư được trả về hàng đợi, không tự ghi nhận đã khám xong.
+inline std::vector<int> duplicateDoctorAssignments(std::vector<ExamSession> records) {
+    const auto now = std::time(nullptr);
+    auto hasResult = [](const ExamSession& s) {
+        for (const auto* field : {&s.diagnosis, &s.prescription, &s.reminder})
+            if (*field && (*field)->find_first_not_of(" \t\r\n") != std::string::npos) return true;
+        return false;
+    };
+    std::stable_sort(records.begin(), records.end(), [&](const ExamSession& a, const ExamSession& b) {
+        if (hasResult(a) != hasResult(b)) return hasResult(a);
+        if (hasStarted(a, now) != hasStarted(b, now)) return hasStarted(a, now);
+        return startsBefore(a, b);
+    });
+    std::vector<std::string> occupied;
+    std::vector<int> duplicates;
+    for (const auto& session : records) {
+        if (session.endTime || !session.doctorId || session.doctorId->empty()) continue;
+        if (std::find(occupied.begin(), occupied.end(), *session.doctorId) != occupied.end())
+            duplicates.push_back(session.checkinId);
+        else occupied.push_back(*session.doctorId);
+    }
+    return duplicates;
 }
 
 // Merge Sort ổn định để sắp các ca đang khám; SQLite không quyết định thứ tự hiển thị.

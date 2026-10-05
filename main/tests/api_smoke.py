@@ -102,7 +102,7 @@ def main():
             assert len(doctors) == 500
             emergency_coverage = set()
             for doctor in doctors:
-                assert doctor['shift_rule'] in ('three_shifts_alternate_days','weekday_split')
+                assert doctor['shift_rule'] in ('day_night_alternate_days','weekday_split')
                 assert len(doctor['shift_period_start']) == 10
                 assert all(s['start_time'] < s['end_time'] and s['date'] == s['start_time'][:10] for s in doctor['shifts'])
                 previous_end = None
@@ -113,21 +113,24 @@ def main():
                     assert 0 < duration <= 12 * 3600
                     assert previous_end is None or previous_end <= shift_start
                     previous_end = shift_end
-                    if doctor['shift_rule'] == 'three_shifts_alternate_days':
-                        assert duration == 10 * 3600
-                        assert shift_start.hour == 7 and shift_end.hour == 17
-                        emergency_coverage.add((shift['date'], shift_start.hour))
+                    if doctor['shift_rule'] == 'day_night_alternate_days':
+                        assert duration == 12 * 3600
+                        assert (shift_start.hour, shift_end.hour) in ((6,18),(18,6))
+                        assert (shift_end.date()-shift_start.date()).days == (1 if shift_start.hour == 18 else 0)
+                        if shift['date'] >= doctor['shift_period_start']:
+                            emergency_coverage.add((shift['date'], shift_start.hour))
                     else:
                         assert shift_start.weekday() < 5
                 if doctor['shift_rule'] == 'weekday_split':
                     assert len(doctor['shifts']) == 10
                 else:
-                    starts = [datetime.fromisoformat(s['start_time']) for s in doctor['shifts']]
+                    starts = [datetime.fromisoformat(s['start_time']) for s in doctor['shifts'] if s['date'] >= doctor['shift_period_start']]
                     assert len(starts) == 3
-                    assert all((b - a).days == 2 for a, b in zip(starts, starts[1:]))
+                    assert all((b - a).days >= 2 for a, b in zip(starts, starts[1:]))
+                    assert len({s.hour for s in starts}) == 1
                 assert sum(s['is_current'] for s in doctor['shifts']) <= 1
                 assert doctor['on_duty'] == any(s['is_current'] for s in doctor['shifts'])
-            assert len(emergency_coverage) == 6
+            assert len(emergency_coverage) == 12
             # Keep scheduling fixtures available even when tests run after hours.
             for doctor in [d for d in doctors if d['department'] == 'Khoa Cap cuu'][:5]:
                 request(f"/api/doctors/{doctor['id']}/status", 'PATCH', {'duty_mode':'on_duty'})
@@ -316,6 +319,65 @@ def main():
             assert next(d for d in request('/api/doctors') if d['id']==admitted[0]['doctor_id'])['status']=='on_duty'
             result=request('/api/assignments','POST',{'department':'Khoa Cap cuu'})
             assert result['assigned_count']==1 and result['waiting_count']==0
+            # Restart repairs legacy duplicate assignments and enforces the invariant in SQLite.
+            original_exam=request('/api/exams')[0]
+            legacy_person=request('/api/patients','POST',{'name':'Legacy duplicate','birth_date':'2000-01-01'},201)
+            legacy_id=request('/api/checkins','POST',{'patient_id':legacy_person['id'],
+                'department':original_exam['department'],'priority':1},201)['checkin_id']
+            with closing(sqlite3.connect(sandbox / 'DANG_KHAM/db/dangKham.db')) as db:
+                db.execute('DROP INDEX ux_dang_kham_unfinished_doctor')
+                db.execute("INSERT INTO dang_kham(checkin_id,patient_id,department,checkin_time,doctor_id,doctor_name,"
+                    "start_time,planned_end_time,status,chan_doan) VALUES(?,?,?,datetime('now','localtime'),?,?,"
+                    "datetime('now','localtime','-2 minutes'),datetime('now','localtime','+20 minutes'),'DA_XEP_BAC_SI','Preserved diagnosis')",
+                    (legacy_id,legacy_person['id'],original_exam['department'],original_exam['doctor_id'],original_exam['doctor_name']))
+                db.commit()
+            process.terminate()
+            process.wait(timeout=10)
+            with closing(sqlite3.connect(sandbox / 'QUAN_LY_BENH_NHAN/db/hospital.db')) as db:
+                db.execute('DELETE FROM checkins WHERE checkin_id=?',(original_exam['checkin_id'],))
+                db.commit()
+            process=start()
+            ready()
+            active=request('/api/exams')
+            assert len({e['doctor_id'] for e in active})==len(active)
+            assert next(e for e in active if e['doctor_id']==original_exam['doctor_id'])['checkin_id']==legacy_id
+            assert next(e for e in active if e['checkin_id']==legacy_id)['diagnosis']=='Preserved diagnosis'
+            assert any(q['checkin_id']==original_exam['checkin_id'] for q in request('/api/queue'))
+            assert not any(e['checkin_id']==original_exam['checkin_id'] for e in request('/api/exams?active=false'))
+            with closing(sqlite3.connect(sandbox / 'DANG_KHAM/db/dangKham.db')) as db:
+                assert db.execute('SELECT doctor_id FROM dang_kham_assignment_archive WHERE checkin_id=?',
+                    (original_exam['checkin_id'],)).fetchone()==(original_exam['doctor_id'],)
+                try:
+                    db.execute('UPDATE dang_kham SET doctor_id=? WHERE checkin_id=?',
+                        (original_exam['doctor_id'],original_exam['checkin_id']))
+                    raise AssertionError('Database accepted overlapping unfinished exams')
+                except sqlite3.IntegrityError:
+                    db.rollback()
+            request(f'/api/exams/{legacy_id}/finish','POST')
+            result=request('/api/assignments','POST',{'doctor_id':original_exam['doctor_id']})
+            assert result['assigned_count']==1
+            assert next(e for e in request('/api/exams') if e['doctor_id']==original_exam['doctor_id'])['checkin_id']==original_exam['checkin_id']
+            # Recover a returned legacy patient whose intake ID was reused for another patient.
+            collision_patient=request('/api/patients','POST',{'name':'Existing intake','birth_date':'2000-01-01'},201)
+            collision_id=request('/api/checkins','POST',{'patient_id':collision_patient['id'],
+                'department':'Khoa Cap cuu','priority':1},201)['checkin_id']
+            missing_intake=request('/api/patients','POST',{'name':'Missing intake','birth_date':'2000-01-01'},201)
+            process.terminate()
+            process.wait(timeout=10)
+            with closing(sqlite3.connect(sandbox / 'DANG_KHAM/db/dangKham.db')) as db:
+                db.execute("INSERT INTO dang_kham(checkin_id,patient_id,department,checkin_time,status,note) "
+                    "VALUES(?,?,'Khoa Cap cuu',datetime('now','localtime'),'CHO_DOI','Tra ve hang doi do lich cu trung bac si')",
+                    (collision_id,missing_intake['id']))
+                db.commit()
+            process=start()
+            ready()
+            restored_queue=request('/api/queue')
+            assert any(q['checkin_id']==collision_id and q['patient_id']==collision_patient['id'] for q in restored_queue)
+            restored=next(q for q in restored_queue if q['patient_id']==missing_intake['id'])
+            assert restored['checkin_id']!=collision_id
+            with closing(sqlite3.connect(sandbox / 'DANG_KHAM/db/dangKham.db')) as db:
+                assert db.execute('SELECT restored_id FROM restored_checkin_ids WHERE original_id=?',
+                    (collision_id,)).fetchone()==(restored['checkin_id'],)
             with closing(sqlite3.connect(sandbox / 'THAY_DOI_MUC_DO_UU_TIEN/db/priority.db')) as db:
                 assert db.execute('SELECT 1 FROM priority_checkins WHERE checkin_id=?',(remaining,)).fetchone() is None
             removable = request('/api/patients', 'POST', {'name':'Delete', 'birth_date':'2000-01-01'}, 201)

@@ -125,6 +125,8 @@ WebService::WebService() {
         std::filesystem::create_directories("DANG_KHAM/db");
         require(exams.mo(retrievalPath, "DANG_KHAM/db/dangKham.db") && exams.taoCauTruc(),
                 500, "Khong khoi tao duoc database kham");
+        restoreReturnedCheckins();
+        syncExams(); // Khôi phục ngay hàng đợi của các lịch cũ vừa được trả lại.
     } catch (...) {
         exams.dong();
         sqlite3_close(priority); sqlite3_close(hospital);
@@ -133,6 +135,78 @@ WebService::WebService() {
 }
 WebService::~WebService() {
     exams.dong(); sqlite3_close(priority); sqlite3_close(hospital);
+}
+
+// Lịch cũ có thể còn trong dangKham.db nhưng phiếu tiếp nhận gốc đã bị mất/thay thế.
+void WebService::restoreReturnedCheckins() {
+    std::vector<ExamSession> sessions;
+    require(exams.docDanhSach(sessions), 500, "Khong doc duoc lich tra ve hang doi");
+    std::vector<int> returned;
+    auto select = prepare(exams.get(), "SELECT checkin_id FROM dang_kham WHERE status='CHO_DOI' "
+        "AND note='Tra ve hang doi do lich cu trung bac si';");
+    int rc;
+    while ((rc = sqlite3_step(select.get())) == SQLITE_ROW) returned.push_back(sqlite3_column_int(select.get(), 0));
+    require(rc == SQLITE_DONE, 500, "Khong doc duoc phieu can khoi phuc");
+    select.reset();
+    if (returned.empty()) return;
+    auto people = patients();
+    std::vector<CheckInRecord> intake;
+    require(HospitalPersistence::loadCheckIns(hospital, intake), 500, "Khong doc duoc check-in");
+    int nextId = 0;
+    for (const auto& s : sessions) nextId = std::max(nextId, s.checkinId);
+    for (const auto& c : intake) nextId = std::max(nextId, c.id);
+    auto attach = prepare(exams.get(), "ATTACH DATABASE ? AS intake;");
+    bindText(attach.get(), 1, std::filesystem::absolute(hospitalPath).string());
+    require(sqlite3_step(attach.get()) == SQLITE_DONE, 500, "Khong lien ket duoc database tiep nhan");
+    attach.reset();
+    try {
+        Transaction tx(exams.get());
+        execute(exams.get(), "CREATE TABLE IF NOT EXISTS restored_checkin_ids(original_id INTEGER PRIMARY KEY, restored_id INTEGER NOT NULL);");
+        for (auto& s : sessions) {
+            if (std::find(returned.begin(), returned.end(), s.checkinId) == returned.end()) continue;
+            if (std::none_of(people.begin(), people.end(), [&](const Patient& p) { return p.id == s.patientId; })) continue;
+            auto saved = std::find_if(intake.begin(), intake.end(), [&](const CheckInRecord& c) { return c.patientId == s.patientId; });
+            int restoredId = s.checkinId;
+            if (saved != intake.end()) {
+                if (saved->id == s.checkinId) continue;
+                auto linked = std::find_if(sessions.begin(), sessions.end(), [&](const ExamSession& other) { return other.checkinId == saved->id; });
+                if (linked != sessions.end() && linked->patientId == s.patientId) continue;
+                restoredId = saved->id;
+                if (linked != sessions.end()) {
+                    restoredId = ++nextId;
+                    auto move = prepare(exams.get(), "UPDATE intake.checkins SET checkin_id=? WHERE checkin_id=?;");
+                    sqlite3_bind_int(move.get(), 1, restoredId); sqlite3_bind_int(move.get(), 2, saved->id);
+                    require(sqlite3_step(move.get()) == SQLITE_DONE, 500, "Khong khoi phuc duoc ma phieu tiep nhan");
+                    saved->id = restoredId;
+                }
+            } else {
+                if (std::any_of(intake.begin(), intake.end(), [&](const CheckInRecord& c) { return c.id == restoredId; })) restoredId = ++nextId;
+                const auto when = s.checkinTime.value_or(ThoiGian::DinhDang(time(nullptr)));
+                auto insert = prepare(exams.get(), "INSERT INTO intake.checkins(checkin_id,patient_id,department,checkin_time,priority) VALUES(?,?,?,?,4);");
+                sqlite3_bind_int(insert.get(), 1, restoredId); sqlite3_bind_int(insert.get(), 2, s.patientId);
+                bindText(insert.get(), 3, s.department); bindText(insert.get(), 4, when);
+                require(sqlite3_step(insert.get()) == SQLITE_DONE, 500, "Khong khoi phuc duoc phieu tiep nhan");
+                CheckInRecord restored;
+                restored.id = restoredId; restored.patientId = s.patientId; restored.priority = 4;
+                restored.department = s.department; restored.time = when;
+                intake.push_back(restored);
+            }
+            if (restoredId != s.checkinId) {
+                auto map = prepare(exams.get(), "INSERT OR REPLACE INTO restored_checkin_ids(original_id,restored_id) VALUES(?,?);");
+                sqlite3_bind_int(map.get(), 1, s.checkinId); sqlite3_bind_int(map.get(), 2, restoredId);
+                require(sqlite3_step(map.get()) == SQLITE_DONE, 500, "Khong luu duoc ma phieu khoi phuc");
+                auto move = prepare(exams.get(), "UPDATE dang_kham SET checkin_id=? WHERE checkin_id=?;");
+                sqlite3_bind_int(move.get(), 1, restoredId); sqlite3_bind_int(move.get(), 2, s.checkinId);
+                require(sqlite3_step(move.get()) == SQLITE_DONE, 500, "Khong doi duoc ma lich cu bi trung");
+                s.checkinId = restoredId;
+            }
+        }
+        tx.commit();
+    } catch (...) {
+        sqlite3_exec(exams.get(), "DETACH DATABASE intake;", nullptr, nullptr, nullptr);
+        throw;
+    }
+    execute(exams.get(), "DETACH DATABASE intake;");
 }
 std::vector<Patient> WebService::patients() {
     std::vector<Patient> records;
@@ -329,7 +403,7 @@ Json WebService::listDoctors() {
     Json result = Json::array();
     int capCuuIndex = 0;
     for (const auto& d : manager.LayDanhSach()) {
-        const int phase = d.khoaChuyenMon == "Khoa Cap cuu" ? capCuuIndex++ % 2 : 0;
+        const int phase = d.khoaChuyenMon == "Khoa Cap cuu" ? capCuuIndex++ % 4 : 0;
         const auto settings = saved.value(d.id, Json::object());
         const auto mode = settings.value("duty_mode", "auto");
         const auto until = settings.value("busy_until", "");
@@ -350,7 +424,7 @@ Json WebService::listDoctors() {
         result.push_back({{"id",d.id},{"name",d.name},{"department",d.khoaChuyenMon},
             {"experience_years",d.ExpYears},{"duty_mode",mode},{"on_duty",duty},{"shifts",shifts},
             {"shift_period_start",ThoiGian::DinhDangNgay(now)},
-            {"shift_rule",d.khoaChuyenMon == "Khoa Cap cuu" ? "three_shifts_alternate_days" : "weekday_split"},
+            {"shift_rule",d.khoaChuyenMon == "Khoa Cap cuu" ? "day_night_alternate_days" : "weekday_split"},
             {"busy",busy},{"busy_until",busy ? Json(until) : Json(nullptr)},
             {"busy_reason",busy ? settings.value("busy_reason", "") : ""},
             {"overtime",overtime},{"overtime_until",overtime ? Json(overtimeUntil) : Json(nullptr)},
@@ -497,6 +571,9 @@ Json WebService::listExams(bool activeOnly) {
     std::vector<ExamSession> records;
     require(exams.docDanhSach(records), 500, "Khong doc duoc ca kham");
     if (activeOnly) records = ExamCore::activeSessions(records);
+    records.erase(std::remove_if(records.begin(), records.end(), [](const ExamSession& record) {
+        return !record.doctorId || record.doctorId->empty();
+    }), records.end());
     Json result = Json::array();
     for (const auto& r : records) result.push_back(examJson(r));
     return result;

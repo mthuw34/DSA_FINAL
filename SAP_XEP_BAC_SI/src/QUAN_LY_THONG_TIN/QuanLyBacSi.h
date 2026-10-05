@@ -14,7 +14,7 @@ class QuanLyBacSi {
 private:
     vector<BacSi> DanhSach;
 
-    // Lưu pha trực Cấp cứu 0 -> 5 của từng bác sĩ
+    // Lưu pha trực Cấp cứu 0 -> 3 của từng bác sĩ.
     vector<int> NgayBatDauTrucCapCuu;
 
 public:
@@ -27,8 +27,8 @@ public:
     // onDinh giữ lại để test và Web/CLI dùng cùng một cách chia pha
     void KhoiTaoLich(time_t HienTai, bool onDinh = true);
 
-    // Pha 0 -> 5:
-    // 0,1 = 00:00-08:00; 2,3 = 08:00-16:00; 4,5 = 16:00-00:00
+    // Pha 0/1 = 06:00-18:00; pha 2/3 = 18:00-06:00 hôm sau.
+    // Pha chẵn trực T2-T4-T6, pha lẻ trực T3-T5-T7.
     int LayPhaTrucCapCuu(int index) const;
 
     bool DangTrucBacSi(int index, time_t thoiDiem) const;

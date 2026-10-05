@@ -24,7 +24,7 @@ const fixture = {
   '/api/assignments':[{checkin_id:10,patient_id:1,department:'Khoa Cap cuu',doctor_name:'Bác sĩ An',doctor_id:'BS001',start_time:'2026-10-04 10:00:00',planned_end_time:'2026-10-04 10:20:00',duration_minutes:20}],
   '/api/exams?active=false':[{checkin_id:10,patient_id:1,department:'Khoa Cap cuu',doctor_name:'Bác sĩ An',doctor_id:'BS001',start_time:'2026-10-04 10:00:00',end_time:null,diagnosis:malicious}],
   '/api/doctors':[{id:'BS001',name:'Bác sĩ An',department:'Khoa Cap cuu',experience_years:10,status:'on_duty',duty_mode:'auto',busy:false,
-    shift_rule:'three_shifts_alternate_days',shift_period_start:'2026-10-05',overtime:false,overtime_until:null,shifts:[{date:'2026-10-05',start_time:'2026-10-05 07:00:00',end_time:'2026-10-05 17:00:00',is_current:true},{date:'2026-10-07',start_time:'2026-10-07 07:00:00',end_time:'2026-10-07 17:00:00',is_current:false},{date:'2026-10-09',start_time:'2026-10-09 07:00:00',end_time:'2026-10-09 17:00:00',is_current:false}]}]
+    shift_rule:'day_night_alternate_days',shift_period_start:'2026-10-05',overtime:false,overtime_until:null,shifts:[{date:'2026-10-05',start_time:'2026-10-05 06:00:00',end_time:'2026-10-05 18:00:00',is_current:true},{date:'2026-10-07',start_time:'2026-10-07 06:00:00',end_time:'2026-10-07 18:00:00',is_current:false},{date:'2026-10-09',start_time:'2026-10-09 06:00:00',end_time:'2026-10-09 18:00:00',is_current:false}]}]
 };
 const document = {querySelector:element,activeElement:null,body:element('body'),listeners:{},addEventListener(type,handler){this.listeners[type]=handler;}};
 const context = vm.createContext({document,location:{hash:''},window:{addEventListener(){}},console,Map,Set,Date,
@@ -113,8 +113,13 @@ const run = code => vm.runInContext(code,context);
   document.listeners.compositionend({target:{id:'search',value:'Nguyễn'}});
   assert.equal(run('state.search'),'Nguyễn');
   run("openModal('doctor-shifts','BS001')");
-  assert(element('#modal-body').innerHTML.includes('07:00 · 05/10/2026'));
-  assert(element('#modal-body').innerHTML.includes('17:00 · 05/10/2026'));
+  assert(element('#modal-body').innerHTML.includes('06:00 · 05/10/2026'));
+  assert(element('#modal-body').innerHTML.includes('18:00 · 05/10/2026'));
+  assert(element('#modal-body').innerHTML.includes('18:00–06:00 hôm sau'));
+  run("state.data.doctors[0].shifts.unshift({date:'2026-10-04',start_time:'2026-10-04 18:00:00',end_time:'2026-10-05 06:00:00',is_current:true});openModal('doctor-shifts','BS001')");
+  assert(element('#modal-body').innerHTML.includes('Ca đêm đang tiếp nối từ hôm trước'));
+  assert(element('#modal-body').innerHTML.includes('18:00 · 04/10/2026'));
+  run('state.data.doctors[0].shifts.shift()');
   assert(element('#modal-body').innerHTML.includes('Nghỉ'));
   assert(element('#modal-submit').hidden);
   run("state.data.doctors[0].duty_mode='off_duty';openModal('doctor-shifts','BS001')");

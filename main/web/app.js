@@ -50,6 +50,7 @@ const birthDateToIso = value => {
   return match ? `${match[3]}-${match[2]}-${match[1]}` : text;
 };
 const patientName = id => state.patientMap?.get(id)?.name || `Bệnh nhân #${id}`;
+const doctorName = (id, fallback = '') => state.doctorMap?.get(id)?.name || fallback || `Bác sĩ ${id || ''}`.trim();
 const empty = (title, description, symbol = 'queue') => `<div class="empty">${icon(symbol)}<strong>${escapeHtml(title)}</strong><p>${escapeHtml(description)}</p></div>`;
 const button = (action, label, id = '', style = 'secondary small') => `<button class="button ${style}" data-action="${action}"${id === '' ? '' : ` data-id="${escapeHtml(id)}"`}>${label}</button>`;
 const departmentOptions = (selected = '', all = true) => `${all ? '<option value="">Tất cả các khoa</option>' : ''}${state.data.departments.map(d => `<option value="${escapeHtml(d.name)}"${d.name === selected ? ' selected' : ''}>${escapeHtml(departmentLabel(d.name))}</option>`).join('')}`;
@@ -84,6 +85,7 @@ async function loadData(background = false) {
   if (version !== state.loadVersion || (background && (state.busy || state.modal))) return;
   state.data = Object.fromEntries(entries);
   state.patientMap = new Map(state.data.patients.map(p => [p.id,p]));
+  state.doctorMap = new Map(state.data.doctors.map(d => [d.id,d]));
   state.loaded = true;
   $('#connection').className = 'connection';
   const connected = '<span class="online-dot"></span> Tự cập nhật mỗi 5 giây';
@@ -211,11 +213,11 @@ function renderList() {
     return toolbar('Tìm tên hoặc mã phiếu…') + `<section class="panel"><div class="panel-header"><div><h2>Danh sách chờ khám</h2><p>Ưu tiên 1 cao nhất · ưu tiên 5 thấp nhất</p></div><div class="row-actions">${button('schedule','Phân bác sĩ','','primary')}</div></div>${pager(records,r => queueRow(r),['BỆNH NHÂN','KHOA','ƯU TIÊN','GIỜ TIẾP NHẬN','THAO TÁC'],'Chưa có bệnh nhân chờ khám','Bệnh nhân đã check-in tự động chuyển vào đây.')}</section>`;
   }
   if (state.view === 'assignments') {
-    const records = filter(d.assignments,r => [patientName(r.patient_id),r.doctor_name,r.doctor_id,r.checkin_id]);
-    return toolbar('Tìm bệnh nhân, bác sĩ, mã phiếu…') + `<section class="panel"><div class="panel-header"><div><h2>Lịch phân bác sĩ</h2><p>Lịch đã lưu được giữ lại khi phân thêm lượt khám</p></div>${button('schedule','Phân bác sĩ','','primary')}</div><div class="schedule-summary">${icon('clock')}Thời lượng và giờ kết thúc ở đây là dự kiến để xếp lịch. Ca tới giờ được tự động nhận khi bác sĩ trống.</div>${pager(records,r => [person(patientName(r.patient_id),`Mã phiếu #${r.checkin_id}`),escapeHtml(departmentLabel(r.department)),person(r.doctor_name,r.doctor_id),escapeHtml(timeLabel(r.start_time)),`${r.duration_minutes} phút`,escapeHtml(timeLabel(r.planned_end_time)),examStatus(r.checkin_id)],['BỆNH NHÂN','KHOA','BÁC SĨ','BẮT ĐẦU','THỜI LƯỢNG DỰ KIẾN','KẾT THÚC DỰ KIẾN','TRẠNG THÁI'],'Chưa có lịch khám','Bấm Phân bác sĩ để sắp xếp các bệnh nhân đang chờ.')}</section>`;
+    const records = filter(d.assignments,r => [patientName(r.patient_id),doctorName(r.doctor_id,r.doctor_name),r.doctor_id,r.checkin_id]);
+    return toolbar('Tìm bệnh nhân, bác sĩ, mã phiếu…') + `<section class="panel"><div class="panel-header"><div><h2>Lịch phân bác sĩ</h2><p>Lịch đã lưu được giữ lại khi phân thêm lượt khám</p></div>${button('schedule','Phân bác sĩ','','primary')}</div><div class="schedule-summary">${icon('clock')}Thời lượng và giờ kết thúc ở đây là dự kiến để xếp lịch. Ca tới giờ được tự động nhận khi bác sĩ trống.</div>${pager(records,r => [person(patientName(r.patient_id),`Mã phiếu #${r.checkin_id}`),escapeHtml(departmentLabel(r.department)),person(doctorName(r.doctor_id,r.doctor_name),r.doctor_id),escapeHtml(timeLabel(r.start_time)),`${r.duration_minutes} phút`,escapeHtml(timeLabel(r.planned_end_time)),examStatus(r.checkin_id)],['BỆNH NHÂN','KHOA','BÁC SĨ','BẮT ĐẦU','THỜI LƯỢNG DỰ KIẾN','KẾT THÚC DỰ KIẾN','TRẠNG THÁI'],'Chưa có lịch khám','Bấm Phân bác sĩ để sắp xếp các bệnh nhân đang chờ.')}</section>`;
   }
   if (state.view === 'exams') {
-    const records = filter(d.exams.filter(e => state.examMode === 'all' || (state.examMode === 'completed' ? e.end_time : e.active)),r => [patientName(r.patientId ?? r.patient_id),r.doctor_name,r.checkin_id]);
+    const records = filter(d.exams.filter(e => state.examMode === 'all' || (state.examMode === 'completed' ? e.end_time : e.active)),r => [patientName(r.patientId ?? r.patient_id),doctorName(r.doctor_id,r.doctor_name),r.doctor_id,r.checkin_id]);
     const mode = `<select id="exam-mode" aria-label="Lọc trạng thái khám"><option value="active"${state.examMode === 'active' ? ' selected' : ''}>Đang khám</option><option value="completed"${state.examMode === 'completed' ? ' selected' : ''}>Đã hoàn tất</option><option value="all"${state.examMode === 'all' ? ' selected' : ''}>Tất cả lượt khám</option></select>`;
     return toolbar('Tìm bệnh nhân, bác sĩ, mã phiếu…',true,mode) + `<section class="panel"><div class="panel-header"><div><h2>Theo dõi lượt khám</h2><p>Thời lượng khám tính từ lúc bắt đầu đến hiện tại; ca hoàn tất tính đến giờ kết thúc thực tế.</p></div></div>${pager(records,r => [person(patientName(r.patient_id),`Mã phiếu #${r.checkin_id}`),escapeHtml(departmentLabel(r.department)),person(r.doctor_name,r.doctor_id),escapeHtml(timeLabel(r.start_time)),`${r.duration_minutes ?? 0} phút`,badge(r.end_time ? 'Đã hoàn tất' : 'Đang khám',r.end_time ? 'gray' : 'blue'),`<div class="row-actions">${button('exam-detail','Chi tiết',r.checkin_id)}${r.end_time ? '' : button('diagnosis','Chẩn đoán',r.checkin_id,'primary small')}${r.end_time ? '' : button('finish','Kết thúc',r.checkin_id)}</div>`],['BỆNH NHÂN','KHOA','BÁC SĨ','BẮT ĐẦU','THỜI LƯỢNG KHÁM','TRẠNG THÁI','THAO TÁC'],'Chưa có lượt khám phù hợp','Các ca tới giờ tự cập nhật. Chọn trạng thái khác để xem lịch sử.')}</section>`;
   }
@@ -280,12 +282,14 @@ function openModal(type, id) {
     const d = state.data.doctors.find(d => d.id === id);
     if (!d) return;
     title = 'Ca trực bác sĩ · 7 ngày';
-    const rule = d.shift_rule === 'three_shifts_alternate_days' ? 'Bác sĩ Khoa Cấp cứu trực 3 ca/tuần, mỗi ca 07:00–17:00 và theo lịch ngày trực - ngày nghỉ. Nhóm A: Thứ 2, 4, 6; Nhóm B: Thứ 3, 5, 7; Chủ nhật nghỉ theo lịch tự động. Có thể dùng Tăng ca khi cần.' : 'Thứ Hai–Thứ Sáu: 07:00–11:30 và 13:00–17:00. Nghỉ cuối tuần.';
+    const rule = d.shift_rule === 'day_night_alternate_days' ? 'Bác sĩ Khoa Cấp cứu được chia ca ngày 06:00–18:00 và ca đêm 18:00–06:00 hôm sau. Mỗi bác sĩ trực 3 ca/tuần: nhóm A bắt đầu Thứ 2, 4, 6; nhóm B bắt đầu Thứ 3, 5, 7. Có thể dùng Tăng ca khi cần.' : 'Thứ Hai–Thứ Sáu: 07:00–11:30 và 13:00–17:00. Nghỉ cuối tuần.';
     html = `<p class="form-info">${escapeHtml(d.name)} · ${escapeHtml(departmentLabel(d.department))}</p><p class="form-note">${rule}</p>`;
     if (d.duty_mode !== 'auto') html += `<p class="form-note">${d.duty_mode === 'on_duty' ? 'Bác sĩ đang được bật trực thủ công, có thể nhận ca ngoài lịch dưới đây cho đến khi cập nhật lại.' : 'Bác sĩ đang được đặt nghỉ thủ công, tạm ngừng nhận ca dù có lịch bên dưới.'} Bảng dưới đây là lịch ca tự động.</p>`;
     if (d.busy) html += `<p class="form-note">Bận đột xuất đến ${escapeHtml(timeLabel(d.busy_until))}: ${escapeHtml(d.busy_reason)}</p>`;
     if (d.overtime) html += `<p class="form-note">Đang tăng ca đến ${escapeHtml(timeLabel(d.overtime_until))}.</p>`;
     if (d.shift_period_start && Array.isArray(d.shifts)) {
+      const ongoing = d.shifts.find(s => s.is_current && s.date < d.shift_period_start);
+      if (ongoing) html += `<p class="form-note">Ca đêm đang tiếp nối từ hôm trước: ${escapeHtml(timeLabel(ongoing.start_time))} → ${escapeHtml(timeLabel(ongoing.end_time))}.</p>`;
       const first = new Date(`${d.shift_period_start}T00:00:00Z`);
       const rows = Array.from({length:7}, (_,i) => {
         const day = new Date(first.getTime() + i * 86400000);
@@ -308,7 +312,7 @@ function openModal(type, id) {
     const e = state.data.exams.find(e => e.checkin_id === id);
     if (!e) return;
     title = type === 'diagnosis' ? 'Cập nhật chẩn đoán' : 'Chi tiết lượt khám';
-    html = `<dl class="detail-grid"><div><dt>Bệnh nhân</dt><dd>${escapeHtml(patientName(e.patient_id))}</dd></div><div><dt>Bác sĩ</dt><dd>${escapeHtml(e.doctor_name || '—')}</dd></div><div><dt>Khoa khám</dt><dd>${escapeHtml(departmentLabel(e.department))}</dd></div><div><dt>Mã phiếu</dt><dd>#${id}</dd></div><div><dt>Bắt đầu</dt><dd>${escapeHtml(timeLabel(e.start_time))}</dd></div><div><dt>Thời lượng khám</dt><dd>${e.duration_minutes ?? 0} phút</dd></div><div><dt>Kết thúc thực tế</dt><dd>${escapeHtml(timeLabel(e.end_time))}</dd></div></dl>`;
+    html = `<dl class="detail-grid"><div><dt>Bệnh nhân</dt><dd>${escapeHtml(patientName(e.patient_id))}</dd></div><div><dt>Bác sĩ</dt><dd>${escapeHtml(doctorName(e.doctor_id,e.doctor_name) || '—')}</dd></div><div><dt>Khoa khám</dt><dd>${escapeHtml(departmentLabel(e.department))}</dd></div><div><dt>Mã phiếu</dt><dd>#${id}</dd></div><div><dt>Bắt đầu</dt><dd>${escapeHtml(timeLabel(e.start_time))}</dd></div><div><dt>Thời lượng khám</dt><dd>${e.duration_minutes ?? 0} phút</dd></div><div><dt>Kết thúc thực tế</dt><dd>${escapeHtml(timeLabel(e.end_time))}</dd></div></dl>`;
     if (type === 'diagnosis') {
       html += `<div class="form-grid">${[['Chẩn đoán *','diagnosis',e.diagnosis,true],['Đơn thuốc','prescription',e.prescription,false],['Lời nhắc của bác sĩ','reminder',e.reminder,false]].map(([label,name,value,required]) => `<label class="field full">${label}<textarea name="${name}" maxlength="10000"${required ? ' required' : ''}>${escapeHtml(value)}</textarea></label>`).join('')}</div>`;
     } else {

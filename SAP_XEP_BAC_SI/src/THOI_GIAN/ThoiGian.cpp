@@ -64,18 +64,40 @@ namespace {
     }
 
     int chuanHoaPha(int pha) {
-        int result = pha % 2;
-        if (result < 0) result += 2;
+        int result = pha % 4;
+        if (result < 0) result += 4;
         return result;
     }
 
     bool dungNgayCapCuu(time_t t, int phaTruc) {
         const int thu = thuTrongTuan(t);
-        const int pha = chuanHoaPha(phaTruc);
+        const int pha = chuanHoaPha(phaTruc) % 2;
 
         // Nhóm 0: Thứ 2, 4, 6. Nhóm 1: Thứ 3, 5, 7.
         if (pha == 0) return thu == 1 || thu == 3 || thu == 5;
         return thu == 2 || thu == 4 || thu == 6;
+    }
+
+    bool caDemCapCuu(int phaTruc) {
+        return chuanHoaPha(phaTruc) >= 2;
+    }
+
+    ThoiGian::CaTruc caCapCuu(time_t ngay, int phaTruc) {
+        const bool caDem = caDemCapCuu(phaTruc);
+        const time_t start = taoThoiGianCungNgay(ngay, caDem ? 18 : 6, 0);
+        tm end = layLocalTm(start);
+        end.tm_hour = caDem ? 6 : 18;
+        if (caDem) ++end.tm_mday;
+        end.tm_isdst = -1;
+        return {ThoiGian::DinhDangNgay(start), start, mktime(&end)};
+    }
+
+    // Trước 06:00, ca đêm thuộc ngày bắt đầu hôm trước.
+    ThoiGian::CaTruc caCapCuuTai(time_t t, int phaTruc) {
+        tm day = layLocalTm(t);
+        if (caDemCapCuu(phaTruc) && phutTrongNgay(t) < 6 * 60) --day.tm_mday;
+        day.tm_isdst = -1;
+        return caCapCuu(mktime(&day), phaTruc);
     }
 }
 
@@ -176,9 +198,9 @@ namespace ThoiGian {
     }
 
     bool DangTrucCapCuu(time_t t, int phaTruc) {
-        if (!dungNgayCapCuu(t, phaTruc)) return false;
-        const int p = phutTrongNgay(t);
-        return p >= 7 * 60 && p < 17 * 60;
+        const auto shift = caCapCuuTai(t, phaTruc);
+        return dungNgayCapCuu(shift.batDau, phaTruc) &&
+               t >= shift.batDau && t < shift.ketThuc;
     }
 
     time_t TrucCapCuuTiepTheo(time_t t, int phaTruc) {
@@ -187,7 +209,7 @@ namespace ThoiGian {
         for (int offset = 0; offset <= 7; ++offset) {
             tm value = layLocalTm(t);
             value.tm_mday += offset;
-            value.tm_hour = 7;
+            value.tm_hour = caDemCapCuu(phaTruc) ? 18 : 6;
             value.tm_min = 0;
             value.tm_sec = 0;
             const time_t start = mktime(&value);
@@ -200,10 +222,9 @@ namespace ThoiGian {
     }
 
     bool DuThoiGianKhamCapCuu(time_t batDau, int soPhut, int phaTruc) {
-        if (soPhut <= 0 || soPhut > 10 * 60) return false;
+        if (soPhut <= 0 || soPhut > 12 * 60) return false;
         if (!DangTrucCapCuu(batDau, phaTruc)) return false;
-        const time_t endShift = taoThoiGianCungNgay(batDau, 17, 0);
-        return batDau + static_cast<time_t>(soPhut) * 60 <= endShift;
+        return batDau + static_cast<time_t>(soPhut) * 60 <= caCapCuuTai(batDau, phaTruc).ketThuc;
     }
 
     vector<CaTruc> LichTruc(
@@ -217,6 +238,12 @@ namespace ThoiGian {
 
         const time_t firstDay = dauNgay(moc);
 
+        // Bao gồm ca đêm đang tiếp nối từ hôm trước để trạng thái và tăng ca dùng đúng ca.
+        if (capCuu && DangTrucCapCuu(moc, phaTruc)) {
+            const auto current = caCapCuuTai(moc, phaTruc);
+            if (current.batDau < firstDay) result.push_back(current);
+        }
+
         for (int offset = 0; offset < soNgay; ++offset) {
             tm day = layLocalTm(firstDay);
             day.tm_mday += offset;
@@ -227,12 +254,7 @@ namespace ThoiGian {
 
             if (capCuu) {
                 if (!dungNgayCapCuu(currentDay, phaTruc)) continue;
-                const time_t start = taoThoiGianCungNgay(currentDay, 7, 0);
-                result.push_back({
-                    DinhDangNgay(start),
-                    start,
-                    taoThoiGianCungNgay(currentDay, 17, 0)
-                });
+                result.push_back(caCapCuu(currentDay, phaTruc));
                 continue;
             }
 
