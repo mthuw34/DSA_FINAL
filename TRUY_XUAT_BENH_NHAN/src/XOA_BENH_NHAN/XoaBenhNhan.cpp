@@ -1,6 +1,6 @@
 #include "XoaBenhNhan.h"
 
 bool XoaBenhNhan::xoaBenhNhan(int patientId) {
-    // Precondition: patientId must be positive.
+    //Điều kiện tiên quyết: ID bệnh nhân phải dương.
     return DBXoaBenhNhan::xoaBenhNhan(patientId);
 }
