@@ -1,4 +1,5 @@
 #include "TruyXuat.h"
+#include "MangDongBenhNhan.h"
 
 using namespace std;
 
@@ -42,7 +43,7 @@ bool ThuatToanSapXep::xetUuTien(const HoSoTruyXuat& left, const HoSoTruyXuat& ri
     return left.checkinId < right.checkinId;
 }
 
-void ThuatToanSapXep::tron(vector<HoSoTruyXuat>& records, vector<HoSoTruyXuat>& buffer, int left, int middle, int right) {
+void ThuatToanSapXep::tron(MangDongBenhNhan& records, MangDongBenhNhan& buffer, int left, int middle, int right) {
     // Precondition: 0 <= left <= middle < right < records.size(), and buffer.size() >= records.size().
     int first = left;
     int second = middle + 1;
@@ -70,7 +71,7 @@ void ThuatToanSapXep::tron(vector<HoSoTruyXuat>& records, vector<HoSoTruyXuat>& 
     }
 }
 
-void ThuatToanSapXep::sapXepTron(vector<HoSoTruyXuat>& records, vector<HoSoTruyXuat>& buffer, int left, int right) {
+void ThuatToanSapXep::sapXepTron(MangDongBenhNhan& records, MangDongBenhNhan& buffer, int left, int right) {
     // Precondition: buffer.size() >= records.size(), and [left, right] is a valid range or empty.
     if (left >= right) {
         return;

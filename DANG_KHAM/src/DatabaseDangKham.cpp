@@ -135,6 +135,24 @@ bool DatabaseDangKham::sourceTableExists(const char* tableName)
     return false;
 }
 
+bool DatabaseDangKham::migrateDoctorState()
+{
+    if (!sourceTableExists("doctor_state")) return true;
+    if (!executeSql("BEGIN IMMEDIATE;", "Loi bat dau chuyen trang thai bac si")) return false;
+
+    bool success = executeSql(
+        "INSERT OR IGNORE INTO main.doctor_state (doctor_id, duty_mode, busy_until, busy_reason) "
+        "SELECT doctor_id, duty_mode, busy_until, busy_reason FROM source.doctor_state;",
+        "Loi chuyen trang thai bac si"
+    );
+    if (success)
+        success = executeSql("DROP TABLE source.doctor_state;", "Loi xoa bang trang thai bac si cu");
+    if (success)
+        success = executeSql("COMMIT;", "Loi hoan tat chuyen trang thai bac si");
+    if (!success) sqlite3_exec(db, "ROLLBACK;", nullptr, nullptr, nullptr);
+    return success;
+}
+
 // Mở dangKham.db và liên kết database nguồn.
 bool DatabaseDangKham::mo(
     const string& sourcePath,
@@ -313,6 +331,21 @@ bool DatabaseDangKham::taoCauTruc()
             )",
             "Loi tao bang dang_kham"
         ))
+    {
+        return false;
+    }
+
+    if (!executeSql(
+            R"(
+                CREATE TABLE IF NOT EXISTS doctor_state (
+                    doctor_id TEXT PRIMARY KEY,
+                    duty_mode TEXT NOT NULL DEFAULT 'auto',
+                    busy_until TEXT,
+                    busy_reason TEXT NOT NULL DEFAULT ''
+                );
+            )",
+            "Loi tao bang trang thai bac si"
+        ) || !migrateDoctorState())
     {
         return false;
     }

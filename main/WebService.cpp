@@ -121,21 +121,17 @@ WebService::WebService() {
             current_priority INTEGER NOT NULL CHECK(current_priority BETWEEN 1 AND 5), last_update TEXT);)");
         std::filesystem::create_directories("TRUY_XUAT_BENH_NHAN/db");
         require(DBTaoBang::taoBangTruyXuat(), 500, "Khong tao duoc bang hang doi");
-        open(retrieval, retrievalPath);
-        execute(retrieval, R"(CREATE TABLE IF NOT EXISTS doctor_state (
-            doctor_id TEXT PRIMARY KEY, duty_mode TEXT NOT NULL DEFAULT 'auto',
-            busy_until TEXT, busy_reason TEXT NOT NULL DEFAULT '');)");
         std::filesystem::create_directories("DANG_KHAM/db");
         require(exams.mo(retrievalPath, "DANG_KHAM/db/dangKham.db") && exams.taoCauTruc(),
                 500, "Khong khoi tao duoc database kham");
     } catch (...) {
         exams.dong();
-        sqlite3_close(retrieval); sqlite3_close(priority); sqlite3_close(hospital);
+        sqlite3_close(priority); sqlite3_close(hospital);
         throw;
     }
 }
 WebService::~WebService() {
-    exams.dong(); sqlite3_close(retrieval); sqlite3_close(priority); sqlite3_close(hospital);
+    exams.dong(); sqlite3_close(priority); sqlite3_close(hospital);
 }
 std::vector<Patient> WebService::patients() {
     std::vector<Patient> records;
@@ -302,7 +298,7 @@ Json WebService::listDoctors() {
     QuanLyBacSi manager;
     require(manager.DocCSV(doctorsPath), 500, "Khong doc duoc CSV bac si");
     Json saved = Json::object();
-    auto stmt = prepare(retrieval, "SELECT doctor_id,duty_mode,busy_until,busy_reason FROM doctor_state;");
+    auto stmt = prepare(exams.get(), "SELECT doctor_id,duty_mode,busy_until,busy_reason FROM doctor_state;");
     int rc;
     while ((rc = sqlite3_step(stmt.get())) == SQLITE_ROW)
         saved[HospitalPersistence::text(stmt.get(), 0)] = {
@@ -354,8 +350,8 @@ Json WebService::updateDoctor(const std::string& id, const Json& data) {
         until = minutes ? ThoiGian::DinhDang(time(nullptr) + minutes * 60) : "";
         reason = minutes ? stringField(data, "busy_reason", true) : "";
     }
-    Transaction tx(retrieval);
-    auto stmt = prepare(retrieval, "INSERT INTO doctor_state(doctor_id,duty_mode,busy_until,busy_reason) VALUES(?,?,?,?) "
+    Transaction tx(exams.get());
+    auto stmt = prepare(exams.get(), "INSERT INTO doctor_state(doctor_id,duty_mode,busy_until,busy_reason) VALUES(?,?,?,?) "
         "ON CONFLICT(doctor_id) DO UPDATE SET duty_mode=excluded.duty_mode,busy_until=excluded.busy_until,busy_reason=excluded.busy_reason;");
     bindText(stmt.get(), 1, id); bindText(stmt.get(), 2, mode); bindText(stmt.get(), 3, until); bindText(stmt.get(), 4, reason);
     require(sqlite3_step(stmt.get()) == SQLITE_DONE, 500, "Khong luu duoc trang thai bac si");

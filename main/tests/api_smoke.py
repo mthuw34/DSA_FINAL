@@ -33,6 +33,12 @@ def main():
         with closing(sqlite3.connect(sandbox / 'QUAN_LY_BENH_NHAN/db/hospital.db')) as db:
             db.execute('CREATE TABLE patients (id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT NOT NULL, '
                        'birth_date TEXT NOT NULL, age INTEGER NOT NULL, gender TEXT, hometown TEXT, address TEXT, phone TEXT)')
+        (sandbox / 'TRUY_XUAT_BENH_NHAN/db').mkdir(parents=True)
+        with closing(sqlite3.connect(sandbox / 'TRUY_XUAT_BENH_NHAN/db/truyXuat.db')) as db:
+            db.execute('CREATE TABLE doctor_state (doctor_id TEXT PRIMARY KEY, duty_mode TEXT NOT NULL, '
+                       'busy_until TEXT, busy_reason TEXT NOT NULL)')
+            db.execute("INSERT INTO doctor_state VALUES ('legacy-doctor', 'off_duty', NULL, '')")
+            db.commit()
         with socket.socket() as sock:
             sock.bind(('127.0.0.1', 0))
             port = sock.getsockname()[1]
@@ -79,6 +85,10 @@ def main():
 
         try:
             ready()
+            with closing(sqlite3.connect(sandbox / 'DANG_KHAM/db/dangKham.db')) as db:
+                assert db.execute("SELECT duty_mode FROM doctor_state WHERE doctor_id='legacy-doctor'").fetchone() == ('off_duty',)
+            with closing(sqlite3.connect(sandbox / 'TRUY_XUAT_BENH_NHAN/db/truyXuat.db')) as db:
+                assert db.execute("SELECT name FROM sqlite_master WHERE type='table' AND name='doctor_state'").fetchone() is None
             for path, content_type, marker in [('/', 'text/html', 'KMIN HEALTH'),
                     ('/assets/app.css', 'text/css', '.sidebar'),
                     ('/assets/app.js', 'text/javascript', 'loadData')]:
@@ -254,7 +264,7 @@ def main():
             with closing(sqlite3.connect(sandbox / 'DANG_KHAM/db/dangKham.db')) as db:
                 db.execute("UPDATE dang_kham SET start_time=datetime('now','localtime','-30 minutes'), planned_end_time=datetime('now','localtime','-1 minute') WHERE checkin_id=?",(late,))
                 db.commit()
-            with closing(sqlite3.connect(sandbox / 'TRUY_XUAT_BENH_NHAN/db/truyXuat.db')) as db:
+            with closing(sqlite3.connect(sandbox / 'DANG_KHAM/db/dangKham.db')) as db:
                 db.execute("UPDATE doctor_state SET busy_until=datetime('now','localtime','-1 minute') WHERE doctor_id=?",(did,))
                 db.commit()
             deadline=time.monotonic()+12
