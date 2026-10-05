@@ -45,7 +45,12 @@ const run = code => vm.runInContext(code,context);
   }
   assert(run("normalize('Nguyễn Văn Đạt')") === 'nguyen van dat');
   run("state.view='patients';render()");
-  assert(!element('#content').innerHTML.includes('&lt;img'),'Checked-in patient leaves intake list');
+  assert(element('#content').innerHTML.includes('&lt;img'),'Checked-in patient must remain searchable in patient registry');
+  run("state.search='1';render()");
+  assert(element('#content').innerHTML.includes('BN-0001'),'Patient search must support numeric ID');
+  run("state.search='BN-0001';render()");
+  assert(element('#content').innerHTML.includes('BN-0001'),'Patient search must support displayed patient code');
+  run("state.search='';render()");
   run("state.view='queue';render()");
   assert(element('#content').innerHTML.includes('&lt;img'),'Checked-in patient appears in queue');
   assert(!element('#content').innerHTML.includes('data-action="sync"'));
