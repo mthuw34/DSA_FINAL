@@ -167,8 +167,8 @@ def main():
             assert request('/api/assignments', 'POST', {})['assigned_count'] == 0
             assert request('/api/assignments') == original
             # Make the saved appointment currently active regardless of fixture doctor shifts.
-            db = sqlite3.connect(sandbox / 'TRUY_XUAT_BENH_NHAN/db/truyXuat.db')
-            db.execute("UPDATE ket_qua_kham SET start_time=datetime('now','localtime','-1 minute'), end_time=datetime('now','localtime','+20 minutes')")
+            db = sqlite3.connect(sandbox / 'DANG_KHAM/db/dangKham.db')
+            db.execute("UPDATE dang_kham SET start_time=datetime('now','localtime','-1 minute'), planned_end_time=datetime('now','localtime','+20 minutes')")
             db.commit()
             db.close()
             request('/api/exams/sync', 'POST')
@@ -244,22 +244,22 @@ def main():
             request('/api/assignments','POST',{'doctor_id':did},409)
             request(endpoint,'PATCH',{'duty_mode':'on_duty'})
             # Future appointment becomes active via background sync, even after planned end.
-            with closing(sqlite3.connect(sandbox / 'TRUY_XUAT_BENH_NHAN/db/truyXuat.db')) as db:
-                db.execute("UPDATE ket_qua_kham SET end_time=datetime('now','localtime') WHERE checkin_id=?", (active[0]['checkin_id'],))
+            with closing(sqlite3.connect(sandbox / 'DANG_KHAM/db/dangKham.db')) as db:
+                db.execute("UPDATE dang_kham SET planned_end_time=datetime('now','localtime') WHERE checkin_id=?", (active[0]['checkin_id'],))
                 db.commit()
             request('/api/assignments','POST',{'doctor_id':did})
             late=selected[1]['checkin_id']
-            # Remove the newly admitted exam to simulate a server offline during appointment.
+            # A scheduled visit becomes active when start_time is reached; planned_end_time
+            # never closes the real exam automatically.
             with closing(sqlite3.connect(sandbox / 'DANG_KHAM/db/dangKham.db')) as db:
-                db.execute('DELETE FROM dang_kham WHERE checkin_id=?',(late,))
+                db.execute("UPDATE dang_kham SET start_time=datetime('now','localtime','-30 minutes'), planned_end_time=datetime('now','localtime','-1 minute') WHERE checkin_id=?",(late,))
                 db.commit()
             with closing(sqlite3.connect(sandbox / 'TRUY_XUAT_BENH_NHAN/db/truyXuat.db')) as db:
-                db.execute("UPDATE ket_qua_kham SET start_time=datetime('now','localtime','-30 minutes'), end_time=datetime('now','localtime','-1 minute') WHERE checkin_id=?",(late,))
                 db.execute("UPDATE doctor_state SET busy_until=datetime('now','localtime','-1 minute') WHERE doctor_id=?",(did,))
                 db.commit()
             deadline=time.monotonic()+12
             while not any(e['checkin_id']==late for e in request('/api/exams')):
-                assert time.monotonic()<deadline, 'Background sync did not admit due exam'
+                assert time.monotonic()<deadline, 'Scheduled exam did not become active'
                 time.sleep(.2)
             assert not next(d for d in request('/api/doctors') if d['id']==did)['busy']
             removable = request('/api/patients', 'POST', {'name':'Delete', 'birth_date':'2000-01-01'}, 201)
