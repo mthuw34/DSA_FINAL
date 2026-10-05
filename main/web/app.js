@@ -152,7 +152,7 @@ function renderList() {
   const d = state.data;
   if (state.view === 'patients') {
     const checked = new Set(d.checkins.map(r => r.patient_id));
-    const records = filter(d.patients,p => [p.name,p.phone,p.id,`BN-${String(p.id).padStart(4,'0')}`,p.birth_date]);
+    const records = filter(d.patients.filter(p => !checked.has(p.id)),p => [p.name,p.phone,p.id,`BN-${String(p.id).padStart(4,'0')}`,p.birth_date]);
     return toolbar('Tìm tên, mã bệnh nhân, số điện thoại…',false) + `<section class="panel"><div class="panel-header"><h2>Hồ sơ chờ check-in</h2><span class="result-count">${number(records.length)} hồ sơ</span></div>${pager(records,p => [person(p.name,`BN-${String(p.id).padStart(4,'0')}`),escapeHtml(p.birth_date),`${p.age} tuổi`,escapeHtml(p.gender || '—'),escapeHtml(p.phone || '—'),checked.has(p.id) ? badge('Đã tiếp nhận','green') : badge('Chưa tiếp nhận','gray'),`<div class="row-actions">${button('edit-patient','Sửa',p.id)}${checked.has(p.id) ? '' : button('checkin','Check-in',p.id,'primary small')}${checked.has(p.id) ? '' : button('delete-patient','Xóa',p.id,'danger small')}</div>`],['BỆNH NHÂN','NGÀY SINH','TUỔI','GIỚI TÍNH','ĐIỆN THOẠI','TRẠNG THÁI','THAO TÁC'],'Không tìm thấy bệnh nhân','Thêm hồ sơ mới hoặc thử từ khóa khác.')}</section>`;
   }
   if (state.view === 'queue') {
