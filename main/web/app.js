@@ -134,7 +134,7 @@ function queueRow(r, actions = true) {
 }
 function dashboard() {
   const d = state.data;
-  const active = d.exams.filter(e => !e.end_time);
+  const active = d.exams.filter(e => e.active);
   const completed = d.exams.filter(e => e.end_time);
   const stats = [ ['Tổng bệnh nhân',d.patients.length,'Hồ sơ đã được lưu','people',''], ['Đang chờ khám',d.queue.length,'Chưa được phân bác sĩ','clock','amber'], ['Đang khám',active.length,'Lượt khám đang hoạt động','medical','blue'], ['Đã hoàn tất',completed.length,'Lượt khám đã kết thúc','check','purple'] ];
   const latest = [...d.checkins].sort((a,b) => b.checkin_id-a.checkin_id).slice(0,5);
@@ -164,7 +164,7 @@ function renderList() {
     return toolbar('Tìm bệnh nhân, bác sĩ, mã phiếu…') + `<section class="panel"><div class="panel-header"><div><h2>Lịch phân bác sĩ</h2><p>Lịch đã lưu được giữ lại khi phân thêm lượt khám</p></div>${button('schedule','Phân bác sĩ','','primary')}</div><div class="schedule-summary">${icon('clock')}Thời lượng và giờ kết thúc ở đây là dự kiến để xếp lịch. Ca tới giờ được tự động nhận khi bác sĩ trống.</div>${pager(records,r => [person(patientName(r.patient_id),`Mã phiếu #${r.checkin_id}`),escapeHtml(departmentLabel(r.department)),person(r.doctor_name,r.doctor_id),escapeHtml(timeLabel(r.start_time)),`${r.duration_minutes} phút`,escapeHtml(timeLabel(r.planned_end_time)),examStatus(r.checkin_id)],['BỆNH NHÂN','KHOA','BÁC SĨ','BẮT ĐẦU','THỜI LƯỢNG DỰ KIẾN','KẾT THÚC DỰ KIẾN','TRẠNG THÁI'],'Chưa có lịch khám','Bấm Phân bác sĩ để sắp xếp các bệnh nhân đang chờ.')}</section>`;
   }
   if (state.view === 'exams') {
-    const records = filter(d.exams.filter(e => state.examMode === 'all' || (state.examMode === 'completed' ? e.end_time : !e.end_time)),r => [patientName(r.patientId ?? r.patient_id),r.doctor_name,r.checkin_id]);
+    const records = filter(d.exams.filter(e => state.examMode === 'all' || (state.examMode === 'completed' ? e.end_time : e.active)),r => [patientName(r.patientId ?? r.patient_id),r.doctor_name,r.checkin_id]);
     const mode = `<select id="exam-mode" aria-label="Lọc trạng thái khám"><option value="active"${state.examMode === 'active' ? ' selected' : ''}>Đang khám</option><option value="completed"${state.examMode === 'completed' ? ' selected' : ''}>Đã hoàn tất</option><option value="all"${state.examMode === 'all' ? ' selected' : ''}>Tất cả lượt khám</option></select>`;
     return toolbar('Tìm bệnh nhân, bác sĩ, mã phiếu…',true,mode) + `<section class="panel"><div class="panel-header"><div><h2>Theo dõi lượt khám</h2><p>Thời lượng khám tính từ lúc bắt đầu đến hiện tại; ca hoàn tất tính đến giờ kết thúc thực tế.</p></div></div>${pager(records,r => [person(patientName(r.patient_id),`Mã phiếu #${r.checkin_id}`),escapeHtml(departmentLabel(r.department)),person(r.doctor_name,r.doctor_id),escapeHtml(timeLabel(r.start_time)),`${r.duration_minutes ?? 0} phút`,badge(r.end_time ? 'Đã hoàn tất' : 'Đang khám',r.end_time ? 'gray' : 'blue'),`<div class="row-actions">${button('exam-detail','Chi tiết',r.checkin_id)}${r.end_time ? '' : button('diagnosis','Chẩn đoán',r.checkin_id,'primary small')}${r.end_time ? '' : button('finish','Kết thúc',r.checkin_id)}</div>`],['BỆNH NHÂN','KHOA','BÁC SĨ','BẮT ĐẦU','THỜI LƯỢNG KHÁM','TRẠNG THÁI','THAO TÁC'],'Chưa có lượt khám phù hợp','Các ca tới giờ tự cập nhật. Chọn trạng thái khác để xem lịch sử.')}</section>`;
   }
@@ -176,7 +176,8 @@ function doctorStatus(d) {
 }
 function examStatus(id) {
   const exam = state.data.exams.find(e => e.checkin_id === id);
-  if (exam) return badge(exam.end_time ? 'Đã hoàn tất' : 'Đang khám',exam.end_time ? 'gray' : 'blue');
+  if (exam?.end_time) return badge('Đã hoàn tất','gray');
+  if (exam?.active) return badge('Đang khám','blue');
   return badge('Đã phân bác sĩ','green');
 }
 function render() {
