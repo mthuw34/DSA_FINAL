@@ -40,16 +40,16 @@ static string getPriorityName(int priority)
 // Thực hiện toàn bộ quy trình check-in cho một bệnh nhân.
 bool checkInMotBenhNhan(sqlite3* db)
 {
-    // =====================================
+    // _____________________________________
     // NHAP ID
-    // =====================================
+    // _____________________________________
 
     int patientId;
 
     cout << "\n\n";
-    cout << "========================================\n";
+    cout << "_____________________________________\n";
     cout << "          CHECK-IN BENH VIEN\n";
-    cout << "========================================\n";
+    cout << "_____________________________________\n";
     cout << "Nhap ID benh nhan\n";
     cout << "Nhap 0 de thoat\n";
     cout << "----------------------------------------\n";
@@ -76,9 +76,9 @@ bool checkInMotBenhNhan(sqlite3* db)
         return false;
 
 
-    // =====================================
+    // _____________________________________
     // TIM BENH NHAN
-    // =====================================
+    // _____________________________________
 
     Patient patient;
 
@@ -97,9 +97,9 @@ bool checkInMotBenhNhan(sqlite3* db)
 
     hienThiBenhNhan(patient);
 
-    // =====================================
+    // _____________________________________
     // KIEM TRA BENH NHAN DA CHECK-IN CHUA
-    // =====================================
+    // _____________________________________
 
     vector<CheckInRecord> checkIns;
     if (!HospitalPersistence::loadCheckIns(db, checkIns)) return true;
@@ -117,9 +117,9 @@ bool checkInMotBenhNhan(sqlite3* db)
              << "Khong the check-in lan thu hai!\n";
         return true;
     }
-    // =====================================
+    // _____________________________________
     // CHON KHOA
-    // =====================================
+    // _____________________________________
 
     string department =
         chonKhoa();
@@ -132,16 +132,16 @@ bool checkInMotBenhNhan(sqlite3* db)
          << '\n';
 
 
-    // =====================================
+    // _____________________________________
     // CHON UU TIEN
-    // =====================================
+    // _____________________________________
 
     int priority;
 
     cout << "\n";
-    cout << "========================================\n";
+    cout << "_____________________________________\n";
     cout << "             MUC DO UU TIEN\n";
-    cout << "========================================\n";
+    cout << "_____________________________________\n";
 
     cout << "1. Cap cuu\n";
     cout << "2. Rat cao\n";
@@ -175,9 +175,9 @@ bool checkInMotBenhNhan(sqlite3* db)
     }
 
 
-    // =====================================
+    // _____________________________________
     // KIEM TRA GIO HOAT DONG
-    // =====================================
+    // _____________________________________
 
     string lyDo;
 
@@ -230,22 +230,22 @@ bool checkInMotBenhNhan(sqlite3* db)
         else
         {
             cout << "\n";
-            cout << "========================================\n";
+            cout << "_____________________________________\n";
             cout << "          KHONG THE CHECK-IN\n";
-            cout << "========================================\n";
+            cout << "_____________________________________\n";
 
             cout << lyDo << '\n';
 
-            cout << "========================================\n";
+            cout << "_____________________________________\n";
 
             return true;
         }
     }
 
 
-    // =====================================
+    // _____________________________________
     // INSERT CHECK-IN
-    // =====================================
+    // _____________________________________
 
     // Khóa ghi ngắn, nạp lại dữ liệu rồi kiểm tra trùng bằng C++ để hai phiên không nhận trùng.
     if (sqlite3_exec(db, "BEGIN IMMEDIATE;", nullptr, nullptr, nullptr) != SQLITE_OK) {
@@ -344,9 +344,9 @@ bool checkInMotBenhNhan(sqlite3* db)
         const int savedPriority = saved->priority;
 
         cout << "\n\n";
-        cout << "========================================\n";
+        cout << "_____________________________________\n";
         cout << "             PHIEU CHECK-IN\n";
-        cout << "========================================\n";
+        cout << "_____________________________________\n";
 
         cout << "Ma check-in : "
              << checkinId
@@ -398,7 +398,7 @@ bool checkInMotBenhNhan(sqlite3* db)
              << getPriorityName(savedPriority)
              << '\n';
 
-        cout << "========================================\n";
+        cout << "_____________________________________\n";
     }
 
 
