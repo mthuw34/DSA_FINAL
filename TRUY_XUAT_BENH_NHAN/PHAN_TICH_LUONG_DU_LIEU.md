@@ -240,6 +240,7 @@ khởi tạo không ghi đè các bảng đã có.
 > Các đường dẫn cơ sở dữ liệu trong mã là đường dẫn tương đối. Hãy chạy chương
 > trình từ thư mục gốc phù hợp của dự án để SQLite mở đúng tệp.
 
+# CÁC THUẬT TOÁN CHÍNH TRONG CHƯƠNG TRÌNH
 
 ## 1. Thuật toán Sắp xếp: Merge Sort (Sắp xếp trộn)
 Bạn đã sử dụng thuật toán Merge Sort làm "bộ não" (DSA Core) để sắp xếp danh sách bệnh nhân.
