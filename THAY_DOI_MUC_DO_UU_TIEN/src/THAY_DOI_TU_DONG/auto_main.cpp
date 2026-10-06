@@ -10,6 +10,7 @@
 
 int main()
 {
+    // Mở các database.
     sqlite3* hospitalDb = nullptr;
     sqlite3* priorityDb = nullptr;
     sqlite3* examsDb = nullptr;

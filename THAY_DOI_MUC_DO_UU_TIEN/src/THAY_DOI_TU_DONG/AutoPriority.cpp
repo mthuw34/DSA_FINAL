@@ -1,5 +1,6 @@
 #include "AutoPriority.h"
 
+// dùng cho các hàm xử lý mức ưu tiên tự động.
 AutoPriorityHeap::AutoPriorityHeap(int initialCapacity) 
 {
     if (initialCapacity <= 0)
@@ -12,6 +13,7 @@ AutoPriorityHeap::AutoPriorityHeap(int initialCapacity)
     heap = new AutoPriorityItem[capacity];
 }
 
+// Hủy bộ nhớ heap.
 AutoPriorityHeap::~AutoPriorityHeap()
 {
     delete[] heap;
@@ -32,7 +34,7 @@ int AutoPriorityHeap::rightChild(int i)
     return 2 * i + 2;
 }
 
-// Moc tang som hon se co do uu tien cao hon
+// Mốc thời gian tiếp theo để tăng mức ưu tiên thấp hơn được coi là ưu tiên cao hơn.
 bool AutoPriorityHeap::higherPriority(const AutoPriorityItem& a,const AutoPriorityItem& b)
 {
     if (a.nextBoostTime != b.nextBoostTime)
@@ -43,7 +45,7 @@ bool AutoPriorityHeap::higherPriority(const AutoPriorityItem& a,const AutoPriori
     return a.checkinId < b.checkinId;
 }
 
-
+// Hoán đổi hai phần tử trong heap.
 void AutoPriorityHeap::swapItem(AutoPriorityItem& a, AutoPriorityItem& b)
 {
     AutoPriorityItem temp = a;
@@ -51,7 +53,7 @@ void AutoPriorityHeap::swapItem(AutoPriorityItem& a, AutoPriorityItem& b)
     b = temp;
 }
 
-
+// Resize heap khi cần thiết.
 void AutoPriorityHeap::resize()
 {
     int newCapacity = capacity * 2;
@@ -83,6 +85,7 @@ void AutoPriorityHeap::siftUp(int index)
 
 void AutoPriorityHeap::siftDown(int index)
 {
+    //Lặp lại cho đến khi phần tử được đặt đúng vị trí.
     while (true)
     {
         int left = leftChild(index);
@@ -110,6 +113,7 @@ void AutoPriorityHeap::siftDown(int index)
     }
 }
 
+// Thêm một phần tử vào heap.
 void AutoPriorityHeap::insert(const AutoPriorityItem& item)
 {
     if (size == capacity)
@@ -122,6 +126,7 @@ void AutoPriorityHeap::insert(const AutoPriorityItem& item)
     size++;
 }
 
+// Lấy phần tử có ưu tiên cao nhất mà không xóa nó khỏi heap.
 bool AutoPriorityHeap::peek(AutoPriorityItem& item) const
 {
     if (size == 0)
@@ -133,6 +138,7 @@ bool AutoPriorityHeap::peek(AutoPriorityItem& item) const
     return true;
 }
 
+// Lấy phần tử có ưu tiên cao nhất và xóa nó khỏi heap.
 bool AutoPriorityHeap::extractMin(AutoPriorityItem& item)
 {
     if (size == 0)
@@ -152,6 +158,7 @@ bool AutoPriorityHeap::extractMin(AutoPriorityItem& item)
     return true;
 }
 
+// Kiểm tra xem heap có rỗng không.
 bool AutoPriorityHeap::isEmpty() const
 {
     return size == 0;

@@ -9,6 +9,7 @@ constexpr int AFTERNOON_START = 13 * 60;
 constexpr int AFTERNOON_END = 17 * 60;
 constexpr int BOOST_SECONDS = 90 * 60;
 
+// Chuyển đổi thời gian từ time_t sang tm theo múi giờ địa phương.
 bool localTime(time_t timestamp, tm& result)
 {
 #ifdef _WIN32
@@ -18,6 +19,7 @@ bool localTime(time_t timestamp, tm& result)
 #endif
 }
 
+// Tạo time_t từ tm và phút trong ngày.
 time_t atMinuteOfDay(tm day, int minuteOfDay)
 {
     day.tm_hour = minuteOfDay / 60;
@@ -28,6 +30,7 @@ time_t atMinuteOfDay(tm day, int minuteOfDay)
 }
 }
 
+// Kiểm tra xem thời gian có nằm trong khung giờ làm việc hay không.
 bool isWorkingTime(time_t timestamp)
 {
     tm local{};
@@ -37,12 +40,15 @@ bool isWorkingTime(time_t timestamp)
         (minuteOfDay >= AFTERNOON_START && minuteOfDay < AFTERNOON_END);
 }
 
+// Tính toán thời gian tiếp theo khi mức ưu tiên được tăng lên.
 time_t calculateNextBoostTime(time_t startTime, bool emergencyDepartment)
 {
     if (emergencyDepartment) return startTime + BOOST_SECONDS;
 
     int remaining = BOOST_SECONDS;
     time_t current = startTime;
+    
+    // Nếu thời gian bắt đầu không nằm trong khung giờ làm việc, di chuyển đến khung giờ tiếp theo.
     while (remaining > 0) {
         tm local{};
         if (!localTime(current, local)) return static_cast<time_t>(-1);
@@ -66,6 +72,7 @@ time_t calculateNextBoostTime(time_t startTime, bool emergencyDepartment)
             continue;
         }
 
+        // Tính toán thời gian còn lại trong khung giờ làm việc hiện tại.
         const time_t endTime = atMinuteOfDay(local, windowEnd);
         const int available = static_cast<int>(endTime - current);
         if (remaining <= available) return current + remaining;

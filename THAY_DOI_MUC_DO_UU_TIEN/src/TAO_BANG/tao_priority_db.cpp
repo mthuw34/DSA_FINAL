@@ -30,7 +30,7 @@ int main()
         nullptr
     );
 
-    //Tạo bảng
+    //Tạo bảng, nếu bảng đã có rồi thì không tạo nữa
     const char* sql = R"(
 
     CREATE TABLE IF NOT EXISTS priority_checkins

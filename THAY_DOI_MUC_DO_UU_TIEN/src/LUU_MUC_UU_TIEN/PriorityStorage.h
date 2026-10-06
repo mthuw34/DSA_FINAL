@@ -20,7 +20,7 @@ struct Record
     int basePriority = 0;
     int currentPriority = 0;
     std::string lastUpdate;
-    bool hasLastUpdate = false;
+    bool hasLastUpdate = false; //cột last_update có NULL hay không.
 };
 
 // Bản ghi từ database gốc.
@@ -97,7 +97,7 @@ inline bool loadRecords(sqlite3* db, std::vector<Record>& records)
 
         // Ghi nhận last_update có khác NULL không.
         record.hasLastUpdate = sqlite3_column_type(stmt, 6) != SQLITE_NULL;
-
+        
         record.lastUpdate = textColumn(stmt, 6);
         records.push_back(record);
     }

@@ -4,14 +4,17 @@
 #include <ctime>
 #include <sqlite3.h>
 
+// Bản ghi trong heap ưu tiên tự động.
 struct AutoPriorityItem
 {
     int checkinId;
     time_t nextBoostTime;
 };
 
+// Heap ưu tiên tự động, sắp xếp theo thời gian tiếp theo để tăng mức ưu tiên.
 class AutoPriorityHeap
 {
+    //Các dữ liệu và phương thức riêng tư của heap.
 private:
     AutoPriorityItem* heap;
     int size;
@@ -50,6 +53,7 @@ public:
     int getSize() const;
 };
 
+// Các hàm hỗ trợ xử lý mức ưu tiên tự động.
 void loadPatients(sqlite3* db, AutoPriorityHeap& heap);
 void processAuto(sqlite3* db, AutoPriorityHeap& heap);
 
