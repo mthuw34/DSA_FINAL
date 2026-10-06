@@ -2,11 +2,12 @@
 #include <iostream>
 using namespace std;
 
-
+// Hàm hủy: Đảm bảo đóng kết nối cơ sở dữ liệu tự động khi đối tượng bị hủy
 XuLyDatabase::~XuLyDatabase() {
     DongDatabase();
 }
 
+// Mở kết nối đến cơ sở dữ liệu SQLite dựa trên đường dẫn file cho trước
 bool XuLyDatabase::MoDatabase(const std::string& duongDan) {
     if (sqlite3_open_v2(
             duongDan.c_str(),
@@ -27,6 +28,7 @@ bool XuLyDatabase::MoDatabase(const std::string& duongDan) {
     return true;
 }
 
+// Đóng kết nối cơ sở dữ liệu an toàn và đặt con trỏ về nullptr
 void XuLyDatabase::DongDatabase() {
     if (Database) {
         sqlite3_close(Database);
@@ -34,6 +36,7 @@ void XuLyDatabase::DongDatabase() {
     }
 }
 
+// Truy vấn và nạp danh sách tất cả bệnh nhân đang chờ khám từ toàn bộ các bảng của các khoa
 bool XuLyDatabase::LayTatCaBenhNhan(
     vector<BenhNhanKham>& danhSach
 ) {
@@ -133,6 +136,7 @@ bool XuLyDatabase::LayTatCaBenhNhan(
     return true;
 }
 
+// Lấy con trỏ thô của SQLite quản lý cơ sở dữ liệu để có thể tương tác trực tiếp nếu cần
 sqlite3* XuLyDatabase::LayDatabase() const {
     return Database;
 }
