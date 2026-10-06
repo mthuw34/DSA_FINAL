@@ -122,6 +122,9 @@ if (active.some(exam => exam.checkin_id === ticket.checkin_id)) {
 }
 ```
 
+Hàng đợi xét mức ưu tiên hiện tại trước (1 cao nhất), bằng mức thì check-in sớm hơn đứng trước.
+Nếu trùng cả thời gian check-in, mã check-in nhỏ hơn đứng trước. Khi phân bác sĩ, áp dụng thứ tự này trong từng khoa.
+
 GET không ghi dữ liệu. Check-in tự đồng bộ hàng đợi; tác vụ nền thử lại nếu tạm lỗi.
 PATCH ưu tiên cập nhật priority.db; POST assignments luôn đồng bộ queue trước khi phân.
 POST assignments nhận `{department: "Khoa Noi"}` để phân một khoa,
@@ -153,7 +156,8 @@ và kết quả đã lưu. Kết thúc khám trả bác sĩ còn trong ca trực
 **Đang rảnh**; bấm **Phân bác sĩ** để nhận bệnh nhân tiếp theo. Khi 5 bác sĩ rảnh và
 6 bệnh nhân chờ, chỉ nhận 5 người, giữ 1 người ở hàng đợi và thông báo khoa đã đầy.
 Server tự đồng bộ mức ưu tiên khi chạy: tính từ giờ check-in, bù các mốc 90 phút đã qua
-đến tối đa mức 1. Khoa thường cộng thời gian mỗi ngày trong khung 07:30–11:30 và
+đến tối đa mức 2; tự động không tăng lên mức 1. Cập nhật thủ công vẫn cho phép mức 1.
+Khoa thường cộng thời gian mỗi ngày trong khung 07:30–11:30 và
 13:00–17:00; Khoa Cấp cứu cộng liên tục 24/7. Chương trình `auto_main` cũng áp dụng cùng quy tắc.
 Không chạy chương trình CLI phân bác sĩ song song với server vì CLI cũ không khôi phục lịch đã lưu.
 

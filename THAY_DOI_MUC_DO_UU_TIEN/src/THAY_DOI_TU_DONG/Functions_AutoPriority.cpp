@@ -12,6 +12,9 @@
 
 using namespace std;
 
+// Waiting-time boosts stop at level 2; level 1 remains available for manual triage.
+static constexpr int AUTO_PRIORITY_LIMIT = 2;
+
 static bool parseTime(const string& text, time_t& result)
 {
     tm t = {};
@@ -51,7 +54,7 @@ void loadPatients(sqlite3* db, AutoPriorityHeap& heap)
 
     for (const priority_storage::Record& record : records)
     {
-        if (record.currentPriority <= 1 || !record.hasLastUpdate)
+        if (record.currentPriority <= AUTO_PRIORITY_LIMIT || !record.hasLastUpdate)
         {
             continue;
         }
@@ -114,7 +117,7 @@ void processAuto(sqlite3* db, AutoPriorityHeap& heap)
         }
 
         priority_storage::Record& record = records[found->second];
-        if (record.currentPriority <= 1 || !record.hasLastUpdate)
+        if (record.currentPriority <= AUTO_PRIORITY_LIMIT || !record.hasLastUpdate)
         {
             continue;
         }
@@ -137,7 +140,7 @@ void processAuto(sqlite3* db, AutoPriorityHeap& heap)
         record.hasLastUpdate = true;
         changes.push_back({record.checkinId, oldPriority, record.currentPriority});
 
-        if (record.currentPriority > 1)
+        if (record.currentPriority > AUTO_PRIORITY_LIMIT)
         {
             AutoPriorityItem nextItem;
             nextItem.checkinId = record.checkinId;

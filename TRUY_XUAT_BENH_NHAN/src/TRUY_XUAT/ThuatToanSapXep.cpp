@@ -8,39 +8,18 @@ int ThuatToanSapXep::layThuTuKhoa(const string& department) {
 }   
 
 bool ThuatToanSapXep::xetUuTien(const HoSoTruyXuat& left, const HoSoTruyXuat& right) {
-    // 1. Phân theo khoa trước
-    if (left.departmentOrder != right.departmentOrder) {
-        return left.departmentOrder < right.departmentOrder;
-    }
-    
-    // 2. Xét mức độ ưu tiên hiện tại (Current Priority)
+    // Smaller numbers mean higher priority (1 is the highest).
     if (left.currentPriority != right.currentPriority) {
         return left.currentPriority < right.currentPriority;
     }
-    
-    // 3. Ưu tiên ca trở nặng thật sự (do Y tá bấm)
-    if (left.isTroNangLamSang != right.isTroNangLamSang) {
-        return left.isTroNangLamSang > right.isTroNangLamSang;
-    }
-    
-    // 4. Ưu tiên lùi về bệnh gốc (Dành cho nhóm tự động được lên cấp do đợi lâu)
-    if (left.basePriority != right.basePriority) {
-        return left.basePriority < right.basePriority;
-    }
-    
-    // 5. Nếu cùng mức ưu tiên, xét ngày + giờ check-in để giữ đúng FIFO qua nhiều ngày.
-    // Chuỗi thời gian có dạng YYYY-MM-DD HH:MM:SS nên so sánh từ điển cũng đúng thứ tự thời gian.
+
+    // Equal priorities follow check-in time, regardless of how priority changed.
+    // YYYY-MM-DD HH:MM:SS also sorts correctly across different dates.
     if (left.checkinTime != right.checkinTime) {
         return left.checkinTime < right.checkinTime;
     }
 
-    // 6. Nếu cùng cả thời điểm check-in, dùng lần cập nhật gần nhất làm khóa phụ.
-    if (left.lastUpdate != right.lastUpdate) {
-        return left.lastUpdate < right.lastUpdate;
-    }
-    
-    // checkinId provides deterministic ordering when all clinical/time keys match;
-    // it is a tie-breaker, not by itself proof of stability relative to input order.
+    // IDs preserve intake order for check-ins recorded in the same second.
     return left.checkinId < right.checkinId;
 }
 

@@ -174,12 +174,20 @@ def main():
                 manual_update = db.execute(
                     'SELECT last_update FROM priority_checkins WHERE checkin_id=?',(cid,)).fetchone()[0]
                 assert manual_update >= checkin_time, (checkin_time, manual_update)
+            # Catch up multiple missed boosts from level 5, stopping at level 2.
+            request(f'/api/checkins/{cid}/priority', 'PATCH', {'priority':5})
+            with closing(sqlite3.connect(sandbox / 'THAY_DOI_MUC_DO_UU_TIEN/db/priority.db')) as db:
                 db.execute("UPDATE priority_checkins SET last_update='2000-01-03 08:00:00' WHERE checkin_id=?", (cid,))
                 db.commit()
             deadline = time.monotonic() + 12
-            while request('/api/queue')[0]['current_priority'] != 1:
+            while request('/api/queue')[0]['current_priority'] != 2:
                 assert time.monotonic() < deadline, 'Background sync did not increase priority'
                 time.sleep(.2)
+            request('/api/queue/sync', 'POST')
+            assert request('/api/queue')[0]['current_priority'] == 2
+            request(f'/api/checkins/{cid}/priority', 'PATCH', {'priority':1})
+            request('/api/queue/sync', 'POST')
+            assert request('/api/queue')[0]['current_priority'] == 1
             scheduled = request('/api/assignments', 'POST', {})
             assert scheduled['assigned_count'] == 1, scheduled
             original = request('/api/assignments')
