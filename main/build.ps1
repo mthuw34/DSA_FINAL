@@ -1,13 +1,21 @@
-param([string]$Compiler = "g++", [ValidatePattern('^[A-Za-z0-9_-]+\.exe$')][string]$OutputName = "hospital_web.exe")
+param(
+    [string]$Compiler = "g++",
+    [ValidatePattern('^[A-Za-z0-9_-]+\.exe$')][string]$OutputName = "",
+    [ValidateSet("web", "terminal")][string]$Target = "web"
+)
 $ErrorActionPreference = "Stop"
+if ([string]::IsNullOrWhiteSpace($OutputName)) {
+    $OutputName = if ($Target -eq "terminal") { "hospital_terminal.exe" } else { "hospital_web.exe" }
+}
 $repoRoot = Split-Path -Parent $PSScriptRoot
 $buildDirectory = Join-Path $PSScriptRoot "build"
 New-Item -ItemType Directory -Force -Path $buildDirectory | Out-Null
 $buildRoot = Join-Path $env:TEMP ("dsa-build-" + [guid]::NewGuid().ToString("N"))
 $buildExitCode = 1
 $linked = $false
+$entryPoint = if ($Target -eq "terminal") { "main/terminal_main.cpp" } else { "main/main.cpp" }
 $sources = @(
-    "main/main.cpp", "main/WebService.cpp",
+    $entryPoint, "main/WebService.cpp",
     "QUAN_LY_BENH_NHAN/src/CHECK_IN/khoa.cpp",
     "THAY_DOI_MUC_DO_UU_TIEN/src/DONG_BO/PrioritySync.cpp",
     "THAY_DOI_MUC_DO_UU_TIEN/src/THAY_DOI_TU_DONG/AutoPriority.cpp",
@@ -55,5 +63,5 @@ finally {
         }
     }
 }
-if ($buildExitCode -ne 0) { throw "Build web that bai (exit $buildExitCode)" }
-Write-Host "Build thanh cong: $buildDirectory\$OutputName"
+if ($buildExitCode -ne 0) { throw "Build $Target that bai (exit $buildExitCode)" }
+Write-Host "Build $Target thanh cong: $buildDirectory\$OutputName"
