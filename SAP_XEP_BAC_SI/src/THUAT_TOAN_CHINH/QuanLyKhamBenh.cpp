@@ -21,6 +21,7 @@ namespace {
         "Khoa Than kinh"
     };
 
+    // Trả về tên định dạng đẹp của khoa (hiện tại giữ nguyên tên gốc)
     string tenKhoaDep(const string& khoa) {
         return khoa;
     }
@@ -31,6 +32,7 @@ namespace {
     };
 
     struct SoSanhUngVien {
+        // Toán tử so sánh để sắp xếp ứng viên bác sĩ trong MinHeap (ưu tiên thời điểm rảnh sớm nhất)
         bool operator()(
             const UngVienBacSi& a,
             const UngVienBacSi& b
@@ -43,6 +45,7 @@ namespace {
     };
 }
 
+// Tìm chỉ số (index) của khoa trong mảng danh sách các khoa tĩnh
 int QuanLyKhamBenh::TimChiSoKhoa(const string& khoa) const {
     for (int i = 0; i < SO_KHOA; ++i) {
         if (CAC_KHOA[i] == khoa) return i;
@@ -50,6 +53,7 @@ int QuanLyKhamBenh::TimChiSoKhoa(const string& khoa) const {
     return -1;
 }
 
+// Khởi động hệ thống: đọc dữ liệu bác sĩ, mở cơ sở dữ liệu và nạp hàng đợi bệnh nhân
 bool QuanLyKhamBenh::KhoiDong(
     const string& duongDanDatabase,
     const string& duongDanCSV
@@ -74,6 +78,7 @@ bool QuanLyKhamBenh::KhoiDong(
     return true;
 }
 
+// Nạp danh sách bệnh nhân từ database vào bộ nhớ (RAM) và phân loại vào các hàng đợi theo khoa
 void QuanLyKhamBenh::NapHangDoiTuDatabase() {
     vector<BenhNhanKham> tatCaBenhNhan;
 
@@ -113,6 +118,7 @@ void QuanLyKhamBenh::NapHangDoiTuDatabase() {
               << " benh nhan vao cac hang doi RAM.\n";
 }
 
+// Sinh ngẫu nhiên thời lượng khám bệnh cho một bệnh nhân (từ 10 đến 30 phút)
 int QuanLyKhamBenh::RandomThoiGianKham() const {
     static mt19937 gen(
         static_cast<unsigned int>(
@@ -124,6 +130,7 @@ int QuanLyKhamBenh::RandomThoiGianKham() const {
     return dist(gen);
 }
 
+// In danh sách thông tin các bác sĩ thuộc một khoa cụ thể ra màn hình
 void QuanLyKhamBenh::InDanhSachBacSiTheoKhoa(
     const string& khoa
 ) const {
@@ -148,6 +155,7 @@ void QuanLyKhamBenh::InDanhSachBacSiTheoKhoa(
     }
 }
 
+// Tìm bác sĩ phù hợp nhất (rảnh sớm nhất) trong khoa để nhận bệnh nhân
 bool QuanLyKhamBenh::TimBacSiTotNhat(
     const string& khoa,
     time_t hienTai,
@@ -190,6 +198,7 @@ bool QuanLyKhamBenh::TimBacSiTotNhat(
     return true;
 }
 
+// Xử lý việc xếp lịch khám cho một bệnh nhân (tìm bác sĩ, tính thời gian bắt đầu/kết thúc)
 bool QuanLyKhamBenh::XuLyMotBenhNhan(
     BenhNhanKham& benhNhan,
     const string& khoaThucTe,
@@ -256,6 +265,7 @@ bool QuanLyKhamBenh::XuLyMotBenhNhan(
     return true;
 }
 
+// Xử lý xếp lịch khám cho toàn bộ bệnh nhân đang chờ trong hàng đợi của một khoa
 bool QuanLyKhamBenh::XuLyKhoa(
     const string& khoa
 ) {
@@ -354,6 +364,7 @@ bool QuanLyKhamBenh::XuLyKhoa(
     return true;
 }
 
+// Thực hiện xử lý xếp lịch cho hàng đợi của tất cả các khoa trong bệnh viện
 bool QuanLyKhamBenh::XuLyTatCaKhoa() {
     for (int i = 0; i < SO_KHOA; ++i) {
         if (!XuLyKhoa(CAC_KHOA[i])) return false;
@@ -361,6 +372,7 @@ bool QuanLyKhamBenh::XuLyTatCaKhoa() {
     return true;
 }
 
+// Khởi động hệ thống dành cho chế độ Web, đồng bộ dữ liệu với các ca đã phân và ca trực hiện tại
 bool QuanLyKhamBenh::KhoiDongWeb(const string& database, const string& csv,
     const vector<BenhNhanKham>& daPhan, const vector<string>& choPhep,
     const vector<string>& dangTruc) {
@@ -387,6 +399,7 @@ bool QuanLyKhamBenh::KhoiDongWeb(const string& database, const string& csv,
     return true;
 }
 
+// In ra danh sách kết quả các bệnh nhân đã được xếp lịch trong phiên chạy htai
 void QuanLyKhamBenh::HienThiKetQua() const {
     cout << "\n===== KET QUA TRONG PHIEN CHAY =====\n";
 

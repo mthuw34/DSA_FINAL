@@ -5,6 +5,7 @@
 using namespace std;
 
 namespace {
+    // Tách các trường dữ liệu từ một dòng định dạng CSV
     vector<string> tachCSV(const string& line) {
         vector<string> result;
         string current;
@@ -25,6 +26,7 @@ namespace {
         return result;
     }
 
+    // Chuyển đổi chuỗi sang số nguyên an toàn (trả về 0 nếu lỗi)
     int toInt(const string& s) {
         try {
             return stoi(s);
@@ -34,6 +36,7 @@ namespace {
     }
 }
 
+// Đọc và nạp dữ liệu danh sách bác sĩ từ file CSV
 bool QuanLyBacSi::DocCSV(const string& duongDan) {
     ifstream file(duongDan);
     if (!file.is_open()) {
@@ -88,10 +91,12 @@ bool QuanLyBacSi::DocCSV(const string& duongDan) {
     return !DanhSach.empty();
 }
 
+// Trả về danh sách toàn bộ bác sĩ
 const vector<BacSi>& QuanLyBacSi::LayDanhSach() const {
     return DanhSach;
 }
 
+// Lấy danh sách chỉ số (index) của các bác sĩ thuộc một khoa cụ thể
 vector<int> QuanLyBacSi::LayBacSiTheoKhoa(const string& khoa) const {
     vector<int> result;
 
@@ -101,6 +106,7 @@ vector<int> QuanLyBacSi::LayBacSiTheoKhoa(const string& khoa) const {
     return result;
 }
 
+// Khởi tạo lịch làm việc, ca trực cấp cứu và thời gian rảnh ban đầu cho các bác sĩ
 void QuanLyBacSi::KhoiTaoLich(time_t hienTai, bool onDinh) {
     (void)onDinh;
     NgayBatDauTrucCapCuu.assign(DanhSach.size(), 0);
@@ -127,11 +133,13 @@ void QuanLyBacSi::KhoiTaoLich(time_t hienTai, bool onDinh) {
     }
 }
 
+// Lấy thông tin pha (nhóm ca trực) cấp cứu của một bác sĩ cụ thể
 int QuanLyBacSi::LayPhaTrucCapCuu(int index) const {
     if (index < 0 || index >= static_cast<int>(DanhSach.size())) return -1;
     return NgayBatDauTrucCapCuu.empty() ? 0 : NgayBatDauTrucCapCuu[index];
 }
 
+// Kiểm tra xem một bác sĩ có đang trong giờ làm việc/ca trực tại thời điểm cho trước không
 bool QuanLyBacSi::DangTrucBacSi(int index, time_t thoiDiem) const {
     if (index < 0 || index >= static_cast<int>(DanhSach.size())) return false;
 
@@ -141,6 +149,7 @@ bool QuanLyBacSi::DangTrucBacSi(int index, time_t thoiDiem) const {
     return ThoiGian::DangTrongCaThuong(thoiDiem);
 }
 
+// Kiểm tra xem tại một thời điểm có bác sĩ nào trong khoa đang trực hay không
 bool QuanLyBacSi::CoBacSiDangTruc(
     const string& khoa,
     time_t thoiDiem
@@ -157,6 +166,7 @@ bool QuanLyBacSi::CoBacSiDangTruc(
     return false;
 }
 
+// Tính toán thời điểm phù hợp nhất để bác sĩ bắt đầu nhận khám một bệnh nhân mới
 bool QuanLyBacSi::TinhThoiDiemNhanBenhNhan(
     int index,
     const string& khoa,
@@ -194,7 +204,7 @@ bool QuanLyBacSi::TinhThoiDiemNhanBenhNhan(
                 return true;
             }
 
-            // Không đủ thời gian trong ca hiện tại thì chuyển sang ca kế tiếp của nhóm.
+            // Ko đủ thời gian trong ca hiện tại thì chuyển sang ca kế tiếp của nhóm
             t = ThoiGian::TrucCapCuuTiepTheo(t + 12 * 60 * 60, pha);
         }
 
@@ -213,15 +223,18 @@ bool QuanLyBacSi::TinhThoiDiemNhanBenhNhan(
     }
 }
 
+// Cập nhật lại thời gian rảnh của bác sĩ sau khi kết thúc một ca khám
 void QuanLyBacSi::CapNhatSauKhiKham(int index, time_t ketThuc) {
     if (index < 0 || index >= static_cast<int>(DanhSach.size())) return;
     DanhSach[index].ThoiGianRanh = ketThuc;
 }
 
+// Lấy tham chiếu chỉ đọc (const) đến thông tin của một bác sĩ dựa vào chỉ số
 const BacSi& QuanLyBacSi::LayBacSi(int index) const {
     return DanhSach.at(index);
 }
 
+// Lấy tham chiếu có thể chỉnh sửa đến đối tượng của một bác sĩ dựa vào chỉ số
 BacSi& QuanLyBacSi::LayBacSi(int index) {
     return DanhSach.at(index);
 }

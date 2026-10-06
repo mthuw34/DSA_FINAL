@@ -5,6 +5,7 @@
 using namespace std;
 
 namespace {
+    // Chuyển đổi time_t sang cấu trúc tm (thời gian địa phương) an toàn
     tm layLocalTm(time_t t) {
         tm result{};
 #ifdef _WIN32
@@ -15,6 +16,7 @@ namespace {
         return result;
     }
 
+    // Tạo một thời điểm mới trong cùng ngày với giờ và phút được chỉ định
     time_t taoThoiGianCungNgay(time_t goc, int hour, int minute) {
         tm value = layLocalTm(goc);
         value.tm_hour = hour;
@@ -23,6 +25,7 @@ namespace {
         return mktime(&value);
     }
 
+    // Lấy thời điểm bắt đầu của ngày (00:00:00) từ một thời điểm cho trước
     time_t dauNgay(time_t t) {
         tm value = layLocalTm(t);
         value.tm_hour = 0;
@@ -31,17 +34,18 @@ namespace {
         return mktime(&value);
     }
 
+    // Tính tổng số phút đã trôi qua kể từ đầu ngày (00:00)
     int phutTrongNgay(time_t t) {
         tm value = layLocalTm(t);
         return value.tm_hour * 60 + value.tm_min;
     }
 
+    // Lấy thứ trong tuần (0 = Chủ nhật, 1 = Thứ hai, ..., 6 = Thứ bảy)
     int thuTrongTuan(time_t t) {
-        // 0 = Chủ nhật, 1 = Thứ hai, ..., 6 = Thứ bảy.
         return layLocalTm(t).tm_wday;
     }
 
-    // Số ngày tuyệt đối tăng đúng 1 sau mỗi ngày dương lịch.
+    // Tính số ngày tuyệt đối theo lịch dương để phục vụ tính toán khoảng cách ngày
     long long soNgayTuyetDoi(int year, unsigned month, unsigned day) {
         year -= month <= 2;
         const int era = (year >= 0 ? year : year - 399) / 400;
@@ -54,6 +58,7 @@ namespace {
                static_cast<long long>(doe);
     }
 
+    // Lấy chỉ số ngày tuyệt đối từ một thời điểm time_t
     long long chiSoNgay(time_t t) {
         const tm value = layLocalTm(t);
         return soNgayTuyetDoi(
@@ -63,12 +68,14 @@ namespace {
         );
     }
 
+    // Chuẩn hóa nhóm/pha trực về phạm vi hợp lệ (0-3)
     int chuanHoaPha(int pha) {
         int result = pha % 4;
         if (result < 0) result += 4;
         return result;
     }
 
+    // Kiểm tra xem một ngày có đúng lịch trực cấp cứu của nhóm/pha hay không
     bool dungNgayCapCuu(time_t t, int phaTruc) {
         const int thu = thuTrongTuan(t);
         const int pha = chuanHoaPha(phaTruc) % 2;
@@ -78,10 +85,12 @@ namespace {
         return thu == 2 || thu == 4 || thu == 6;
     }
 
+    // Kiểm tra xem pha trực có phải là ca đêm hay không (pha 2 và 3)
     bool caDemCapCuu(int phaTruc) {
         return chuanHoaPha(phaTruc) >= 2;
     }
 
+    // Khởi tạo đối tượng CaTruc cấp cứu cho một ngày và pha trực cụ thể
     ThoiGian::CaTruc caCapCuu(time_t ngay, int phaTruc) {
         const bool caDem = caDemCapCuu(phaTruc);
         const time_t start = taoThoiGianCungNgay(ngay, caDem ? 18 : 6, 0);
@@ -92,6 +101,7 @@ namespace {
         return {ThoiGian::DinhDangNgay(start), start, mktime(&end)};
     }
 
+    // Xác định ca trực cấp cứu tại một thời điểm cụ thể (xử lý ca đêm vắt ngang 2 ngày)
     // Trước 06:00, ca đêm thuộc ngày bắt đầu hôm trước.
     ThoiGian::CaTruc caCapCuuTai(time_t t, int phaTruc) {
         tm day = layLocalTm(t);
@@ -102,10 +112,12 @@ namespace {
 }
 
 namespace ThoiGian {
+    // Lấy thời gian hiện tại của hệ thống
     time_t HienTai() {
         return time(nullptr);
     }
 
+    // Định dạng thời gian thành chuỗi (YYYY-MM-DD HH:MM:SS)
     string DinhDang(time_t t) {
         tm value = layLocalTm(t);
         ostringstream out;
@@ -113,6 +125,7 @@ namespace ThoiGian {
         return out.str();
     }
 
+    // Định dạng ngày thành chuỗi (YYYY-MM-DD)
     string DinhDangNgay(time_t t) {
         tm value = layLocalTm(t);
         ostringstream out;
@@ -120,11 +133,13 @@ namespace ThoiGian {
         return out.str();
     }
 
+    // Kiểm tra xem thời điểm cho trước có phải là cuối tuần (Thứ 7, Chủ nhật) không
     bool LaCuoiTuan(time_t t) {
         const int thu = thuTrongTuan(t);
         return thu == 0 || thu == 6;
     }
 
+    // Kiểm tra xem thời điểm hiện tại có nằm trong ca làm việc hành chính (khoa thường) không
     bool DangTrongCaThuong(time_t t) {
         if (LaCuoiTuan(t)) return false;
 
@@ -133,6 +148,7 @@ namespace ThoiGian {
                (p >= 13 * 60 && p < 17 * 60);
     }
 
+    // Tìm thời điểm bắt đầu ca làm việc hành chính tiếp theo
     time_t CaThuongTiepTheo(time_t t) {
         const int thu = thuTrongTuan(t);
         const int p = phutTrongNgay(t);
@@ -178,10 +194,12 @@ namespace ThoiGian {
         return next;
     }
 
+    // Điều chỉnh thời gian về đầu ca làm việc bình thường (nếu ngoài giờ)
     time_t DieuChinhThoiGianKhoaThuong(time_t t) {
         return CaThuongTiepTheo(t);
     }
 
+    // Kiểm tra xem ca làm việc hành chính hiện tại còn đủ thời lượng để khám bệnh hay không
     bool DuThoiGianKhamKhoaThuong(time_t batDau, int soPhut) {
         if (soPhut <= 0 || LaCuoiTuan(batDau)) return false;
 
@@ -197,12 +215,14 @@ namespace ThoiGian {
         return false;
     }
 
+    // Kiểm tra xem thời điểm cho trước có nằm trong ca trực cấp cứu của nhóm không
     bool DangTrucCapCuu(time_t t, int phaTruc) {
         const auto shift = caCapCuuTai(t, phaTruc);
         return dungNgayCapCuu(shift.batDau, phaTruc) &&
                t >= shift.batDau && t < shift.ketThuc;
     }
 
+    // Tìm thời điểm bắt đầu ca trực cấp cứu tiếp theo của nhóm
     time_t TrucCapCuuTiepTheo(time_t t, int phaTruc) {
         if (DangTrucCapCuu(t, phaTruc)) return t;
 
@@ -221,12 +241,14 @@ namespace ThoiGian {
         return t;
     }
 
+    // Kiểm tra xem ca trực cấp cứu hiện tại còn đủ thời lượng khám bệnh hay không
     bool DuThoiGianKhamCapCuu(time_t batDau, int soPhut, int phaTruc) {
         if (soPhut <= 0 || soPhut > 12 * 60) return false;
         if (!DangTrucCapCuu(batDau, phaTruc)) return false;
         return batDau + static_cast<time_t>(soPhut) * 60 <= caCapCuuTai(batDau, phaTruc).ketThuc;
     }
 
+    // Lập danh sách các ca trực trong một số ngày nhất định kể từ một mốc thời gian
     vector<CaTruc> LichTruc(
         time_t moc,
         bool capCuu,
@@ -238,7 +260,7 @@ namespace ThoiGian {
 
         const time_t firstDay = dauNgay(moc);
 
-        // Bao gồm ca đêm đang tiếp nối từ hôm trước để trạng thái và tăng ca dùng đúng ca.
+        // Bao gồm ca đêm đang tiếp nối từ hôm trước để trạng thái và tăng ca dùng đúng ca
         if (capCuu && DangTrucCapCuu(moc, phaTruc)) {
             const auto current = caCapCuuTai(moc, phaTruc);
             if (current.batDau < firstDay) result.push_back(current);
@@ -278,6 +300,7 @@ namespace ThoiGian {
         return result;
     }
 
+    // Kiểm tra tính hợp lệ của lịch trực (không có ca nào bị chồng chéo hoặc sai định dạng thời gian)
     bool KiemTraLichTruc(const vector<CaTruc>& lich) {
         for (const auto& shift : lich) {
             if (shift.batDau >= shift.ketThuc) return false;
