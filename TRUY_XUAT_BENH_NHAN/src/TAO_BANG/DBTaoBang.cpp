@@ -11,33 +11,36 @@ namespace {
 
 constexpr const char* retrievalPath = "TRUY_XUAT_BENH_NHAN/db/truyXuat.db";
 
-bool executeSql(sqlite3* database, const string& sql, const char* operation) {
-    char* errorMessage = nullptr;
-    if (sqlite3_exec(database, sql.c_str(), nullptr, nullptr, &errorMessage) == SQLITE_OK) {
-        return true;
+bool executeSql(sqlite3* database, const string& sql, const char* operation) 
+    {
+        char* errorMessage = nullptr;
+        if (sqlite3_exec(database, sql.c_str(), nullptr, nullptr, &errorMessage) == SQLITE_OK) {
+            return true;
+        }
+
+        cerr << operation << ": "
+                << (errorMessage ? errorMessage : sqlite3_errmsg(database)) << '\n';
+        sqlite3_free(errorMessage);
+        return false;
     }
 
-    cerr << operation << ": "
-              << (errorMessage ? errorMessage : sqlite3_errmsg(database)) << '\n';
-    sqlite3_free(errorMessage);
-    return false;
 }
 
-}
-
-bool DBTaoBang::taoBangTruyXuat() {
+bool DBTaoBang::taoBangTruyXuat() 
+{
     sqlite3* database = nullptr;
     if (sqlite3_open_v2(
             retrievalPath,
             &database,
             SQLITE_OPEN_READWRITE | SQLITE_OPEN_CREATE,
             nullptr
-        ) != SQLITE_OK) {
-        cerr << "Khong mo duoc truyXuat.db: "
-                  << (database ? sqlite3_errmsg(database) : "loi SQLite") << '\n';
-        if (database) sqlite3_close(database);
-        return false;
-    }
+        ) != SQLITE_OK) 
+        {
+            cerr << "Khong mo duoc truyXuat.db: "
+                    << (database ? sqlite3_errmsg(database) : "loi SQLite") << '\n';
+            if (database) sqlite3_close(database);
+            return false;
+        }
 
     if (!executeSql(database, "BEGIN TRANSACTION;", "Khong the bat dau giao dich tao bang")) {
         sqlite3_close(database);
