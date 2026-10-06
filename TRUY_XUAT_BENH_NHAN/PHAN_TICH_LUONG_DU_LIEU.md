@@ -240,7 +240,8 @@ khởi tạo không ghi đè các bảng đã có.
 > Các đường dẫn cơ sở dữ liệu trong mã là đường dẫn tương đối. Hãy chạy chương
 > trình từ thư mục gốc phù hợp của dự án để SQLite mở đúng tệp.
 
-1. Thuật toán Sắp xếp: Merge Sort (Sắp xếp trộn)
+
+## 1. Thuật toán Sắp xếp: Merge Sort (Sắp xếp trộn)
 Bạn đã sử dụng thuật toán Merge Sort làm "bộ não" (DSA Core) để sắp xếp danh sách bệnh nhân.
 
 	Hàm liên quan: ThuatToanSapXep::sapXepTron() và ThuatToanSapXep::tron().
@@ -251,7 +252,7 @@ Bạn đã sử dụng thuật toán Merge Sort làm "bộ não" (DSA Core) đ�
 
 	Sự đánh đổi (Space-Time Tradeoff): Merge Sort không phải là thuật toán tại chỗ (in-place). Bạn đã phải sử dụng mảng buffer với chi phí bộ nhớ là O(n) (auxiliary space) để chứa dữ liệu tạm thời khi gộp. Bù lại, điều này giúp hệ thống đạt tốc độ Θ(n log⁡n ) và bảo toàn tính ổn định (stability). 
 
-2. Thuật toán Tìm kiếm: Linear Search (Tìm kiếm tuyến tính)
+## 2. Thuật toán Tìm kiếm: Linear Search (Tìm kiếm tuyến tính)
 Khi bạn thực hiện chức năng xóa một bệnh nhân cụ thể trên mảng.
 
 	Hàm liên quan: Hàm tìm kiếm ẩn trong vòng lặp for của DBXoaBenhNhan::xoaBenhNhan(int patientId).
@@ -260,7 +261,7 @@ Khi bạn thực hiện chức năng xóa một bệnh nhân cụ thể trên m�
 
 	Vì sao dùng Linear Search? Vì mảng động MangDongBenhNhan đang được sắp xếp ưu tiên theo 7 tiêu chí y khoa khác nhau, không được sắp xếp tăng dần theo patientId. Do dữ liệu ID không có thứ tự, việc quét tuần tự với chi phí O(n) là bắt buộc. 
 
-3. Cấu trúc Dữ liệu: Mảng động (Dynamic Array)
+## 3. Cấu trúc Dữ liệu: Mảng động (Dynamic Array)
 Thay vì dùng thư viện có sẵn std::vector, bạn đã tự cài đặt class MangDongBenhNhan.
 
 	Hàm liên quan: push_back(const HoSoTruyXuat& value), resize(int new_capacity), erase(int index).
@@ -269,7 +270,7 @@ Thay vì dùng thư viện có sẵn std::vector, bạn đã tự cài đặt cl
 
 	Logic của thao tác Xóa (erase): Khi xóa một bệnh nhân ở vị trí index, các phần tử đứng phía sau (những người sống sót - survivors) sẽ tự động dịch chuyển sang trái một bước để lấp đầy khoảng trống. Thao tác dịch chuyển này tiêu tốn thời gian O(n). Cấu trúc mảng phải làm điều này để đảm bảo dữ liệu luôn liên tục trong bộ nhớ, không có lỗ hổng. 
 
-4. Cơ chế Xử lý Tie-breaker (Giải quyết xung đột)
+## 4. Cơ chế Xử lý Tie-breaker (Giải quyết xung đột)
 Trong hàm so sánh xetUuTien của bạn, có một cơ chế logic cực kỳ quan trọng là Multi-key Sorting (Sắp xếp đa khóa). 
 
 	Logic hoạt động: Hàm này sẽ xét từ thứ tự Khoa → Độ khẩn cấp hiện tại → Khẩn cấp đột xuất → Khẩn cấp ban đầu → Giờ thay đổi tình trạng → Giờ bốc số. 
