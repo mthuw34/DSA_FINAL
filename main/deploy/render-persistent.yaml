@@ -1,0 +1,22 @@
+# Tùy chọn CÓ PHÍ. Chọn Blueprint Path này chỉ khi đã đồng ý chi phí trên Render.
+services:
+  - type: web
+    name: mediflow-dsa
+    runtime: docker
+    plan: 0.5c-512mb
+    dockerfilePath: ./Dockerfile
+    dockerContext: .
+    healthCheckPath: /api/health
+    disk:
+      name: hospital-data
+      mountPath: /data
+      sizeGB: 1
+    envVars:
+      - key: HOSPITAL_BIND
+        value: 0.0.0.0
+      - key: PORT
+        value: "10000"
+      - key: TZ
+        value: Asia/Ho_Chi_Minh
+      - key: HOSPITAL_PASSWORD
+        sync: false

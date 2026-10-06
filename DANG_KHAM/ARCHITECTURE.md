@@ -1,0 +1,16 @@
+# Đang khám
+
+Luồng dữ liệu: SQLite → vector lịch phân bác sĩ/lịch sử khám → ExamCore → hiển thị hoặc lưu thay đổi.
+
+- **Presentation:** `DangKhamManager.cpp`, `NhapChanDoan.cpp` và `main.cpp` nhận input, gọi tầng xử lý và hiển thị kết quả.
+- **DSA Core:** `ExamCore.h` dùng bảng băm tự cài đặt trong `include/HashSearch.h` để đối chiếu nhiều mã check-in và kiểm tra bác sĩ đang có ca/trùng lịch. Tìm một ca theo mã trên vector chưa sắp xếp dùng Linear Search trong `include/LinearSearch.h`. Lọc trạng thái/thời gian duyệt tuyến tính; sắp danh sách đang khám dùng Merge Sort ổn định tự cài đặt. Các hàm này không phụ thuộc SQLite.
+- **Persistence:** `DatabaseDangKham.cpp` nạp toàn bộ `ket_qua_kham` và `dang_kham` bằng SELECT thuần; tạo/bổ sung schema; ghi các bản ghi mà tầng xử lý đã chọn. Không lọc hoặc sắp xếp danh sách bằng SQL.
+- `dangKham.db` cũng lưu `doctor_state` để giữ chế độ trực và trạng thái bận của bác sĩ. Khi khởi động, dữ liệu từ bảng `doctor_state` cũ trong `truyXuat.db` được chuyển sang database này một lần; bảng cũ được gỡ khỏi database hàng đợi. `sqlite_sequence` là metadata nội bộ SQLite của riêng từng file và không phải bảng nghiệp vụ để di chuyển.
+
+Ca mới chỉ được nhận khi đã đến giờ bắt đầu và chưa hết giờ dự kiến. Ca đã nhận vẫn đang khám cho đến khi bác sĩ kết thúc thực tế; đồng bộ không mở lại ca đã kết thúc và không ghi đè chẩn đoán, đơn thuốc, lời nhắc hay giờ check-in đã lưu. Thời gian nguồn dùng định dạng địa phương YYYY-MM-DD HH:MM:SS (chấp nhận T thay khoảng trắng). Nguồn chưa có giờ check-in gốc nên giờ bắt đầu là giá trị thay thế khi thiếu.
+
+Đối chiếu lịch sử và kiểm tra bác sĩ bằng bảng băm có chi phí trung bình O(n + m), trường hợp xấu O((n + m)²) nếu các khóa cùng bucket; sắp ca đang khám O(k log k) thời gian và O(k) bộ nhớ phụ. `findActive` chỉ tìm một ID nên dùng Linear Search O(n), O(1) bộ nhớ phụ, không dựng rồi sắp xếp chỉ mục mỗi lần gọi. Các bước migration, sửa ca trùng và ghi phân bác sĩ dựng bảng băm ID một lần để tra cứu nhiều lần. `include/BinarySearch.h` vẫn là tiện ích cho trường hợp cần tái sử dụng chỉ mục đã sắp xếp; luồng hiện tại không cần dùng nó. Các vector được nạp lại khi thao tác để nhận các ca mới từ chương trình phân bác sĩ.
+
+Mã chạy không dùng `WHERE`, kể cả khi ghi. `include/SqliteMemoryTable.h` nạp toàn bộ bảng, tìm một ID bằng Linear Search và lưu bản ghi đã sửa bằng `INSERT ... ON CONFLICT ... DO UPDATE`. Kiểm tra ca đã kết thúc diễn ra trong C++ sau khi khóa ghi bằng `BEGIN IMMEDIATE`. Xóa một ca thực hiện trên vector, rồi xóa bảng và chèn lại các dòng còn lại trong cùng giao dịch; cách lưu này tốn O(n) lượt ghi cho mỗi ca bị xóa. Bản lưu lịch trùng giữ cả giá trị NULL, BLOB và cột bổ sung của database cũ. Unique index dùng biểu thức CASE để bảo vệ một bác sĩ chỉ nhận một ca chưa kết thúc. Lỗi ghi sẽ rollback. Database cũ có `checkin_time NOT NULL` được giữ tương thích, các cột còn thiếu được bổ sung.
+
+Kiểm thử từ root repo: `python DANG_KHAM/tests/regression.py` (cần Python, g++ và SQLite). Bản kiểm thử chặn mọi câu SQL chứa WHERE ở cả `sqlite3_prepare_v2` và `sqlite3_exec`, đồng thời chặn ORDER BY, JOIN, GROUP BY hoặc LIMIT trong câu đọc. SQL trong Python chỉ thiết lập và kiểm tra database tạm, không phải mã chạy của module.

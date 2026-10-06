@@ -1,0 +1,13 @@
+# Quản lý bệnh nhân
+
+Luồng dữ liệu: SQLite → bản ghi trong vector → DSA Core → hiển thị hoặc lưu thay đổi.
+
+- **Presentation:** menu, nhập CSV/thông tin và xuất phiếu trong các chương trình con.
+- **DSA Core:** `src/PatientCore.h` dùng bảng băm tự cài đặt trong `include/HashSearch.h` để tra cứu nhiều ID khi ghép bảng check-in và nhận diện bệnh nhân trùng khi import. Tìm một mã check-in dùng Linear Search trong `include/LinearSearch.h`; tìm check-in mới nhất của bệnh nhân duyệt toàn bộ vector để chọn ID lớn nhất. Merge Sort ổn định tự cài đặt sắp theo khoa, ưu tiên, giờ đến và ID. Quy định giờ nhận bệnh nhân nằm trong `CHECK_IN/khoa.cpp`: 07:30–10:00 và 13:00–15:00; Khoa Cấp cứu giữ 24/7.
+- **Persistence:** `src/HospitalPersistence.h` nạp toàn bộ bảng patients/checkins bằng SELECT thuần. Không dùng SQL để tìm, lọc, nối bảng hoặc sắp thứ tự. INSERT/UPDATE/DELETE trong chương trình con chỉ lưu thao tác đã được xác định trong bộ nhớ.
+
+Tìm nhiều ID bằng bảng băm có chi phí trung bình O(1) mỗi lần sau bước xây dựng O(n), trường hợp xấu O(n). Sắp xếp check-in dùng O(n log n) thời gian và O(n) bộ nhớ phụ. `findPatient`, `findCheckIn` và `latestCheckIn` dùng Linear Search O(n), O(1) bộ nhớ phụ vì chỉ tìm một kết quả trên dữ liệu chưa sắp xếp. Check-in, sửa và xóa thông tin bệnh nhân gọi `findPatient`; bảng hiển thị ghép nhiều ID gọi `indexPatients` để tái sử dụng bảng băm. Không dựng rồi sắp xếp chỉ mục cho mỗi lần tìm. `include/BinarySearch.h` vẫn là tiện ích cho trường hợp cần tái sử dụng chỉ mục đã sắp xếp; luồng hiện tại không cần dùng nó. Import dùng khóa ghép có độ dài từng trường, giữ phân biệt NULL với chuỗi rỗng.
+
+Mã chạy không dùng `WHERE`, kể cả khi ghi. `include/SqliteMemoryTable.h` tìm một bản ghi bằng Linear Search và lưu bản ghi đã sửa bằng `INSERT ... ON CONFLICT ... DO UPDATE`, giữ các cột khác và giá trị NULL/BLOB. Khi xóa, C++ loại dòng khỏi vector rồi lưu lại các dòng còn lại trong giao dịch; cách này cần O(n) lượt ghi. Kiểm tra khóa ngoại được trì hoãn trong lúc lưu lại bảng, kiểm tra toàn vẹn trước khi commit và rollback nếu có lỗi. Unique index của patient_id chỉ là ràng buộc toàn vẹn lúc lưu; không được dùng thay thuật toán tìm kiếm hay kiểm tra trùng. Check-in/import nạp lại dữ liệu trong giao dịch ghi ngắn để chống hai phiên cùng nhận trùng. Không xóa bộ đếm check-in khi xóa dữ liệu.
+
+Kiểm thử từ root repo: `python QUAN_LY_BENH_NHAN/tests/regression.py` (cần Python, g++ và SQLite). Bản kiểm thử chặn mọi câu SQL chứa WHERE ở cả `sqlite3_prepare_v2` và `sqlite3_exec`, đồng thời chặn ORDER BY, JOIN, GROUP BY hoặc LIMIT trong câu đọc. SQL trong Python chỉ thiết lập và kiểm tra database tạm, không phải mã chạy của module.

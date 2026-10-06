@@ -1,0 +1,18 @@
+# Demo miễn phí. SQLite ở /data không được giữ khi service khởi động/triển khai lại.
+services:
+  - type: web
+    name: mediflow-dsa-demo
+    runtime: docker
+    plan: free
+    dockerfilePath: ./Dockerfile
+    dockerContext: .
+    healthCheckPath: /api/health
+    envVars:
+      - key: HOSPITAL_BIND
+        value: 0.0.0.0
+      - key: PORT
+        value: "10000"
+      - key: TZ
+        value: Asia/Ho_Chi_Minh
+      - key: HOSPITAL_PASSWORD
+        sync: false
