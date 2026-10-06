@@ -13,15 +13,6 @@ int ThuatToanSapXep::layThuTuKhoa(const string& department) {
 
 // Trả true khi left phải được xếp trước right theo quy tắc ưu tiên.
 bool ThuatToanSapXep::xetUuTien(const HoSoTruyXuat& left, const HoSoTruyXuat& right) {
-<<<<<<< HEAD
-    // Smaller numbers mean higher priority (1 is the highest).
-    if (left.currentPriority != right.currentPriority) {
-        return left.currentPriority < right.currentPriority;
-    }
-
-    // Equal priorities follow check-in time, regardless of how priority changed.
-    // YYYY-MM-DD HH:MM:SS also sorts correctly across different dates.
-=======
     // Ưu tiên nhóm theo khoa; khoa có số thứ tự nhỏ hơn được xếp trước.
     if (left.departmentOrder != right.departmentOrder) {
         return left.departmentOrder < right.departmentOrder;
@@ -44,21 +35,16 @@ bool ThuatToanSapXep::xetUuTien(const HoSoTruyXuat& left, const HoSoTruyXuat& ri
     
     // Xét thời điểm đăng ký tăng dần để lượt đến trước đứng trước (FIFO).
     // So sánh chuỗi đúng thứ tự thời gian khi định dạng là YYYY-MM-DD HH:MM:SS.
->>>>>>> 83064261dd8b1778bff88c316d0eea7c58b646d0
     if (left.checkinTime != right.checkinTime) {
         return left.checkinTime < right.checkinTime;
     }
 
-<<<<<<< HEAD
-    // IDs preserve intake order for check-ins recorded in the same second.
-=======
     // Dùng thời điểm cập nhật làm khóa phụ khi thời điểm đăng ký trùng nhau.
     if (left.lastUpdate != right.lastUpdate) {
         return left.lastUpdate < right.lastUpdate;
     }
     
     // Dùng mã lượt khám để tạo thứ tự xác định khi các tiêu chí phía trên đều hòa.
->>>>>>> 83064261dd8b1778bff88c316d0eea7c58b646d0
     return left.checkinId < right.checkinId;
 }
 
