@@ -18,6 +18,12 @@ with tempfile.TemporaryDirectory() as directory:
                     "-I", str(MODULE / "src"), str(MODULE / "tests/core_tests.cpp"),
                     "-o", str(root / "core.exe")], check=True)
     subprocess.run([str(root / "core.exe")], check=True, timeout=15)
+    subprocess.run(["g++", "-std=c++17", "-Wall", "-Wextra", "-Wpedantic",
+                    str(MODULE / "tests/persistence_tests.cpp"),
+                    str(MODULE / "tests/read_sql_guard.cpp"),
+                    "-Wl,--wrap=sqlite3_prepare_v2,--wrap=sqlite3_exec", "-lsqlite3",
+                    "-o", str(root / "persistence.exe")], check=True)
+    subprocess.run([str(root / "persistence.exe")], check=True, timeout=15)
     programs = {
         "schema": list(MODULE.joinpath("src/TAO_BANG_DB").glob("*.cpp")),
         "import": list(MODULE.joinpath("src/NHAP_BENH_NHAN").glob("*.cpp")),
@@ -28,7 +34,7 @@ with tempfile.TemporaryDirectory() as directory:
     for name, files in programs.items():
         subprocess.run(["g++", "-std=c++17", "-Wall", "-Wextra", "-Wpedantic",
                         *map(str, files), str(MODULE / "tests/read_sql_guard.cpp"),
-                        "-Wl,--wrap=sqlite3_prepare_v2", "-lsqlite3", "-o", str(root / (name + ".exe"))], check=True)
+                        "-Wl,--wrap=sqlite3_prepare_v2,--wrap=sqlite3_exec", "-lsqlite3", "-o", str(root / (name + ".exe"))], check=True)
 
     def run(name, text="", ok=True):
         result = subprocess.run([str(root / (name + ".exe"))], cwd=root,
@@ -149,7 +155,7 @@ int main(int argc, char** argv) {
                      'sqlite3_stmt* s=nullptr; return sqlite3_prepare_v2(db,"SELECT 1 WHERE 1;",-1,&s,nullptr);}',
                      encoding="utf-8")
     subprocess.run(["g++", str(probe), str(MODULE / "tests/read_sql_guard.cpp"),
-                    "-Wl,--wrap=sqlite3_prepare_v2", "-lsqlite3", "-o", str(root / "probe.exe")], check=True)
+                    "-Wl,--wrap=sqlite3_prepare_v2,--wrap=sqlite3_exec", "-lsqlite3", "-o", str(root / "probe.exe")], check=True)
     result = subprocess.run([str(root / "probe.exe")], capture_output=True, text=True, timeout=15)
     assert result.returncode != 0 and "SQL read must only load records" in result.stderr, result
 

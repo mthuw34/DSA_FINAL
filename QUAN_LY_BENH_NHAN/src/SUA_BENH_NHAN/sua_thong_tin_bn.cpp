@@ -4,6 +4,7 @@
 #include <sqlite3.h>
 #include "../patient_validation.h"
 #include "../HospitalPersistence.h"
+#include "../../../include/SqliteMemoryTable.h"
 
 using namespace std;
 
@@ -41,13 +42,12 @@ int main() {
     if (!HospitalPersistence::loadPatients(db, patients)) {
         sqlite3_close(db); return 1;
     }
-    const auto ids = PatientCore::indexPatients(patients);
-    size_t position;
-    if (!ids.find(to_string(id), position)) {
+    const auto* found = PatientCore::findPatient(patients, id);
+    if (!found) {
         cout << "Khong tim thay benh nhan co ID = " << id << '\n';
         sqlite3_close(db); return 0;
     }
-    const Patient& selected = patients[position];
+    const Patient& selected = *found;
     string oldName = selected.name;
     int oldAge = selected.age;
     string oldPhone = selected.phone, oldBirthDate = selected.birthDate;
@@ -140,90 +140,25 @@ int main() {
         return 1;
     }
 
-    const char* updateSql =
-        "UPDATE patients "
-        "SET name = ?, "
-        "age = ?, "
-        "phone = ?, "
-        "birth_date = ?, "
-        "gender = ?, "
-        "hometown = ?, "
-        "address = ? "
-        "WHERE id = ?;";
-
-    sqlite3_stmt* updateStmt = nullptr;
-
-    if (sqlite3_prepare_v2(
-            db,
-            updateSql,
-            -1,
-            &updateStmt,
-            nullptr
-        ) != SQLITE_OK) {
-
-        cout << "Loi SQL: "
-             << sqlite3_errmsg(db) << endl;
-
-        sqlite3_close(db);
-        return 1;
+    bool updated = false;
+    {
+        MemoryTable::Transaction transaction(db);
+        MemoryTable::Table table;
+        if (transaction && table.load(db, "patients")) {
+            auto* row = table.find("id", id); // Linear Search cho mot ID trong snapshot moi.
+            if (row) {
+                updated = MemoryTable::set(db, table, *row, "name", oldName) &&
+                    MemoryTable::set(db, table, *row, "age", to_string(oldAge)) &&
+                    MemoryTable::set(db, table, *row, "phone", oldPhone) &&
+                    MemoryTable::set(db, table, *row, "birth_date", oldBirthDate) &&
+                    MemoryTable::set(db, table, *row, "gender", oldGender) &&
+                    MemoryTable::set(db, table, *row, "hometown", oldHometown) &&
+                    MemoryTable::set(db, table, *row, "address", oldAddress) &&
+                    MemoryTable::insert(db, "patients", table, *row, "id") &&
+                    transaction.commit();
+            }
+        }
     }
-
-    sqlite3_bind_text(
-        updateStmt, 1,
-        oldName.c_str(),
-        -1,
-        SQLITE_TRANSIENT
-    );
-
-    sqlite3_bind_int(
-        updateStmt,
-        2,
-        oldAge
-    );
-
-    sqlite3_bind_text(
-        updateStmt, 3,
-        oldPhone.c_str(),
-        -1,
-        SQLITE_TRANSIENT
-    );
-
-    sqlite3_bind_text(
-        updateStmt, 4,
-        oldBirthDate.c_str(),
-        -1,
-        SQLITE_TRANSIENT
-    );
-
-    sqlite3_bind_text(
-        updateStmt, 5,
-        oldGender.c_str(),
-        -1,
-        SQLITE_TRANSIENT
-    );
-
-    sqlite3_bind_text(
-        updateStmt, 6,
-        oldHometown.c_str(),
-        -1,
-        SQLITE_TRANSIENT
-    );
-
-    sqlite3_bind_text(
-        updateStmt, 7,
-        oldAddress.c_str(),
-        -1,
-        SQLITE_TRANSIENT
-    );
-
-    sqlite3_bind_int(
-        updateStmt,
-        8,
-        id
-    );
-
-    const int updateResult = sqlite3_step(updateStmt);
-    const bool updated = updateResult == SQLITE_DONE && sqlite3_changes(db) > 0;
     if (updated) {
 
         cout << "\nCap nhat thong tin thanh cong!"
@@ -241,7 +176,6 @@ int main() {
              << endl;
     }
 
-    sqlite3_finalize(updateStmt);
     sqlite3_close(db);
 
     return updated ? 0 : 1;

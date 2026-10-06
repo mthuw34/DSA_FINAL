@@ -3,6 +3,8 @@
 #include <string>
 #include <utility>
 #include <vector>
+#include "../../include/LinearSearch.h"
+#include "../../include/HashSearch.h"
 
 struct Patient {
     int id = 0;
@@ -22,34 +24,19 @@ namespace PatientCore {
 
 // Bảng băm tự cài đặt, giải quyết va chạm bằng các danh sách trong từng bucket.
 // Giá trị là vị trí bản ghi trong vector; không dùng index của SQLite để tìm kiếm.
-class HashIndex {
-    std::vector<std::vector<std::pair<std::string, std::size_t>>> buckets;
-    std::size_t bucket(const std::string& key) const {
-        std::size_t hash = 2166136261u;
-        for (unsigned char c : key) hash = (hash ^ c) * 16777619u;
-        return hash % buckets.size();
-    }
-public:
-    explicit HashIndex(std::size_t size = 65537) : buckets(size) {}
-    bool find(const std::string& key, std::size_t& position) const {
-        for (const auto& entry : buckets[bucket(key)]) {
-            if (entry.first == key) { position = entry.second; return true; }
-        }
-        return false;
-    }
-    void put(const std::string& key, std::size_t position) {
-        auto& entries = buckets[bucket(key)];
-        for (auto& entry : entries) {
-            if (entry.first == key) { entry.second = position; return; }
-        }
-        entries.emplace_back(key, position);
-    }
-};
+using HashIndex = DsaSearch::HashStringIndex;
 
 inline HashIndex indexPatients(const std::vector<Patient>& records) {
     HashIndex ids;
     for (std::size_t i = 0; i < records.size(); ++i) ids.put(std::to_string(records[i].id), i);
     return ids;
+}
+
+// Tim mot benh nhan trong snapshot moi: khong can tao bang bam cho mot lan tra cuu.
+inline const Patient* findPatient(const std::vector<Patient>& records, int id) {
+    std::size_t position;
+    return DsaSearch::linearFind(records, [id](const auto& p) { return p.id == id; }, position)
+        ? &records[position] : nullptr;
 }
 
 // Ghép khóa có độ dài từng trường để dữ liệu chứa dấu phân cách không bị trùng khóa.
@@ -111,7 +98,9 @@ inline const CheckInRecord* latestCheckIn(const std::vector<CheckInRecord>& reco
 }
 
 inline const CheckInRecord* findCheckIn(const std::vector<CheckInRecord>& records, int id) {
-    for (const auto& record : records) if (record.id == id) return &record;
-    return nullptr;
+    // Chi tim mot check-in: duyet O(n), giu thu tu va khong can sap xep O(n log n).
+    std::size_t position;
+    return DsaSearch::linearFind(records, [id](const auto& r) { return r.id == id; }, position)
+        ? &records[position] : nullptr;
 }
 }

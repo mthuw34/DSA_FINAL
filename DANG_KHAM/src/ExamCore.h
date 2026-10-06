@@ -6,6 +6,8 @@
 #include <string>
 #include <utility>
 #include <vector>
+#include "../../include/LinearSearch.h"
+#include "../../include/HashSearch.h"
 
 struct ExamSession {
     int checkinId = 0, patientId = 0;
@@ -22,21 +24,7 @@ struct ExamAssignment {
 
 namespace ExamCore {
 // Bảng băm tự cài đặt để đối chiếu check-in giữa lịch phân bác sĩ và lịch sử khám.
-class SessionIndex {
-    std::vector<std::vector<std::pair<int, std::size_t>>> buckets{4099};
-public:
-    void put(int id, std::size_t position) {
-        auto& entries = buckets[static_cast<unsigned>(id) % buckets.size()];
-        for (auto& entry : entries)
-            if (entry.first == id) { entry.second = position; return; }
-        entries.emplace_back(id, position);
-    }
-    bool find(int id, std::size_t& position) const {
-        for (const auto& entry : buckets[static_cast<unsigned>(id) % buckets.size()])
-            if (entry.first == id) { position = entry.second; return true; }
-        return false;
-    }
-};
+using SessionIndex = DsaSearch::HashIdIndex;
 
 // Đọc định dạng giờ địa phương YYYY-MM-DD HH:MM:SS do module phân bác sĩ xuất ra.
 // Kiểm tra ngày/giờ hợp lệ trước và sau mktime, không để ngày sai bị tự chuẩn hóa.
@@ -89,10 +77,11 @@ inline bool hasStarted(const ExamSession& session, std::time_t now = std::time(n
 }
 
 inline const ExamSession* findActive(const std::vector<ExamSession>& records, int id) {
-    const auto now = std::time(nullptr);
-    for (const auto& session : records)
-        if (session.checkinId == id && hasStarted(session, now)) return &session;
-    return nullptr;
+    // Tim mot ca tren vector chua sap xep: Linear Search khong can chi muc phu.
+    std::size_t position;
+    if (!DsaSearch::linearFind(records, [id](const auto& s) { return s.checkinId == id; }, position) ||
+        !hasStarted(records[position])) return nullptr;
+    return &records[position];
 }
 
 // Quyết định ca nào cần thêm/cập nhật hoàn toàn trong bộ nhớ.
@@ -101,6 +90,12 @@ inline std::vector<ExamSession> synchronizationChanges(
     const std::vector<ExamSession>& existing, std::time_t now) {
     SessionIndex ids;
     for (std::size_t i = 0; i < existing.size(); ++i) ids.put(existing[i].checkinId, i);
+    DsaSearch::HashStringIndex occupiedDoctors;
+    for (std::size_t i = 0; i < existing.size(); ++i) {
+        const auto& session = existing[i];
+        if (!session.endTime && session.doctorId && !session.doctorId->empty())
+            occupiedDoctors.put(*session.doctorId, i);
+    }
     std::vector<ExamSession> changes;
     for (const auto& assignment : assignments) {
         std::time_t start, end;
@@ -112,14 +107,9 @@ inline std::vector<ExamSession> synchronizationChanges(
         if (!found && (!parseTime(assignment.plannedEnd, end) || end <= start)) continue;
         // Ca tới giờ vẫn được nhận khi server khởi động trễ; một bác sĩ chỉ khám một ca.
         if (!found) {
-            bool occupied = false;
-            for (const auto& session : existing)
-                if (!session.endTime && session.doctorId && !session.doctorId->empty() &&
-                    session.doctorId == assignment.session.doctorId) occupied = true;
-            for (const auto& session : changes)
-                if (!session.endTime && session.doctorId && !session.doctorId->empty() &&
-                    session.doctorId == assignment.session.doctorId) occupied = true;
-            if (occupied) continue;
+            std::size_t occupiedPosition;
+            if (assignment.session.doctorId && !assignment.session.doctorId->empty() &&
+                occupiedDoctors.find(*assignment.session.doctorId, occupiedPosition)) continue;
         }
         ExamSession result = found ? existing[position] : ExamSession{};
         result.checkinId = assignment.session.checkinId;
@@ -131,6 +121,8 @@ inline std::vector<ExamSession> synchronizationChanges(
         // Nguồn chưa có giờ check-in gốc; giữ giờ đã lưu, chỉ dùng giờ bắt đầu khi thiếu.
         if (!result.checkinTime) result.checkinTime = result.startTime;
         changes.push_back(result);
+        if (!result.endTime && result.doctorId && !result.doctorId->empty())
+            occupiedDoctors.put(*result.doctorId, changes.size() - 1);
     }
     return changes;
 }
@@ -157,13 +149,14 @@ inline std::vector<int> duplicateDoctorAssignments(std::vector<ExamSession> reco
         if (hasStarted(a, now) != hasStarted(b, now)) return hasStarted(a, now);
         return startsBefore(a, b);
     });
-    std::vector<std::string> occupied;
+    DsaSearch::HashStringIndex occupied;
     std::vector<int> duplicates;
     for (const auto& session : records) {
         if (session.endTime || !session.doctorId || session.doctorId->empty()) continue;
-        if (std::find(occupied.begin(), occupied.end(), *session.doctorId) != occupied.end())
+        std::size_t position;
+        if (occupied.find(*session.doctorId, position))
             duplicates.push_back(session.checkinId);
-        else occupied.push_back(*session.doctorId);
+        else occupied.put(*session.doctorId, 0);
     }
     return duplicates;
 }

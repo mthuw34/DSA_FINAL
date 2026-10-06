@@ -65,6 +65,18 @@ with tempfile.TemporaryDirectory() as directory:
         "-o", str(root / "core.exe")
     ], check=True)
     subprocess.run([str(root / "core.exe")], check=True, timeout=15)
+    subprocess.run([
+        "g++", "-std=c++17", "-Wall", "-Wextra", "-Wpedantic",
+        "-I", str(MODULE / "src"),
+        "-I", str(REPO / "SAP_XEP_BAC_SI/src/QUAN_LY_THONG_TIN"),
+        str(MODULE / "tests/persistence_tests.cpp"),
+        str(MODULE / "src/DatabaseDangKham.cpp"),
+        str(MODULE / "tests/read_sql_guard.cpp"),
+        "-Wl,--wrap=sqlite3_prepare_v2,--wrap=sqlite3_exec", "-lsqlite3",
+        "-o", str(root / "persistence.exe")
+    ], check=True)
+    subprocess.run([str(root / "persistence.exe"), str(root / "repair_source.db"),
+                    str(root / "repair_destination.db")], check=True, timeout=15)
 
     # CLI + SQLite persistence.
     exe = root / "DangKham.exe"
@@ -74,7 +86,7 @@ with tempfile.TemporaryDirectory() as directory:
         "-I", str(REPO / "SAP_XEP_BAC_SI/src/QUAN_LY_THONG_TIN"),
         *map(str, MODULE.joinpath("src").glob("*.cpp")),
         str(MODULE / "tests/read_sql_guard.cpp"),
-        "-Wl,--wrap=sqlite3_prepare_v2", "-lsqlite3",
+        "-Wl,--wrap=sqlite3_prepare_v2,--wrap=sqlite3_exec", "-lsqlite3",
         "-o", str(exe)
     ], check=True)
 

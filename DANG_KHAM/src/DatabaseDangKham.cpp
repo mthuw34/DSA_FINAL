@@ -3,6 +3,7 @@
 #include <filesystem>
 #include <iostream>
 #include <algorithm>
+#include "../../include/SqliteMemoryTable.h"
 
 using namespace std;
 
@@ -224,6 +225,12 @@ bool DatabaseDangKham::mo(
 
 bool DatabaseDangKham::migrateLegacyAssignments() {
     if (!sourceTableExists("ket_qua_kham")) return true;
+    MemoryTable::Transaction transaction(db);
+    MemoryTable::Table existing;
+    if (!transaction || !existing.load(db, "dang_kham")) return false;
+    const DsaSearch::HashIdIndex ids(existing.rows, [&](const auto& row) {
+        return sqlite3_value_int(row[existing.column("checkin_id")].get());
+    });
 
     const char* selectSql = R"(
         SELECT checkin_id, patient_id, khoa_benh_nhan, khoa_bac_si,
@@ -249,7 +256,7 @@ bool DatabaseDangKham::migrateLegacyAssignments() {
             status=excluded.status,
             note=excluded.note,
             updated_at=datetime('now','localtime')
-        WHERE dang_kham.end_time IS NULL;
+        ;
     )";
     sqlite3_stmt* select = nullptr;
     sqlite3_stmt* insert = nullptr;
@@ -259,8 +266,12 @@ bool DatabaseDangKham::migrateLegacyAssignments() {
     }
 
     bool ok = true;
-    while (sqlite3_step(select) == SQLITE_ROW) {
+    int readResult;
+    while ((readResult = sqlite3_step(select)) == SQLITE_ROW) {
         const int checkinId = sqlite3_column_int(select, 0);
+        size_t position;
+        if (ids.find(checkinId, position) &&
+            !MemoryTable::isNull(existing.rows[position], existing.column("end_time"))) continue;
         const int patientId = sqlite3_column_int(select, 1);
         const string department = getText(select, 2);
         const string doctorDepartment = getText(select, 3);
@@ -298,10 +309,10 @@ bool DatabaseDangKham::migrateLegacyAssignments() {
     }
     sqlite3_finalize(select);
     sqlite3_finalize(insert);
-    if (!ok) return false;
+    if (!ok || readResult != SQLITE_DONE) return false;
 
     // Sau khi da chuyen du lieu, xoa bang cu khoi truyXuat.db.
-    return executeSql("DROP TABLE IF EXISTS source.ket_qua_kham;", "Loi xoa bang ket_qua_kham cu");
+    return executeSql("DROP TABLE IF EXISTS source.ket_qua_kham;", "Loi xoa bang ket_qua_kham cu") && transaction.commit();
 }
 
 // Tạo và cập nhật cấu trúc bảng dang_kham.
@@ -442,67 +453,70 @@ bool DatabaseDangKham::taoCauTruc()
     }
 
     // Bổ sung giờ còn thiếu bằng cách duyệt bản ghi trong bộ nhớ.
-    vector<ExamSession> records;
-    if (!docDanhSach(records)) return false;
-    sqlite3_stmt* stmt = nullptr;
-    if (sqlite3_prepare_v2(db, "UPDATE dang_kham SET checkin_time = ? WHERE checkin_id = ?;",
-                          -1, &stmt, nullptr) != SQLITE_OK) return false;
-    bool success = true;
-    for (const auto& session : records) {
-        if (session.checkinTime || !session.startTime) continue;
-        sqlite3_bind_text(stmt, 1, session.startTime->c_str(), -1, SQLITE_TRANSIENT);
-        sqlite3_bind_int(stmt, 2, session.checkinId);
-        if (sqlite3_step(stmt) != SQLITE_DONE) { success = false; break; }
-        sqlite3_reset(stmt); sqlite3_clear_bindings(stmt);
+    {
+        MemoryTable::Transaction transaction(db);
+        MemoryTable::Table table;
+        if (!transaction || !table.load(db, "dang_kham")) return false;
+        const int checkin = table.column("checkin_time"), start = table.column("start_time");
+        for (auto& row : table.rows) {
+            if (!MemoryTable::text(row, checkin).empty() || MemoryTable::text(row, start).empty()) continue;
+            row[checkin] = row[start];
+            if (!MemoryTable::insert(db, "dang_kham", table, row, "checkin_id")) return false;
+        }
+        if (!transaction.commit()) return false;
     }
-    sqlite3_finalize(stmt);
-    if (!success) return false;
     if (!migrateLegacyAssignments() || !suaCaTrungBacSi()) return false;
-    return executeSql(
-        "CREATE UNIQUE INDEX IF NOT EXISTS ux_dang_kham_unfinished_doctor ON dang_kham(doctor_id) "
-        "WHERE end_time IS NULL AND doctor_id IS NOT NULL AND doctor_id <> '';",
+    // Rang buoc toan ven: CASE tao khoa NULL cho ca da ket thuc/chua co bac si.
+    MemoryTable::Transaction transaction(db);
+    return transaction && executeSql(
+        "DROP INDEX IF EXISTS ux_dang_kham_unfinished_doctor;"
+        "CREATE UNIQUE INDEX ux_dang_kham_unfinished_doctor ON dang_kham("
+        "CASE WHEN end_time IS NULL AND doctor_id IS NOT NULL AND doctor_id <> '' THEN doctor_id END);",
         "Loi bao ve moi bac si chi nhan mot ca"
-    );
+    ) && transaction.commit();
 }
 
 bool DatabaseDangKham::suaCaTrungBacSi() {
-    if (!executeSql("BEGIN IMMEDIATE;", "Loi bat dau sua ca trung")) return false;
+    MemoryTable::Transaction transaction(db);
     vector<ExamSession> records;
-    bool ok = docDanhSach(records);
+    MemoryTable::Table table;
+    if (!transaction || !docDanhSach(records) || !table.load(db, "dang_kham")) return false;
     const auto duplicates = ExamCore::duplicateDoctorAssignments(records);
-    if (ok && !duplicates.empty())
-        ok = executeSql(
-            "CREATE TABLE IF NOT EXISTS dang_kham_assignment_archive AS "
-            "SELECT *, datetime('now','localtime') AS archived_at, 'duplicate_doctor' AS repair_reason "
-            "FROM dang_kham WHERE 0;", "Loi tao ban luu lich cu"
-        );
-    sqlite3_stmt* archive = nullptr;
-    sqlite3_stmt* reset = nullptr;
-    if (ok && !duplicates.empty()) {
-        ok = sqlite3_prepare_v2(db,
-            "INSERT INTO dang_kham_assignment_archive SELECT *, datetime('now','localtime'), 'duplicate_doctor' "
-            "FROM dang_kham WHERE checkin_id=?;", -1, &archive, nullptr) == SQLITE_OK;
-        if (ok) ok = sqlite3_prepare_v2(db,
-            "UPDATE dang_kham SET doctor_id=NULL, doctor_name=NULL, doctor_department=NULL, "
-            "start_time=NULL, planned_end_time=NULL, exam_duration=NULL, status='CHO_DOI', "
-            "note='Tra ve hang doi do lich cu trung bac si', updated_at=datetime('now','localtime') "
-            "WHERE checkin_id=? AND end_time IS NULL;", -1, &reset, nullptr) == SQLITE_OK;
+    string timestamp;
+    if (!MemoryTable::now(db, timestamp)) return false;
+    if (!duplicates.empty()) {
+        string sql = "CREATE TABLE IF NOT EXISTS dang_kham_assignment_archive (";
+        for (const auto& c : table.columns) sql += MemoryTable::identifier(c) + ",";
+        sql += "archived_at TEXT, repair_reason TEXT);";
+        if (!executeSql(sql, "Loi tao ban luu lich cu")) return false;
     }
+    const DsaSearch::HashIdIndex ids(table.rows, [&](const auto& row) {
+        return sqlite3_value_int(row[table.column("checkin_id")].get());
+    });
     for (int id : duplicates) {
-        if (!ok) break;
-        sqlite3_bind_int(archive, 1, id);
-        ok = sqlite3_step(archive) == SQLITE_DONE;
-        sqlite3_reset(archive);
-        if (!ok) break;
-        sqlite3_bind_int(reset, 1, id);
-        ok = sqlite3_step(reset) == SQLITE_DONE && sqlite3_changes(db) == 1;
-        sqlite3_reset(reset);
+        size_t position;
+        if (!ids.find(id, position)) return false;
+        auto& row = table.rows[position];
+        if (!MemoryTable::isNull(row, table.column("end_time"))) return false;
+        auto archived = row;
+        MemoryTable::Table archiveTable;
+        archiveTable.columns = table.columns;
+        archiveTable.columns.push_back("archived_at");
+        archiveTable.columns.push_back("repair_reason");
+        const string reason = "duplicate_doctor";
+        archived.push_back(MemoryTable::value(db, &timestamp));
+        archived.push_back(MemoryTable::value(db, &reason));
+        if (!archived[archived.size()-2] || !archived.back() ||
+            !MemoryTable::insert(db, "dang_kham_assignment_archive", archiveTable, archived)) return false;
+        for (const char* c : {"doctor_id", "doctor_name", "doctor_department", "start_time",
+                              "planned_end_time", "exam_duration"})
+            if (!MemoryTable::set(db, table, row, c, nullptr)) return false;
+        if (!MemoryTable::set(db, table, row, "status", string("CHO_DOI")) ||
+            !MemoryTable::set(db, table, row, "note", string("Tra ve hang doi do lich cu trung bac si")) ||
+            !MemoryTable::set(db, table, row, "updated_at", timestamp) ||
+            !MemoryTable::insert(db, "dang_kham", table, row, "checkin_id")) return false;
     }
-    sqlite3_finalize(archive);
-    sqlite3_finalize(reset);
-    if (ok) ok = executeSql("COMMIT;", "Loi hoan tat sua ca trung");
-    if (!ok) sqlite3_exec(db, "ROLLBACK;", nullptr, nullptr, nullptr);
-    return ok;
+    return transaction.commit();
 }
 
 // DANG_KHAM la nguon assignment duy nhat sau khi bo ket_qua_kham.
@@ -547,6 +561,14 @@ bool DatabaseDangKham::docDanhSach(vector<ExamSession>& records) {
 bool DatabaseDangKham::ghiPhanBacSi(const vector<BenhNhanKham>& assignments) {
     if (!executeSql("BEGIN IMMEDIATE;", "Loi bat dau ghi phan bac si")) return false;
 
+    MemoryTable::Table existing;
+    if (!existing.load(db, "dang_kham")) {
+        sqlite3_exec(db, "ROLLBACK;", nullptr, nullptr, nullptr);
+        return false;
+    }
+    const DsaSearch::HashIdIndex ids(existing.rows, [&](const auto& row) {
+        return sqlite3_value_int(row[existing.column("checkin_id")].get());
+    });
     const char* sql = R"(
         INSERT INTO dang_kham (checkin_id, patient_id, department, checkin_time,
             doctor_id, doctor_name, doctor_department, start_time, planned_end_time, exam_duration, status, note, updated_at)
@@ -557,7 +579,7 @@ bool DatabaseDangKham::ghiPhanBacSi(const vector<BenhNhanKham>& assignments) {
             doctor_department=excluded.doctor_department, start_time=excluded.start_time, planned_end_time=excluded.planned_end_time,
             exam_duration=excluded.exam_duration, status=excluded.status, note=excluded.note,
             updated_at=datetime('now','localtime')
-        WHERE dang_kham.end_time IS NULL;
+        ;
     )";
     sqlite3_stmt* stmt = nullptr;
     if (sqlite3_prepare_v2(db, sql, -1, &stmt, nullptr) != SQLITE_OK) {
@@ -566,6 +588,9 @@ bool DatabaseDangKham::ghiPhanBacSi(const vector<BenhNhanKham>& assignments) {
     }
     bool ok = true;
     for (const auto& bn : assignments) {
+        size_t position;
+        if (ids.find(bn.CheckinId, position) &&
+            !MemoryTable::isNull(existing.rows[position], existing.column("end_time"))) continue;
         sqlite3_bind_int(stmt, 1, bn.CheckinId);
         sqlite3_bind_int(stmt, 2, bn.PatientId);
         bindText(stmt, 3, bn.khoa);
@@ -595,8 +620,7 @@ bool DatabaseDangKham::docPhanBacSi(vector<BenhNhanKham>& assignments) {
         "SELECT checkin_id, patient_id, department, doctor_department, "
         "doctor_id, doctor_name, start_time, exam_duration, planned_end_time, "
         "status, note, checkin_time "
-        "FROM dang_kham "
-        "WHERE doctor_id IS NOT NULL AND doctor_id <> '';";
+        "FROM dang_kham;";
 
     sqlite3_stmt* stmt = nullptr;
     if (sqlite3_prepare_v2(db, sql, -1, &stmt, nullptr) != SQLITE_OK)
@@ -610,6 +634,8 @@ bool DatabaseDangKham::docPhanBacSi(vector<BenhNhanKham>& assignments) {
         record.khoa = getText(stmt, 2);
         record.KhoaBacSi = getText(stmt, 3);
         record.DoctorId = getText(stmt, 4);
+        // Tim tuyen tinh trong du lieu da nap; SQL chi doc toan bo bang.
+        if (record.DoctorId.empty()) continue;
         record.DoctorName = getText(stmt, 5);
         record.StartTime = getText(stmt, 6);
         record.ExamDuration = sqlite3_column_int(stmt, 7);
@@ -630,14 +656,20 @@ bool DatabaseDangKham::docPhanBacSi(vector<BenhNhanKham>& assignments) {
 }
 
 bool DatabaseDangKham::xoaCaChuaBatDauCuaBacSi(const string& doctorId) {
-    sqlite3_stmt* stmt = nullptr;
-    const char* sql = "DELETE FROM dang_kham WHERE doctor_id=? AND end_time IS NULL "
-                      "AND (start_time IS NULL OR start_time > datetime('now','localtime'));";
-    if (sqlite3_prepare_v2(db, sql, -1, &stmt, nullptr) != SQLITE_OK) return false;
-    sqlite3_bind_text(stmt, 1, doctorId.c_str(), -1, SQLITE_TRANSIENT);
-    const bool ok = sqlite3_step(stmt) == SQLITE_DONE;
-    sqlite3_finalize(stmt);
-    return ok;
+    MemoryTable::Transaction transaction(db);
+    MemoryTable::Table table;
+    string timestamp;
+    if (!transaction || !table.load(db, "dang_kham") || !MemoryTable::now(db, timestamp)) return false;
+    const int doctor = table.column("doctor_id"), end = table.column("end_time"),
+              start = table.column("start_time"), id = table.column("checkin_id");
+    for (const auto& row : table.rows) {
+        if (!MemoryTable::isNull(row, doctor) && MemoryTable::text(row, doctor) == doctorId &&
+            MemoryTable::isNull(row, end) &&
+            (MemoryTable::isNull(row, start) || MemoryTable::text(row, start) > timestamp)) {
+            if (!MemoryTable::erase(db, "dang_kham", "checkin_id", sqlite3_value_int(row[id].get()))) return false;
+        }
+    }
+    return transaction.commit();
 }
 
 bool DatabaseDangKham::dongBoTuXepBacSi(const vector<string>& blockedDoctors) {
@@ -652,27 +684,30 @@ bool DatabaseDangKham::dongBoTuXepBacSi(const vector<string>& blockedDoctors) {
 // Lưu chẩn đoán cho ca đã được tầng xử lý tìm và kiểm tra trong bộ nhớ.
 bool DatabaseDangKham::luuChanDoan(int checkinId, const string& diagnosis,
                                  const string& prescription, const string& reminder) {
-    sqlite3_stmt* stmt = nullptr;
-    const char* sql = "UPDATE dang_kham SET chan_doan=?, don_thuoc=?, loi_nhac_bac_si=?, "
-        "updated_at=datetime('now','localtime') WHERE checkin_id=? AND end_time IS NULL;";
-    if (sqlite3_prepare_v2(db, sql, -1, &stmt, nullptr) != SQLITE_OK) return false;
-    bindText(stmt, 1, diagnosis); bindText(stmt, 2, prescription); bindText(stmt, 3, reminder);
-    sqlite3_bind_int(stmt, 4, checkinId);
-    const bool success = sqlite3_step(stmt) == SQLITE_DONE && sqlite3_changes(db) > 0;
-    sqlite3_finalize(stmt);
-    return success;
+    MemoryTable::Transaction transaction(db);
+    MemoryTable::Table table;
+    string timestamp;
+    if (!transaction || !table.load(db, "dang_kham") || !MemoryTable::now(db, timestamp)) return false;
+    auto* row = table.find("checkin_id", checkinId);
+    if (!row || !MemoryTable::isNull(*row, table.column("end_time"))) return false;
+    return MemoryTable::set(db, table, *row, "chan_doan", diagnosis) &&
+        MemoryTable::set(db, table, *row, "don_thuoc", prescription) &&
+        MemoryTable::set(db, table, *row, "loi_nhac_bac_si", reminder) &&
+        MemoryTable::set(db, table, *row, "updated_at", timestamp) &&
+        MemoryTable::insert(db, "dang_kham", table, *row, "checkin_id") && transaction.commit();
 }
 
 // Ghi thời gian kết thúc thực tế; không dùng giờ kết thúc dự kiến để thay thế.
 bool DatabaseDangKham::ketThucPhien(int checkinId) {
-    sqlite3_stmt* stmt = nullptr;
-    const char* sql = "UPDATE dang_kham SET end_time=datetime('now','localtime'), "
-        "updated_at=datetime('now','localtime') WHERE checkin_id=? AND end_time IS NULL;";
-    if (sqlite3_prepare_v2(db, sql, -1, &stmt, nullptr) != SQLITE_OK) return false;
-    sqlite3_bind_int(stmt, 1, checkinId);
-    const bool success = sqlite3_step(stmt) == SQLITE_DONE && sqlite3_changes(db) > 0;
-    sqlite3_finalize(stmt);
-    return success;
+    MemoryTable::Transaction transaction(db);
+    MemoryTable::Table table;
+    string timestamp;
+    if (!transaction || !table.load(db, "dang_kham") || !MemoryTable::now(db, timestamp)) return false;
+    auto* row = table.find("checkin_id", checkinId);
+    if (!row || !MemoryTable::isNull(*row, table.column("end_time"))) return false;
+    return MemoryTable::set(db, table, *row, "end_time", timestamp) &&
+        MemoryTable::set(db, table, *row, "updated_at", timestamp) &&
+        MemoryTable::insert(db, "dang_kham", table, *row, "checkin_id") && transaction.commit();
 }
 
 // Ngắt liên kết database nguồn và đóng kết nối SQLite.

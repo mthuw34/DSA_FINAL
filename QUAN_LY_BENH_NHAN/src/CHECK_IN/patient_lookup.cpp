@@ -13,15 +13,14 @@ using namespace std;
 // _________________________________________
 // LAY TEXT TU SQLITE
 // _________________________________________
-// Nạp bảng bệnh nhân và tìm ID bằng bảng băm trong bộ nhớ.
+// Nạp bảng bệnh nhân và tìm một ID bằng Linear Search trong bộ nhớ.
 bool timBenhNhan(sqlite3* db, int patientId, Patient& patient)
 {
     std::vector<Patient> records;
     if (!HospitalPersistence::loadPatients(db, records)) return false;
-    const auto ids = PatientCore::indexPatients(records);
-    std::size_t position;
-    if (!ids.find(std::to_string(patientId), position)) return false;
-    patient = records[position];
+    const auto* selected = PatientCore::findPatient(records, patientId);
+    if (!selected) return false;
+    patient = *selected;
     try { patient.age = ageFromBirthDate(patient.birthDate); }
     catch (const std::exception& error) {
         cerr << "Ngay sinh khong hop le: " << error.what() << '\n';

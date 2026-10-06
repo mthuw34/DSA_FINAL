@@ -3,6 +3,7 @@
 #include <sqlite3.h>
 #include "../patient_validation.h"
 #include "../HospitalPersistence.h"
+#include "../../../include/SqliteMemoryTable.h"
 
 using namespace std;
 
@@ -35,9 +36,7 @@ int main() {
     vector<CheckInRecord> checkIns;
     if (!HospitalPersistence::loadPatients(db, patients) ||
         !HospitalPersistence::loadCheckIns(db, checkIns)) { sqlite3_close(db); return 1; }
-    const auto ids = PatientCore::indexPatients(patients);
-    size_t position;
-    if (!ids.find(to_string(id), position)) {
+    if (!PatientCore::findPatient(patients, id)) {
         cout << "Khong tim thay benh nhan co ID = " << id << '\n';
         sqlite3_close(db); return 0;
     }
@@ -46,22 +45,9 @@ int main() {
         sqlite3_close(db); return 1;
     }
     // Ghi thao tác xóa đã được quyết định ở tầng xử lý trong bộ nhớ.
-    sqlite3_stmt* stmt = nullptr;
-    if (sqlite3_prepare_v2(db, "DELETE FROM patients WHERE id = ?;", -1, &stmt, nullptr) != SQLITE_OK) {
-        cerr << "Loi SQL: " << sqlite3_errmsg(db) << '\n';
-        sqlite3_close(db);
-        return 1;
-    }
-    sqlite3_bind_int(stmt, 1, id);
-    const int result = sqlite3_step(stmt);
-    if (result != SQLITE_DONE) {
-        cerr << "Xoa that bai (benh nhan co the dang check-in): " << sqlite3_errmsg(db) << '\n';
-    } else if (sqlite3_changes(db) == 0) {
-        cout << "Khong tim thay benh nhan co ID = " << id << '\n';
-    } else {
-        cout << "Da xoa benh nhan co ID = " << id << '\n';
-    }
-    sqlite3_finalize(stmt);
+    const bool removed = MemoryTable::erase(db, "patients", "id", id);
+    if (!removed) cerr << "Xoa that bai: " << sqlite3_errmsg(db) << '\n';
+    else cout << "Da xoa benh nhan co ID = " << id << '\n';
     sqlite3_close(db);
-    return result == SQLITE_DONE ? 0 : 1;
+    return removed ? 0 : 1;
 }

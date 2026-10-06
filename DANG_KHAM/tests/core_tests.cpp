@@ -1,7 +1,20 @@
 #include "ExamCore.h"
+#include "../../include/BinarySearch.h"
 #include <cassert>
 
 int main() {
+    std::vector<int> keys{40, 2, 17, 1, 90};
+    DsaSearch::BinaryIdIndex binary(keys, [](int id) { return id; });
+    std::size_t original = 123;
+    assert(binary.find(1, original) && original == 3);
+    assert(binary.find(90, original) && original == 4);
+    assert(binary.find(17, original) && original == 2);
+    assert(!binary.find(0, original) && !binary.find(18, original) && !binary.find(91, original));
+    assert(keys == (std::vector<int>{40, 2, 17, 1, 90}));
+    DsaSearch::BinaryIdIndex empty(std::vector<int>{}, [](int id) { return id; });
+    assert(!empty.find(1, original));
+    DsaSearch::BinaryIdIndex single(std::vector<int>{7}, [](int id) { return id; });
+    assert(single.find(7, original) && original == 0 && !single.find(8, original));
     std::time_t now;
     assert(ExamCore::parseTime(std::string("2026-10-04 10:00:00"), now));
     std::time_t parsed;
@@ -48,10 +61,20 @@ int main() {
     assert(ExamCore::synchronizationChanges({sameDoctor}, existing, now).empty());
     sameDoctor.session.doctorId = assignments[0].session.doctorId;
     assert(ExamCore::synchronizationChanges({assignments[0], sameDoctor}, {}, now).size() == 1);
+    auto changedDoctor = assignments[1];
+    changedDoctor.session.doctorId = "BS_CHANGED";
+    sameDoctor.session.doctorId = changedDoctor.session.doctorId;
+    assert(ExamCore::synchronizationChanges({changedDoctor, sameDoctor}, {overrun}, now).size() == 1);
+    sameDoctor.session.doctorId = completed.doctorId;
+    assert(ExamCore::synchronizationChanges({sameDoctor}, {completed}, now).size() == 1);
     existing.push_back(changes[0]);
     const auto active = ExamCore::activeSessions(existing);
     assert(active.size() == 2 && active[0].checkinId == 2 && active[1].checkinId == 1);
     assert(ExamCore::findActive(existing, 2) && !ExamCore::findActive(existing, 3));
+    assert(!ExamCore::findActive(existing, 999) && !ExamCore::findActive({}, 1));
+    auto future = changes[0];
+    future.startTime = "2999-01-01 08:00:00";
+    assert(!ExamCore::findActive({future}, future.checkinId));
     assert(ExamCore::activeSessions({}).empty());
     auto duplicate = overrun;
     duplicate.checkinId = 20;
@@ -68,4 +91,13 @@ int main() {
     assert(ids.find(1, position) && position == 2);
     assert(ids.find(4100, position) && position == 3);
     assert(!ids.find(8199, position));
+    ids.put(1, 99);
+    assert(ids.find(1, position) && position == 99);
+    DsaSearch::HashIdIndex collisions(1);
+    for (int id : {-7, 0, 4, 20000}) collisions.put(id, static_cast<std::size_t>(id + 7));
+    for (int id : {-7, 0, 4, 20000})
+        assert(collisions.find(id, position) && position == static_cast<std::size_t>(id + 7));
+    assert(!collisions.find(8, position));
+    DsaSearch::HashIdIndex batch(keys, [](int id) { return id; });
+    assert(batch.find(17, position) && position == 2 && !batch.find(18, position));
 }

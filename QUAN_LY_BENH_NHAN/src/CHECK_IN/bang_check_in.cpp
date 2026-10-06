@@ -5,6 +5,7 @@
 
 #include "bang_check_in.h"
 #include "../HospitalPersistence.h"
+#include "../../../include/SqliteMemoryTable.h"
 
 using namespace std;
 
@@ -148,43 +149,8 @@ bool xoaMotCheckIn(sqlite3* db, int checkinId)
         return false;
     }
     // Chỉ lưu thao tác xóa bản ghi đã tìm được trong bộ nhớ.
-    const char* sql =
-        "DELETE FROM checkins WHERE checkin_id = ?;";
-
-    sqlite3_stmt* stmt = nullptr;
-
-    if (sqlite3_prepare_v2(db, sql, -1, &stmt, nullptr) != SQLITE_OK)
-    {
-        cerr << "Loi SQL khi xoa check-in: "
-             << sqlite3_errmsg(db)
-             << '\n';
-
-        return false;
-    }
-
-    sqlite3_bind_int(stmt, 1, checkinId);
-
-    const int stepResult = sqlite3_step(stmt);
-
-    if (stepResult != SQLITE_DONE)
-    {
-        cerr << "Khong the xoa check-in: "
-             << sqlite3_errmsg(db)
-             << '\n';
-
-        sqlite3_finalize(stmt);
-        return false;
-    }
-
-    const int soDongDaXoa = sqlite3_changes(db);
-    sqlite3_finalize(stmt);
-
-    if (soDongDaXoa == 0)
-    {
-        cout << "\nKhong tim thay check-in co ma = "
-             << checkinId
-             << '\n';
-
+    if (!MemoryTable::erase(db, "checkins", "checkin_id", checkinId)) {
+        cerr << "Khong the xoa check-in: " << sqlite3_errmsg(db) << '\n';
         return false;
     }
 
